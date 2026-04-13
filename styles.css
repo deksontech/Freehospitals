@@ -2015,10 +2015,21 @@ output {
 
   .topbar {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
     min-height: 0;
     padding: 12px 14px;
+  }
+
+  .brand {
+    min-width: 0;
+  }
+
+  .brand span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .nav-links {
@@ -2026,33 +2037,59 @@ output {
   }
 
   .urgent-link {
-    width: 100%;
+    width: 46px;
     justify-content: center;
     min-height: 38px;
-    padding: 0 10px;
+    padding: 0;
+    font-size: 0;
   }
 
   .top-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 100%;
-    align-items: end;
-    gap: 8px;
+    display: flex;
+    justify-content: flex-end;
+    width: auto;
+    align-items: center;
+    gap: 6px;
   }
 
   .login-button {
-    width: 100%;
+    width: 48px;
     min-height: 38px;
-    padding: 0 10px;
+    padding: 0;
+    font-size: 0;
   }
 
-  .language-switcher,
-  .language-switcher select {
-    width: 100%;
+  .login-button::before {
+    content: "Login";
+    font-size: 0.72rem;
+  }
+
+  .urgent-link::before {
+    content: "SOS";
+    font-size: 0.78rem;
   }
 
   .language-switcher {
-    grid-column: 1 / -1;
+    width: auto;
+    gap: 0;
+  }
+
+  .language-switcher span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .language-switcher select {
+    width: 62px;
+    min-width: 0;
+    min-height: 38px;
+    padding: 0 4px;
+    font-size: 0.8rem;
+    font-weight: 900;
   }
 
   .emergency-banner {
