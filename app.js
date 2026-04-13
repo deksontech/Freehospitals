@@ -46,7 +46,9 @@ const translations = {
     faq: "FAQ",
     help: "Help",
     login: "Login / Sign up",
+    loginShort: "Login",
     urgentCare: "Need urgent care?",
+    urgentShort: "SOS",
     emergencyTitle: "Medical emergency?",
     emergencyText: "Call local emergency services or visit the nearest hospital immediately. Freehospitals helps with doctor discovery and contact support.",
     heroEyebrow: "Find the right doctor faster",
@@ -87,9 +89,13 @@ const translations = {
     trustTitle: "Clear, free, and easy to act on.",
     freeCost: "Free of Cost",
     noHidden: "No hidden charges",
+    noHiddenCopy: "Any clinic or hospital terms are confirmed before the visit.",
     careDeskSupport: "Care desk support",
+    careDeskSupportCopy: "A centralized team helps patients connect with the right next step.",
     hospitalsPrivate: "Hospitals and private clinics",
+    hospitalsPrivateCopy: "Search both hospital-affiliated doctors and private clinic doctors.",
     indiaStates: "Available across Indian states",
+    indiaStatesCopy: "Browse doctors by state and city as the network grows.",
     refine: "Refine Results",
     reset: "Reset",
     useLocation: "Use my location",
@@ -141,13 +147,17 @@ const translations = {
     speaksHindi: "Speaks Hindi",
     hospitalAffiliated: "Hospital Affiliated",
     privateClinic: "Private Clinic",
+    affiliatedTo: "Affiliated to",
+    careDeskMatch: "Care desk will help match the right doctor",
+    inLocation: "in",
     viewProfile: "View profile",
     requestContact: "Request contact",
     shortlist: "Shortlist",
     saved: "Saved",
     rating: "Rating",
     yearsExperience: "{years} years experience",
-    doctorProfile: "Doctor profile",
+  doctorProfile: "Doctor profile",
+  doctorBioFallback: "Experienced {specialty} available for patient consultation and care guidance.",
     verifiedProfile: "Verified profile",
     documentsChecked: "Documents checked",
     documentsPending: "Documents pending",
@@ -157,6 +167,50 @@ const translations = {
     savingRequest: "Saving your request for the care desk...",
     requestSaved: "Request saved in the admin panel. You can now call, WhatsApp, or open email.",
     invalidPhone: "Please enter a valid 10 digit Indian mobile number.",
+    menu: "Menu",
+    wizardCopy: "Answer a few quick questions and we will set up the search for you.",
+    wizardProblem: "What problem are you facing?",
+    wizardCity: "Which city are you in?",
+    wizardPatient: "Who is the patient?",
+    preferredLanguage: "Preferred language",
+    urgency: "Urgency",
+    showMatches: "Show matches",
+    askCareDesk: "Ask care desk",
+    generalSymptoms: "Fever, cough, weakness",
+    heartSymptoms: "Chest pain or BP",
+    skinSymptoms: "Skin, acne, hair fall",
+    womenSymptoms: "Pregnancy, PCOS, periods",
+    childSymptoms: "Child fever or vaccine",
+    boneSymptoms: "Joint pain or injury",
+    specialtyEyebrow: "Popular specialties",
+    specialtyTitle: "Care that matches the moment.",
+    pediatricCare: "Pediatric Care",
+    pediatricCopy: "Fever, nutrition, vaccines, newborn support, and growth concerns.",
+    heartHealth: "Heart Health",
+    heartCopy: "Blood pressure, cholesterol, rhythm concerns, and prevention plans.",
+    everydayConsults: "Everyday Consults",
+    everydayCopy: "General medicine, skin, ENT, orthopedics, and women's health.",
+    trustSectionEyebrow: "Built for confidence",
+    trustSectionTitle: "Clear information before the first call.",
+    trustSectionCopy: "Every listing keeps the essentials easy to scan: specialty, hospital or clinic, city, availability, language, and supported visit options.",
+    verifiedProfiles: "Verified profiles",
+    freeContactRequests: "Free contact requests",
+    indiaWideSearch: "India-wide location search",
+    browseEyebrow: "Browse faster",
+    browseTitle: "Start with a city or specialty.",
+    browseCopy: "Choose a popular location or doctor category and we will take you straight to matching doctors.",
+    browseByCity: "Browse by city",
+    browseBySpecialty: "Browse by specialty",
+    faqEyebrow: "Common questions",
+    faqTitle: "Clear answers before you contact.",
+    faqFreeQuestion: "Is the contact request free?",
+    faqFreeAnswer: "Yes. The request is free of cost. Any medical consultation terms are confirmed by the care desk or clinic.",
+    faqHospitalQuestion: "Can I find hospital-affiliated doctors?",
+    faqHospitalAnswer: "Yes. Use the hospital or clinic search field to find doctors linked to a hospital, or search private clinic doctors.",
+    faqEmergencyQuestion: "What should I do in an emergency?",
+    faqEmergencyAnswer: "Call emergency services immediately. This website is for discovery and contact support, not emergency care.",
+    faqWhatsappQuestion: "Can I use WhatsApp?",
+    faqWhatsappAnswer: "Yes. Doctor cards and profiles include WhatsApp and call options for the centralized care desk.",
     helpMeFind: "Help me find a doctor",
   },
   hi: {
@@ -403,12 +457,160 @@ const translations = {
   },
 };
 
+Object.assign(translations.hi, {
+  language: "\u092d\u093e\u0937\u093e",
+  doctors: "\u0921\u0949\u0915\u094d\u091f\u0930",
+  specialties: "\u0935\u093f\u0936\u0947\u0937\u0924\u093e\u090f\u0902",
+  symptoms: "\u0932\u0915\u094d\u0937\u0923",
+  faq: "\u0938\u0935\u093e\u0932",
+  login: "\u0932\u0949\u0917\u093f\u0928 / \u0938\u093e\u0907\u0928 \u0905\u092a",
+  loginShort: "\u0932\u0949\u0917\u093f\u0928",
+  urgentCare: "\u0924\u0941\u0930\u0902\u0924 \u0926\u0947\u0916\u092d\u093e\u0932 \u091a\u093e\u0939\u093f\u090f?",
+  urgentShort: "SOS",
+  emergencyTitle: "\u092e\u0947\u0921\u093f\u0915\u0932 \u0907\u092e\u0930\u091c\u0947\u0902\u0938\u0940?",
+  emergencyText: "\u0938\u094d\u0925\u093e\u0928\u0940\u092f \u0906\u092a\u093e\u0924\u0915\u093e\u0932\u0940\u0928 \u0938\u0947\u0935\u093e \u0915\u094b \u0915\u0949\u0932 \u0915\u0930\u0947\u0902 \u092f\u093e \u0928\u091c\u0926\u0940\u0915\u0940 \u0905\u0938\u094d\u092a\u0924\u093e\u0932 \u091c\u093e\u090f\u0902\u0964 Freehospitals \u0921\u0949\u0915\u094d\u091f\u0930 \u0916\u094b\u091c \u0914\u0930 \u0938\u0902\u092a\u0930\u094d\u0915 \u0938\u0939\u093e\u092f\u0924\u093e \u092e\u0947\u0902 \u092e\u0926\u0926 \u0915\u0930\u0924\u093e \u0939\u0948\u0964",
+  heroEyebrow: "\u0938\u0939\u0940 \u0921\u0949\u0915\u094d\u091f\u0930 \u091c\u0932\u094d\u0926\u0940 \u0916\u094b\u091c\u0947\u0902",
+  heroTitle: "\u0905\u092a\u0928\u0947 \u0928\u091c\u0926\u0940\u0915 \u092d\u0930\u094b\u0938\u0947\u092e\u0902\u0926 \u0926\u0947\u0916\u092d\u093e\u0932 \u092a\u093e\u090f\u0902\u0964",
+  heroCopy: "\u0935\u093f\u0936\u0947\u0937\u0924\u093e, \u0905\u0928\u0941\u092d\u0935, \u0930\u0947\u091f\u093f\u0902\u0917, \u092d\u093e\u0937\u093e \u0914\u0930 \u0909\u092a\u0932\u092c\u094d\u0927 \u0938\u092e\u092f \u0915\u0947 \u0906\u0927\u093e\u0930 \u092a\u0930 \u0921\u0949\u0915\u094d\u091f\u0930 \u0926\u0947\u0916\u0947\u0902\u0964",
+  findDoctor: "\u0921\u0949\u0915\u094d\u091f\u0930 \u0916\u094b\u091c\u0947\u0902",
+  howItWorks: "\u0915\u0948\u0938\u0947 \u0915\u093e\u092e \u0915\u0930\u0924\u093e \u0939\u0948",
+  searchLabel: "\u0921\u0949\u0915\u094d\u091f\u0930, \u0932\u0915\u094d\u0937\u0923 \u092f\u093e \u0935\u093f\u0936\u0947\u0937\u0924\u093e",
+  searchPlaceholder: "\u091c\u0948\u0938\u0947 \u0939\u0943\u0926\u092f \u0930\u094b\u0917, \u0924\u094d\u0935\u091a\u093e, \u092c\u0941\u0916\u093e\u0930",
+  specialty: "\u0935\u093f\u0936\u0947\u0937\u0924\u093e",
+  allSpecialties: "\u0938\u092d\u0940 \u0935\u093f\u0936\u0947\u0937\u0924\u093e\u090f\u0902",
+  state: "\u0930\u093e\u091c\u094d\u092f",
+  allStates: "\u0938\u092d\u0940 \u0930\u093e\u091c\u094d\u092f",
+  city: "\u0936\u0939\u0930",
+  allCities: "\u0938\u092d\u0940 \u0936\u0939\u0930",
+  availability: "\u0909\u092a\u0932\u092c\u094d\u0927\u0924\u093e",
+  anyTime: "\u0915\u094b\u0908 \u092d\u0940 \u0938\u092e\u092f",
+  today: "\u0906\u091c",
+  tomorrow: "\u0915\u0932",
+  thisWeek: "\u0907\u0938 \u0938\u092a\u094d\u0924\u093e\u0939",
+  callToConfirm: "\u092a\u0941\u0937\u094d\u091f\u093f \u0915\u0947 \u0932\u093f\u090f \u0915\u0949\u0932",
+  hospitalClinic: "\u0905\u0938\u094d\u092a\u0924\u093e\u0932 \u092f\u093e \u0915\u094d\u0932\u093f\u0928\u093f\u0915",
+  hospitalPlaceholder: "\u0905\u0938\u094d\u092a\u0924\u093e\u0932 \u092f\u093e \u0928\u093f\u091c\u0940 \u0915\u094d\u0932\u093f\u0928\u093f\u0915 \u0916\u094b\u091c\u0947\u0902",
+  popular: "\u0932\u094b\u0915\u092a\u094d\u0930\u093f\u092f:",
+  categories: "\u0936\u094d\u0930\u0947\u0923\u093f\u092f\u093e\u0902",
+  languages: "\u092d\u093e\u0937\u093e\u090f\u0902",
+  timePreference: "\u0938\u092e\u092f \u092a\u0938\u0902\u0926",
+  minRating: "\u0928\u094d\u092f\u0942\u0928\u0924\u092e \u0930\u0947\u091f\u093f\u0902\u0917",
+  refine: "\u092a\u0930\u093f\u0923\u093e\u092e \u0938\u0941\u0927\u093e\u0930\u0947\u0902",
+  reset: "\u0930\u0940\u0938\u0947\u091f",
+  useLocation: "\u092e\u0947\u0930\u0940 \u0932\u094b\u0915\u0947\u0936\u0928 \u0907\u0938\u094d\u0924\u0947\u092e\u093e\u0932 \u0915\u0930\u0947\u0902",
+  recommended: "\u0938\u0941\u091d\u093e\u090f \u0917\u090f \u0921\u0949\u0915\u094d\u091f\u0930",
+  sortBy: "\u0915\u094d\u0930\u092e\u092c\u0926\u094d\u0927 \u0915\u0930\u0947\u0902",
+  recommendedSort: "\u0938\u0941\u091d\u093e\u090f \u0917\u090f",
+  highestRating: "\u0938\u092c\u0938\u0947 \u0905\u091a\u094d\u091b\u0940 \u0930\u0947\u091f\u093f\u0902\u0917",
+  soonest: "\u0938\u092c\u0938\u0947 \u091c\u0932\u094d\u0926\u0940 \u0909\u092a\u0932\u092c\u094d\u0927",
+  showing: "{total} \u092e\u0947\u0902 \u0938\u0947 {shown} \u0921\u0949\u0915\u094d\u091f\u0930 \u0926\u093f\u0916 \u0930\u0939\u0947 \u0939\u0948\u0902",
+  freeOfCost: "\u092e\u0941\u092b\u094d\u0924",
+  verified: "\u0938\u0924\u094d\u092f\u093e\u092a\u093f\u0924",
+  rating: "\u0930\u0947\u091f\u093f\u0902\u0917",
+  yearsExperience: "{years} \u0938\u093e\u0932 \u0905\u0928\u0941\u092d\u0935",
+  viewProfile: "\u092a\u094d\u0930\u094b\u092b\u093e\u0907\u0932 \u0926\u0947\u0916\u0947\u0902",
+  requestContact: "\u0938\u0902\u092a\u0930\u094d\u0915 \u0905\u0928\u0941\u0930\u094b\u0927",
+  privateClinic: "\u0928\u093f\u091c\u0940 \u0915\u094d\u0932\u093f\u0928\u093f\u0915",
+  affiliatedTo: "\u0905\u0938\u094d\u092a\u0924\u093e\u0932:",
+  careDeskMatch: "Care desk \u0938\u0939\u0940 \u0921\u0949\u0915\u094d\u091f\u0930 \u092e\u093f\u0932\u093e\u0928\u0947 \u092e\u0947\u0902 \u092e\u0926\u0926 \u0915\u0930\u0947\u0917\u093e",
+  inLocation: "\u092e\u0947\u0902",
+  doctorBioFallback: "\u0905\u0928\u0941\u092d\u0935\u0940 {specialty} \u092e\u0930\u0940\u091c \u092a\u0930\u093e\u092e\u0930\u094d\u0936 \u0914\u0930 \u0926\u0947\u0916\u092d\u093e\u0932 \u092e\u093e\u0930\u094d\u0917\u0926\u0930\u094d\u0936\u0928 \u0915\u0947 \u0932\u093f\u090f \u0909\u092a\u0932\u092c\u094d\u0927 \u0939\u0948\u0902\u0964",
+  callDesk: "Care desk \u0915\u094b \u0915\u0949\u0932",
+  privacy: "\u0917\u094b\u092a\u0928\u0940\u092f\u0924\u093e \u0928\u0940\u0924\u093f",
+  terms: "\u0928\u093f\u092f\u092e",
+  footerText: "Freehospitals \u092e\u0930\u0940\u091c\u094b\u0902 \u0915\u094b \u0921\u0949\u0915\u094d\u091f\u0930 \u0916\u094b\u091c\u0928\u0947 \u0914\u0930 \u0938\u0902\u092a\u0930\u094d\u0915 \u0905\u0928\u0941\u0930\u094b\u0927 \u092d\u0947\u091c\u0928\u0947 \u092e\u0947\u0902 \u092e\u0926\u0926 \u0915\u0930\u0924\u093e \u0939\u0948\u0964",
+  contactDoctor: "\u0921\u0949\u0915\u094d\u091f\u0930 \u0938\u0947 \u0938\u0902\u092a\u0930\u094d\u0915",
+  requestCallback: "\u0915\u0949\u0932\u092c\u0948\u0915 \u0905\u0928\u0941\u0930\u094b\u0927",
+  patientName: "\u092e\u0930\u0940\u091c \u0915\u093e \u0928\u093e\u092e",
+  mobile: "\u092e\u094b\u092c\u093e\u0907\u0932 \u0928\u0902\u092c\u0930",
+  email: "\u0908\u092e\u0947\u0932",
+  age: "\u0909\u092e\u094d\u0930",
+  gender: "\u0932\u093f\u0902\u0917",
+  preferredContact: "\u0938\u0902\u092a\u0930\u094d\u0915 \u0915\u093e \u0924\u0930\u0940\u0915\u093e",
+  preferredTime: "\u092a\u0938\u0902\u0926\u0940\u0926\u093e \u0938\u092e\u092f",
+  healthConcern: "\u0938\u094d\u0935\u093e\u0938\u094d\u0925\u094d\u092f \u0938\u092e\u0938\u094d\u092f\u093e",
+  submitRequest: "\u0905\u0928\u0941\u0930\u094b\u0927 \u092d\u0947\u091c\u0947\u0902",
+  menu: "\u092e\u0947\u0928\u0942",
+  wizardCopy: "\u0915\u0941\u091b \u091b\u094b\u091f\u0947 \u0938\u0935\u093e\u0932\u094b\u0902 \u0915\u0947 \u091c\u0935\u093e\u092c \u0926\u0947\u0902, \u0939\u092e \u0906\u092a\u0915\u0947 \u0932\u093f\u090f \u0916\u094b\u091c \u0938\u0947\u091f \u0915\u0930 \u0926\u0947\u0902\u0917\u0947\u0964",
+  wizardProblem: "\u0906\u092a\u0915\u094b \u0915\u094d\u092f\u093e \u0938\u092e\u0938\u094d\u092f\u093e \u0939\u0948?",
+  wizardCity: "\u0906\u092a \u0915\u093f\u0938 \u0936\u0939\u0930 \u092e\u0947\u0902 \u0939\u0948\u0902?",
+  wizardPatient: "\u092e\u0930\u0940\u091c \u0915\u094c\u0928 \u0939\u0948?",
+  preferredLanguage: "\u092a\u0938\u0902\u0926\u0940\u0926\u093e \u092d\u093e\u0937\u093e",
+  urgency: "\u091c\u0930\u0942\u0930\u0924",
+  showMatches: "\u092e\u0948\u091a \u0926\u093f\u0916\u093e\u090f\u0902",
+  askCareDesk: "Care desk \u0938\u0947 \u092a\u0942\u091b\u0947\u0902",
+  generalSymptoms: "\u092c\u0941\u0916\u093e\u0930, \u0916\u093e\u0902\u0938\u0940, \u0915\u092e\u091c\u094b\u0930\u0940",
+  heartSymptoms: "\u091b\u093e\u0924\u0940 \u092e\u0947\u0902 \u0926\u0930\u094d\u0926 \u092f\u093e BP",
+  skinSymptoms: "\u0924\u094d\u0935\u091a\u093e, \u092e\u0941\u0902\u0939\u093e\u0938\u0947, \u092c\u093e\u0932 \u091d\u0921\u093c\u0928\u093e",
+  womenSymptoms: "\u0917\u0930\u094d\u092d\u093e\u0935\u0938\u094d\u0925\u093e, PCOS, \u092a\u0940\u0930\u093f\u092f\u0921\u094d\u0938",
+  childSymptoms: "\u092c\u091a\u094d\u091a\u0947 \u0915\u093e \u092c\u0941\u0916\u093e\u0930 \u092f\u093e \u091f\u0940\u0915\u093e",
+  boneSymptoms: "\u091c\u094b\u0921\u093c\u094b\u0902 \u0915\u093e \u0926\u0930\u094d\u0926 \u092f\u093e \u091a\u094b\u091f",
+  specialtyEyebrow: "\u0932\u094b\u0915\u092a\u094d\u0930\u093f\u092f \u0935\u093f\u0936\u0947\u0937\u0924\u093e\u090f\u0902",
+  specialtyTitle: "\u0939\u0930 \u091c\u0930\u0942\u0930\u0924 \u0915\u0947 \u0932\u093f\u090f \u0938\u0939\u0940 \u0926\u0947\u0916\u092d\u093e\u0932\u0964",
+  noHiddenCopy: "\u0915\u094d\u0932\u093f\u0928\u093f\u0915 \u092f\u093e \u0905\u0938\u094d\u092a\u0924\u093e\u0932 \u0915\u0940 \u0936\u0930\u094d\u0924\u0947\u0902 \u0935\u093f\u091c\u093f\u091f \u0938\u0947 \u092a\u0939\u0932\u0947 \u092c\u0924\u093e\u0908 \u091c\u093e\u0924\u0940 \u0939\u0948\u0902\u0964",
+  careDeskSupportCopy: "\u0915\u0947\u0902\u0926\u094d\u0930\u0940\u092f \u091f\u0940\u092e \u092e\u0930\u0940\u091c\u094b\u0902 \u0915\u094b \u0938\u0939\u0940 \u0905\u0917\u0932\u093e \u0915\u0926\u092e \u091a\u0941\u0928\u0928\u0947 \u092e\u0947\u0902 \u092e\u0926\u0926 \u0915\u0930\u0924\u0940 \u0939\u0948\u0964",
+  hospitalsPrivateCopy: "\u0905\u0938\u094d\u092a\u0924\u093e\u0932 \u0938\u0947 \u091c\u0941\u0921\u093c\u0947 \u0914\u0930 \u0928\u093f\u091c\u0940 \u0915\u094d\u0932\u093f\u0928\u093f\u0915 \u0921\u0949\u0915\u094d\u091f\u0930 \u0926\u094b\u0928\u094b\u0902 \u0916\u094b\u091c\u0947\u0902\u0964",
+  indiaStatesCopy: "\u0928\u0947\u091f\u0935\u0930\u094d\u0915 \u092c\u0922\u093c\u0928\u0947 \u092a\u0930 \u0930\u093e\u091c\u094d\u092f \u0914\u0930 \u0936\u0939\u0930 \u0938\u0947 \u0921\u0949\u0915\u094d\u091f\u0930 \u092c\u094d\u0930\u093e\u0909\u091c \u0915\u0930\u0947\u0902\u0964",
+  pediatricCare: "\u092c\u093e\u0932 \u0930\u094b\u0917 \u0926\u0947\u0916\u092d\u093e\u0932",
+  pediatricCopy: "\u092c\u0941\u0916\u093e\u0930, \u092a\u094b\u0937\u0923, \u091f\u0940\u0915\u0947, \u0928\u0935\u091c\u093e\u0924 \u0938\u0939\u093e\u092f\u0924\u093e \u0914\u0930 \u0935\u093f\u0915\u093e\u0938 \u0938\u0902\u092c\u0902\u0927\u0940 \u091a\u093f\u0902\u0924\u093e\u090f\u0902\u0964",
+  heartHealth: "\u0939\u0943\u0926\u092f \u0938\u094d\u0935\u093e\u0938\u094d\u0925\u094d\u092f",
+  heartCopy: "\u092c\u094d\u0932\u0921 \u092a\u094d\u0930\u0947\u0936\u0930, \u0915\u094b\u0932\u0947\u0938\u094d\u091f\u094d\u0930\u0949\u0932, \u0927\u0921\u093c\u0915\u0928 \u0914\u0930 \u092c\u091a\u093e\u0935 \u0926\u0947\u0916\u092d\u093e\u0932\u0964",
+  everydayConsults: "\u0930\u094b\u091c\u092e\u0930\u094d\u0930\u093e \u092a\u0930\u093e\u092e\u0930\u094d\u0936",
+  everydayCopy: "\u0938\u093e\u092e\u093e\u0928\u094d\u092f \u091a\u093f\u0915\u093f\u0924\u094d\u0938\u093e, \u0924\u094d\u0935\u091a\u093e, ENT, \u0939\u0921\u094d\u0921\u0940 \u0914\u0930 \u092e\u0939\u093f\u0932\u093e \u0938\u094d\u0935\u093e\u0938\u094d\u0925\u094d\u092f\u0964",
+  trustSectionEyebrow: "\u092d\u0930\u094b\u0938\u0947 \u0915\u0947 \u0932\u093f\u090f",
+  trustSectionTitle: "\u092a\u0939\u0932\u0940 \u0915\u0949\u0932 \u0938\u0947 \u092a\u0939\u0932\u0947 \u0938\u094d\u092a\u0937\u094d\u091f \u091c\u093e\u0928\u0915\u093e\u0930\u0940\u0964",
+  trustSectionCopy: "\u0939\u0930 \u0932\u093f\u0938\u094d\u091f\u093f\u0902\u0917 \u092e\u0947\u0902 \u0935\u093f\u0936\u0947\u0937\u0924\u093e, \u0905\u0938\u094d\u092a\u0924\u093e\u0932 \u092f\u093e \u0915\u094d\u0932\u093f\u0928\u093f\u0915, \u0936\u0939\u0930, \u0909\u092a\u0932\u092c\u094d\u0927\u0924\u093e, \u092d\u093e\u0937\u093e \u0914\u0930 \u0938\u0902\u092a\u0930\u094d\u0915 \u0935\u093f\u0915\u0932\u094d\u092a \u0906\u0938\u093e\u0928\u0940 \u0938\u0947 \u0926\u093f\u0916\u0924\u0947 \u0939\u0948\u0902\u0964",
+  verifiedProfiles: "\u0938\u0924\u094d\u092f\u093e\u092a\u093f\u0924 \u092a\u094d\u0930\u094b\u092b\u093e\u0907\u0932",
+  freeContactRequests: "\u092e\u0941\u092b\u094d\u0924 \u0938\u0902\u092a\u0930\u094d\u0915 \u0905\u0928\u0941\u0930\u094b\u0927",
+  indiaWideSearch: "\u092d\u093e\u0930\u0924 \u092d\u0930 \u092e\u0947\u0902 \u0932\u094b\u0915\u0947\u0936\u0928 \u0916\u094b\u091c",
+  browseEyebrow: "\u091c\u0932\u094d\u0926\u0940 \u092c\u094d\u0930\u093e\u0909\u091c \u0915\u0930\u0947\u0902",
+  browseTitle: "\u0936\u0939\u0930 \u092f\u093e \u0935\u093f\u0936\u0947\u0937\u0924\u093e \u0938\u0947 \u0936\u0941\u0930\u0942 \u0915\u0930\u0947\u0902\u0964",
+  browseCopy: "\u0932\u094b\u0915\u092a\u094d\u0930\u093f\u092f \u0932\u094b\u0915\u0947\u0936\u0928 \u092f\u093e \u0921\u0949\u0915\u094d\u091f\u0930 \u0936\u094d\u0930\u0947\u0923\u0940 \u091a\u0941\u0928\u0947\u0902 \u0914\u0930 \u0939\u092e \u0906\u092a\u0915\u094b \u0938\u0940\u0927\u0947 \u092e\u0948\u091a \u0926\u093f\u0916\u093e\u090f\u0902\u0917\u0947\u0964",
+  browseByCity: "\u0936\u0939\u0930 \u0938\u0947 \u092c\u094d\u0930\u093e\u0909\u091c",
+  browseBySpecialty: "\u0935\u093f\u0936\u0947\u0937\u0924\u093e \u0938\u0947 \u092c\u094d\u0930\u093e\u0909\u091c",
+  faqEyebrow: "\u0906\u092e \u0938\u0935\u093e\u0932",
+  faqTitle: "\u0938\u0902\u092a\u0930\u094d\u0915 \u0938\u0947 \u092a\u0939\u0932\u0947 \u0938\u094d\u092a\u0937\u094d\u091f \u091c\u0935\u093e\u092c\u0964",
+  faqFreeQuestion: "\u0915\u094d\u092f\u093e \u0938\u0902\u092a\u0930\u094d\u0915 \u0905\u0928\u0941\u0930\u094b\u0927 \u092e\u0941\u092b\u094d\u0924 \u0939\u0948?",
+  faqFreeAnswer: "\u0939\u093e\u0902\u0964 \u0921\u0949\u0915\u094d\u091f\u0930 \u0938\u0902\u092a\u0930\u094d\u0915 \u0905\u0928\u0941\u0930\u094b\u0927 \u092e\u0941\u092b\u094d\u0924 \u0939\u0948\u0964",
+  faqHospitalQuestion: "\u0915\u094d\u092f\u093e \u092e\u0948\u0902 \u0905\u0938\u094d\u092a\u0924\u093e\u0932 \u0938\u0947 \u091c\u0941\u0921\u093c\u0947 \u0921\u0949\u0915\u094d\u091f\u0930 \u0916\u094b\u091c \u0938\u0915\u0924\u093e \u0939\u0942\u0902?",
+  faqHospitalAnswer: "\u0939\u093e\u0902\u0964 \u0905\u0938\u094d\u092a\u0924\u093e\u0932 \u092f\u093e \u0915\u094d\u0932\u093f\u0928\u093f\u0915 \u0938\u0930\u094d\u091a \u092b\u0940\u0932\u094d\u0921 \u0915\u093e \u0907\u0938\u094d\u0924\u0947\u092e\u093e\u0932 \u0915\u0930\u0947\u0902\u0964",
+  faqEmergencyQuestion: "\u0907\u092e\u0930\u091c\u0947\u0902\u0938\u0940 \u092e\u0947\u0902 \u0915\u094d\u092f\u093e \u0915\u0930\u0942\u0902?",
+  faqEmergencyAnswer: "\u0924\u0941\u0930\u0902\u0924 \u0906\u092a\u093e\u0924\u0915\u093e\u0932\u0940\u0928 \u0938\u0947\u0935\u093e \u0915\u094b \u0915\u0949\u0932 \u0915\u0930\u0947\u0902\u0964 \u092f\u0939 \u0935\u0947\u092c\u0938\u093e\u0907\u091f \u0916\u094b\u091c \u0914\u0930 \u0938\u0902\u092a\u0930\u094d\u0915 \u0938\u0939\u093e\u092f\u0924\u093e \u0915\u0947 \u0932\u093f\u090f \u0939\u0948\u0964",
+  faqWhatsappQuestion: "\u0915\u094d\u092f\u093e \u092e\u0948\u0902 WhatsApp \u0915\u093e \u0909\u092a\u092f\u094b\u0917 \u0915\u0930 \u0938\u0915\u0924\u093e \u0939\u0942\u0902?",
+  faqWhatsappAnswer: "\u0939\u093e\u0902\u0964 \u0921\u0949\u0915\u094d\u091f\u0930 \u0915\u093e\u0930\u094d\u0921 \u0914\u0930 \u092a\u094d\u0930\u094b\u092b\u093e\u0907\u0932 \u092e\u0947\u0902 WhatsApp \u0914\u0930 \u0915\u0949\u0932 \u0935\u093f\u0915\u0932\u094d\u092a \u0939\u0948\u0902\u0964",
+});
+
+Object.assign(translations.gu, {
+  loginShort: "\u0ab2\u0acb\u0a97\u0abf\u0aa8",
+  urgentShort: "SOS",
+  menu: "\u0aae\u0ac7\u0aa8\u0ac1",
+  wizardCopy: "\u0a95\u0ac7\u0a9f\u0ab2\u0abe\u0a95 \u0a9f\u0ac2\u0a82\u0a95\u0abe \u0aaa\u0acd\u0ab0\u0ab6\u0acd\u0aa8\u0acb\u0aa8\u0abe \u0a9c\u0ab5\u0abe\u0aac \u0a86\u0aaa\u0acb, \u0a85\u0aae\u0ac7 \u0aa4\u0aae\u0abe\u0ab0\u0abe \u0aae\u0abe\u0a9f\u0ac7 search set \u0a95\u0ab0\u0ac0\u0ab6\u0ac1\u0a82.",
+  wizardProblem: "\u0aa4\u0aae\u0aa8\u0ac7 \u0ab6\u0ac1\u0a82 \u0aa4\u0a95\u0ab2\u0ac0\u0aab \u0a9b\u0ac7?",
+  wizardCity: "\u0aa4\u0aae\u0ac7 \u0a95\u0aaf\u0abe \u0ab6\u0ab9\u0ac7\u0ab0\u0aae\u0abe\u0a82 \u0a9b\u0acb?",
+  wizardPatient: "\u0aa6\u0ab0\u0acd\u0aa6\u0ac0 \u0a95\u0acb\u0aa3 \u0a9b\u0ac7?",
+  preferredLanguage: "\u0aaa\u0ab8\u0a82\u0aa6\u0a97\u0ac0\u0aa8\u0ac0 \u0aad\u0abe\u0ab7\u0abe",
+  urgency: "\u0aa4\u0abe\u0aa4\u0acd\u0a95\u0abe\u0ab2\u0abf\u0a95\u0aa4\u0abe",
+  showMatches: "Matches \u0aac\u0aa4\u0abe\u0ab5\u0acb",
+  askCareDesk: "Care desk \u0aa8\u0ac7 \u0aaa\u0ac2\u0a9b\u0acb",
+  generalSymptoms: "\u0aa4\u0abe\u0ab5, \u0a96\u0abe\u0a82\u0ab8\u0ac0, \u0aa8\u0aac\u0ab3\u0abe\u0a88",
+  heartSymptoms: "\u0a9b\u0abe\u0aa4\u0ac0\u0aae\u0abe\u0a82 \u0aa6\u0ac1\u0a96\u0abe\u0ab5\u0acb \u0a85\u0aa5\u0ab5\u0abe BP",
+  skinSymptoms: "\u0aa4\u0acd\u0ab5\u0a9a\u0abe, \u0a96\u0ac0\u0ab2, \u0ab5\u0abe\u0ab3 \u0a96\u0ab0\u0ab5\u0abe",
+  womenSymptoms: "\u0a97\u0ab0\u0acd\u0aad\u0abe\u0ab5\u0ab8\u0acd\u0aa5\u0abe, PCOS, periods",
+  childSymptoms: "\u0aac\u0abe\u0ab3\u0a95\u0aa8\u0acb \u0aa4\u0abe\u0ab5 \u0a85\u0aa5\u0ab5\u0abe \u0ab0\u0ab8\u0ac0",
+  boneSymptoms: "\u0ab8\u0abe\u0a82\u0aa7\u0abe\u0aa8\u0acb \u0aa6\u0ac1\u0a96\u0abe\u0ab5\u0acb \u0a85\u0aa5\u0ab5\u0abe \u0a88\u0a9c\u0abe",
+});
+
+const supportedLanguages = ["en", "hi"];
+const relatedLanguageBase = {};
+
 let currentLanguage = localStorage.getItem("freehospitalsLanguage") || "en";
 const pathLanguage = window.location.pathname.split("/").filter(Boolean)[0];
-if (["hi", "gu"].includes(pathLanguage)) currentLanguage = pathLanguage;
+if (supportedLanguages.includes(pathLanguage)) currentLanguage = pathLanguage;
+if (!supportedLanguages.includes(currentLanguage)) currentLanguage = "en";
 
 function t(key, replacements = {}) {
-  const template = translations[currentLanguage]?.[key] || translations.en[key] || key;
+  const baseLanguage = relatedLanguageBase[currentLanguage];
+  const template = translations[currentLanguage]?.[key] || translations[baseLanguage]?.[key] || translations.en[key] || key;
   return Object.entries(replacements).reduce((text, [name, value]) => text.replace(`{${name}}`, value), template);
 }
 
@@ -616,6 +818,8 @@ const doctorDetailContent = document.querySelector("#doctorDetailContent");
 const categoryFilters = document.querySelector("#categoryFilters");
 const generalEnquiryButton = document.querySelector("#generalEnquiryButton");
 const languageSelect = document.querySelector("#languageSelect");
+const menuToggle = document.querySelector("#menuToggle");
+const primaryNav = document.querySelector("#primaryNav");
 const openWizard = document.querySelector("#openWizard");
 const findWizard = document.querySelector("#findWizard");
 const doctorWizard = document.querySelector("#doctorWizard");
@@ -670,6 +874,72 @@ const suggestionItems = [
   ["diabetes", "General Physician"],
 ];
 
+const termTranslations = {
+  hi: {
+    "Dr. Ananya Mehtas": "\u0921\u0949. \u0905\u0928\u0928\u094d\u092f\u093e \u092e\u0947\u0939\u0924\u093e",
+    "Dr. Rohan Kapoor": "\u0921\u0949. \u0930\u094b\u0939\u0928 \u0915\u092a\u0942\u0930",
+    "Dr. Priya Nair": "\u0921\u0949. \u092a\u094d\u0930\u093f\u092f\u093e \u0928\u093e\u092f\u0930",
+    "Dr. Arjun Sen": "\u0921\u0949. \u0905\u0930\u094d\u091c\u0941\u0928 \u0938\u0947\u0928",
+    "Dr. Kavita Rao": "\u0921\u0949. \u0915\u0935\u093f\u0924\u093e \u0930\u093e\u0935",
+    "Dr. Sameer Khan": "\u0921\u0949. \u0938\u092e\u0940\u0930 \u0916\u093e\u0928",
+    "Dr. Neha Bansal": "\u0921\u0949. \u0928\u0947\u0939\u093e \u092c\u0902\u0938\u0932",
+    "Dr. Vikram Iyer": "\u0921\u0949. \u0935\u093f\u0915\u094d\u0930\u092e \u0905\u092f\u094d\u092f\u0930",
+    "Dr. Rohan Shah": "\u0921\u0949. \u0930\u094b\u0939\u0928 \u0936\u093e\u0939",
+    "Dr. Nisha Kapoor": "\u0921\u0949. \u0928\u093f\u0936\u093e \u0915\u092a\u0942\u0930",
+    "Dr. Kabir Sethi": "\u0921\u0949. \u0915\u092c\u0940\u0930 \u0938\u0947\u0920\u0940",
+    "Dr. Farah Contractor": "\u0921\u0949. \u092b\u0930\u093e\u0939 \u0915\u0949\u0928\u094d\u091f\u094d\u0930\u0948\u0915\u094d\u091f\u0930",
+    "Dr. Sameer Iyer": "\u0921\u0949. \u0938\u092e\u0940\u0930 \u0905\u092f\u094d\u092f\u0930",
+    "Dr. Priya Menon": "\u0921\u0949. \u092a\u094d\u0930\u093f\u092f\u093e \u092e\u0947\u0928\u0928",
+    "Dr. Arjun Bansal": "\u0921\u0949. \u0905\u0930\u094d\u091c\u0941\u0928 \u092c\u0902\u0938\u0932",
+    "Cardiologist": "\u0939\u0943\u0926\u092f \u0930\u094b\u0917 \u0935\u093f\u0936\u0947\u0937\u091c\u094d\u091e",
+    "Dermatologist": "\u0924\u094d\u0935\u091a\u093e \u0935\u093f\u0936\u0947\u0937\u091c\u094d\u091e",
+    "Gynecologist": "\u0938\u094d\u0924\u094d\u0930\u0940 \u0930\u094b\u0917 \u0935\u093f\u0936\u0947\u0937\u091c\u094d\u091e",
+    "Pediatrician": "\u092c\u093e\u0932 \u0930\u094b\u0917 \u0935\u093f\u0936\u0947\u0937\u091c\u094d\u091e",
+    "Orthopedic Surgeon": "\u0939\u0921\u094d\u0921\u0940 \u0930\u094b\u0917 \u0935\u093f\u0936\u0947\u0937\u091c\u094d\u091e",
+    "General Physician": "\u0938\u093e\u092e\u093e\u0928\u094d\u092f \u091a\u093f\u0915\u093f\u0924\u094d\u0938\u0915",
+    "ENT Specialist": "\u0915\u093e\u0928, \u0928\u093e\u0915, \u0917\u0932\u093e \u0935\u093f\u0936\u0947\u0937\u091c\u094d\u091e",
+    "Neurologist": "\u0928\u094d\u092f\u0942\u0930\u094b\u0932\u0949\u091c\u093f\u0938\u094d\u091f",
+    "Video": "\u0935\u0940\u0921\u093f\u092f\u094b",
+    "Clinic": "\u0915\u094d\u0932\u093f\u0928\u093f\u0915",
+    "Hospital": "\u0905\u0938\u094d\u092a\u0924\u093e\u0932",
+    "Home": "\u0918\u0930 \u092a\u0930",
+    "Hospital Affiliated": "\u0905\u0938\u094d\u092a\u0924\u093e\u0932 \u0938\u0947 \u091c\u0941\u0921\u093c\u0947",
+    "Private Clinic": "\u0928\u093f\u091c\u0940 \u0915\u094d\u0932\u093f\u0928\u093f\u0915",
+    "Morning": "\u0938\u0941\u092c\u0939",
+    "Afternoon": "\u0926\u094b\u092a\u0939\u0930",
+    "Evening": "\u0936\u093e\u092e",
+    "English": "\u0905\u0902\u0917\u094d\u0930\u0947\u091c\u0940",
+    "Hindi": "\u0939\u093f\u0902\u0926\u0940",
+    "Gujarati": "\u0917\u0941\u091c\u0930\u093e\u0924\u0940",
+    "Today": "\u0906\u091c",
+    "Tomorrow": "\u0915\u0932",
+    "This week": "\u0907\u0938 \u0938\u092a\u094d\u0924\u093e\u0939",
+    "Call to confirm": "\u092a\u0941\u0937\u094d\u091f\u093f \u0915\u0947 \u0932\u093f\u090f \u0915\u0949\u0932",
+  },
+  gu: {
+    "Cardiologist": "\u0ab9\u0ac3\u0aa6\u0aaf \u0ab0\u0acb\u0a97 \u0aa8\u0abf\u0ab7\u0acd\u0aa3\u0abe\u0aa4",
+    "Dermatologist": "\u0aa4\u0acd\u0ab5\u0a9a\u0abe \u0aa8\u0abf\u0ab7\u0acd\u0aa3\u0abe\u0aa4",
+    "Gynecologist": "\u0ab8\u0acd\u0aa4\u0acd\u0ab0\u0ac0 \u0ab0\u0acb\u0a97 \u0aa8\u0abf\u0ab7\u0acd\u0aa3\u0abe\u0aa4",
+    "Pediatrician": "\u0aac\u0abe\u0ab3 \u0ab0\u0acb\u0a97 \u0aa8\u0abf\u0ab7\u0acd\u0aa3\u0abe\u0aa4",
+    "Orthopedic Surgeon": "\u0ab9\u0abe\u0aa1\u0a95\u0abe\u0a82 \u0aa8\u0abf\u0ab7\u0acd\u0aa3\u0abe\u0aa4",
+    "General Physician": "\u0ab8\u0abe\u0aae\u0abe\u0aa8\u0acd\u0aaf \u0aa1\u0acb\u0a95\u0acd\u0a9f\u0ab0",
+    "ENT Specialist": "\u0a95\u0abe\u0aa8, \u0aa8\u0abe\u0a95, \u0a97\u0ab3\u0abe \u0aa8\u0abf\u0ab7\u0acd\u0aa3\u0abe\u0aa4",
+    "Video": "\u0ab5\u0ac0\u0aa1\u0abf\u0aaf\u0acb",
+    "Clinic": "\u0a95\u0acd\u0ab2\u0abf\u0aa8\u0abf\u0a95",
+    "Hospital": "\u0ab9\u0acb\u0ab8\u0acd\u0aaa\u0abf\u0a9f\u0ab2",
+    "Home": "\u0a98\u0ab0\u0ac7",
+    "Today": "\u0a86\u0a9c\u0ac7",
+    "Tomorrow": "\u0a95\u0abe\u0ab2\u0ac7",
+    "This week": "\u0a86 \u0a85\u0aa0\u0ab5\u0abe\u0aa1\u0abf\u0aaf\u0ac7",
+    "Call to confirm": "\u0aaa\u0ac1\u0ab7\u0acd\u0a9f\u0abf \u0aae\u0abe\u0a9f\u0ac7 \u0a95\u0ac9\u0ab2",
+  },
+};
+
+function translateTerm(value) {
+  const baseLanguage = relatedLanguageBase[currentLanguage] || currentLanguage;
+  return termTranslations[baseLanguage]?.[value] || value;
+}
+
 function careDeskDoctor() {
   return {
     id: 0,
@@ -717,23 +987,36 @@ function localizedDoctor(doctor) {
   if (currentLanguage === "hi") {
     return {
       ...doctor,
-      displaySpecialty: doctor.specialty_hi || doctor.specialty,
-      displayBio: doctor.bio_hi || doctor.bio,
-      displayServices: doctor.services_hi?.length ? doctor.services_hi : doctor.services,
+      displayName: translateTerm(doctor.name),
+      displaySpecialty: doctor.specialty_hi || translateTerm(doctor.specialty),
+      displayBio: doctor.bio_hi || t("doctorBioFallback", { specialty: doctor.specialty_hi || translateTerm(doctor.specialty) }),
+      displayServices: doctor.services_hi?.length ? doctor.services_hi : doctor.services.map(translateTerm),
     };
   }
 
   if (currentLanguage === "gu") {
     return {
       ...doctor,
-      displaySpecialty: doctor.specialty_gu || doctor.specialty,
+      displayName: doctor.name,
+      displaySpecialty: doctor.specialty_gu || translateTerm(doctor.specialty),
       displayBio: doctor.bio_gu || doctor.bio,
-      displayServices: doctor.services_gu?.length ? doctor.services_gu : doctor.services,
+      displayServices: doctor.services_gu?.length ? doctor.services_gu : doctor.services.map(translateTerm),
+    };
+  }
+
+  if (relatedLanguageBase[currentLanguage]) {
+    return {
+      ...doctor,
+      displayName: translateTerm(doctor.name),
+      displaySpecialty: translateTerm(doctor.specialty),
+      displayBio: doctor.bio_hi || doctor.bio,
+      displayServices: doctor.services_hi?.length ? doctor.services_hi : doctor.services.map(translateTerm),
     };
   }
 
   return {
     ...doctor,
+    displayName: doctor.name,
     displaySpecialty: doctor.specialty,
     displayBio: doctor.bio,
     displayServices: doctor.services,
@@ -745,7 +1028,7 @@ function fillSelect(select, values, placeholder) {
   values.forEach((value) => {
     const option = document.createElement("option");
     option.value = value;
-    option.textContent = value;
+    option.textContent = translateTerm(value);
     select.append(option);
   });
 }
@@ -792,9 +1075,9 @@ function trustBadges(doctor) {
 }
 
 function affiliationLine(doctor) {
-  if (doctor.practiceType === "Care Desk") return "Care desk will help match the right doctor";
+  if (doctor.practiceType === "Care Desk") return t("careDeskMatch");
   return doctor.practiceType === "Hospital Affiliated" && doctor.hospitalName
-    ? `Affiliated to ${doctor.hospitalName}`
+    ? `${t("affiliatedTo")} ${doctor.hospitalName}`
     : t("privateClinic");
 }
 
@@ -879,16 +1162,15 @@ function filteredDoctors() {
 
 function doctorCard(doctor) {
   const displayDoctor = localizedDoctor(doctor);
-  const isSaved = listingState.saved.has(doctor.id);
   return `
     <article class="doctor-card">
-      <img class="doctor-photo" src="${doctor.image}" alt="Portrait of ${doctor.name}" />
+      <img class="doctor-photo" src="${doctor.image}" alt="${displayDoctor.displayName}" />
       <div class="doctor-main">
-        <h3>${doctor.name}${doctor.verified ? `<span class="verified-badge">${t("verified")}</span>` : ""}</h3>
-        <p class="specialty-line">${displayDoctor.displaySpecialty} in ${doctor.city}, ${doctor.state}</p>
+        <h3>${displayDoctor.displayName}${doctor.verified ? `<span class="verified-badge">${t("verified")}</span>` : ""}</h3>
+        <p class="specialty-line">${displayDoctor.displaySpecialty} ${t("inLocation")} ${doctor.city}, ${doctor.state}</p>
         <p class="affiliation-line">${affiliationLine(doctor)}</p>
         ${doctor.address ? `<p class="meta-line">${doctor.address}</p>` : ""}
-        <p class="meta-line">${t("yearsExperience", { years: doctor.experience })} - ${doctor.languages.join(", ")}</p>
+        <p class="meta-line">${t("yearsExperience", { years: doctor.experience })} - ${doctor.languages.map(translateTerm).join(", ")}</p>
         <div class="trust-badges" aria-label="Doctor highlights">
           ${trustBadges(doctor).map((badge) => `<span>${badge}</span>`).join("")}
         </div>
@@ -901,16 +1183,13 @@ function doctorCard(doctor) {
         <div>
           <p class="rating">${t("rating")} ${doctor.rating.toFixed(1)} (${doctor.reviews})</p>
           <p class="fee">${t("freeOfCost")}</p>
-          <p class="availability">${doctor.availability} - ${doctor.nextSlot}</p>
+          <p class="availability">${translateTerm(doctor.availability)} - ${doctor.nextSlot}</p>
         </div>
         <div class="actions">
           <a class="whatsapp-button" href="${whatsAppUrl(doctor, "Doctor card WhatsApp")}" target="_blank" rel="noreferrer">WhatsApp</a>
           <a class="call-button" href="tel:+918586930497">Call</a>
           <button class="detail-button" type="button" data-detail="${doctor.id}">${t("viewProfile")}</button>
           <button class="book-button" type="button" data-contact="${doctor.id}" data-source="Doctor card request">${t("requestContact")}</button>
-          <button class="save-button ${isSaved ? "saved" : ""}" type="button" data-save="${doctor.id}">
-            ${isSaved ? t("saved") : t("shortlist")}
-          </button>
         </div>
       </div>
     </article>
@@ -960,7 +1239,7 @@ function renderBrowseLinks() {
     .map((city) => `<button type="button" data-browse-city="${city}">${city}</button>`)
     .join("");
   browseSpecialties.innerHTML = specialties
-    .map((specialty) => `<button type="button" data-browse-specialty="${specialty}">${specialty}</button>`)
+    .map((specialty) => `<button type="button" data-browse-specialty="${specialty}">${translateTerm(specialty)}</button>`)
     .join("");
 }
 
@@ -977,7 +1256,7 @@ function renderSearchSuggestions() {
   }
 
   searchSuggestions.innerHTML = matches
-    .map(([label, specialty]) => `<button type="button" data-suggestion="${label}" data-specialty="${specialty}">${label} <span>${specialty}</span></button>`)
+    .map(([label, specialty]) => `<button type="button" data-suggestion="${label}" data-specialty="${specialty}">${label} <span>${translateTerm(specialty)}</span></button>`)
     .join("");
   searchSuggestions.hidden = false;
 }
@@ -1002,7 +1281,7 @@ function renderSavedDrawer() {
           `;
         })
         .join("")
-    : `<p class="form-note">No saved doctors yet. Use Shortlist on doctor cards to save options here.</p>`;
+    : `<p class="form-note">No saved doctors yet.</p>`;
 }
 
 function applyWizardFilters() {
@@ -1054,7 +1333,7 @@ function updateCheckboxSet(name, set) {
 function openContactForm(doctor, source = "Doctor listing contact form") {
   currentContactSource = source;
   selectedDoctorId.value = doctor.id;
-  contactDoctorName.textContent = doctor.id ? `Contact ${doctor.name}` : t("helpMeFind");
+  contactDoctorName.textContent = doctor.id ? `${t("contactDoctor")} ${translateTerm(doctor.name)}` : t("helpMeFind");
   contactMessage.textContent = t("submitOnce");
   contactMessage.className = "form-note";
   emailButton.hidden = true;
@@ -1082,17 +1361,17 @@ function detailMarkup(doctor) {
     <div class="modal-heading">
       <div>
         <p class="eyebrow">${t("doctorProfile")}</p>
-        <h2>${doctor.name}</h2>
+        <h2>${displayDoctor.displayName}</h2>
       </div>
       <button class="icon-button" type="button" data-close="doctorDetailModal" aria-label="Close doctor profile">x</button>
     </div>
     <div class="doctor-detail-grid">
-      <img class="doctor-detail-photo" src="${doctor.image}" alt="Portrait of ${doctor.name}" />
+      <img class="doctor-detail-photo" src="${doctor.image}" alt="${displayDoctor.displayName}" />
       <div>
-        <p class="specialty-line">${displayDoctor.displaySpecialty} in ${doctor.city}, ${doctor.state}</p>
+        <p class="specialty-line">${displayDoctor.displaySpecialty} ${t("inLocation")} ${doctor.city}, ${doctor.state}</p>
         ${doctor.verified ? `<p class="verified-profile-line">${t("verifiedProfile")}${doctor.registrationNumber ? ` - Reg. ${doctor.registrationNumber}` : ""}</p>` : ""}
         <p class="affiliation-line">${affiliationLine(doctor)}</p>
-        <p class="rating">${t("rating")} ${doctor.rating.toFixed(1)} from ${doctor.reviews} patients</p>
+        <p class="rating">${t("rating")} ${doctor.rating.toFixed(1)} (${doctor.reviews})</p>
         <p class="fee">${t("freeOfCost")}</p>
         <div class="trust-badges">${trustBadges(doctor).map((badge) => `<span>${badge}</span>`).join("")}</div>
       </div>
@@ -1103,10 +1382,10 @@ function detailMarkup(doctor) {
     <div class="detail-facts">
       <span>${t("yearsExperience", { years: doctor.experience })}</span>
       <span>${affiliationLine(doctor)}</span>
-      <span>${doctor.languages.join(", ")}</span>
-      <span>${doctor.visits.join(", ")}</span>
-      <span>${doctor.availability} - ${doctor.nextSlot}</span>
-      <span>${doctor.timeOfDay}</span>
+      <span>${doctor.languages.map(translateTerm).join(", ")}</span>
+      <span>${doctor.visits.map(translateTerm).join(", ")}</span>
+      <span>${translateTerm(doctor.availability)} - ${doctor.nextSlot}</span>
+      <span>${translateTerm(doctor.timeOfDay)}</span>
       ${doctor.address ? `<span>${doctor.address}</span>` : ""}
     </div>
     ${displayDoctor.displayServices.length ? `<div class="chips">${displayDoctor.displayServices.map((service) => `<span class="chip">${service}</span>`).join("")}</div>` : ""}
@@ -1116,7 +1395,6 @@ function detailMarkup(doctor) {
       <a class="call-button" href="tel:+918586930497">Call +91 8586930497</a>
     </div>
     ${doctor.mapUrl ? `<a class="seo-link" href="${doctor.mapUrl}" target="_blank" rel="noreferrer">${t("openMap")}</a>` : ""}
-    <a class="seo-link" href="${doctorSeoPath(doctor)}">${t("openSeo")}</a>
   `;
 }
 
@@ -1194,8 +1472,23 @@ function setPlaceholder(selector, value) {
   if (element) element.placeholder = value;
 }
 
+function setFieldLabel(fieldSelector, value) {
+  const field = document.querySelector(fieldSelector);
+  const label = field?.closest(".field");
+  const labelText = label?.querySelector("span");
+  if (labelText) labelText.textContent = value;
+}
+
 function applyTranslations() {
   document.documentElement.lang = currentLanguage;
+  [...languageSelect.options].forEach((option) => {
+    if (!supportedLanguages.includes(option.value)) option.remove();
+  });
+  if (!languageSelect.querySelector('option[value="hi"]')) {
+    languageSelect.append(new Option("Hindi", "hi"));
+  }
+  languageSelect.querySelector('option[value="en"]').textContent = "English";
+  languageSelect.querySelector('option[value="hi"]').textContent = currentLanguage === "hi" ? "\u0939\u093f\u0902\u0926\u0940" : "Hindi";
   languageSelect.value = currentLanguage;
   document.title = currentLanguage === "en" ? "Freehospitals Doctor Listings" : `${t("findDoctor")} | Freehospitals`;
 
@@ -1204,8 +1497,9 @@ function applyTranslations() {
   setText('.nav-links a[href="#specialties"]', t("specialties"));
   setText('.nav-links a[href="#symptoms"]', t("symptoms"));
   setText('.nav-links a[href="#faq"]', t("faq"));
-  setText('.nav-links a[href="#help"]', t("help"));
   setText(".urgent-link", t("urgentCare"));
+  openAuth.dataset.shortLabel = t("loginShort");
+  document.querySelector(".urgent-link").dataset.shortLabel = t("urgentShort");
   setText(".emergency-banner strong", t("emergencyTitle"));
   setText(".emergency-banner span", t("emergencyText"));
   setText(".search-copy .eyebrow", t("heroEyebrow"));
@@ -1213,6 +1507,7 @@ function applyTranslations() {
   setText(".search-copy > p:not(.eyebrow)", t("heroCopy"));
   setText('.hero-actions a[href="#doctors"]', t("findDoctor"));
   setText('.hero-actions a[href="#journey"]', t("howItWorks"));
+  setText("#openWizard", t("helpFind"));
   setText('label[for="searchInput"] span', t("searchLabel"));
   setPlaceholder("#searchInput", t("searchPlaceholder"));
   setText('label[for="specialtyFilter"] span', t("specialty"));
@@ -1222,9 +1517,18 @@ function applyTranslations() {
   setText('label[for="hospitalFilter"] span', t("hospitalClinic"));
   setPlaceholder("#hospitalFilter", t("hospitalPlaceholder"));
   setText(".quick-searches span", t("popular"));
+  document.querySelectorAll("[data-quick-specialty]").forEach((button) => {
+    button.textContent = `${translateTerm(button.dataset.quickSpecialty)} ${t("inLocation")} ${button.dataset.quickCity}`;
+  });
   setText("#symptoms .eyebrow", t("symptomEyebrow"));
   setText("#symptom-title", t("symptomTitle"));
   setText("#symptoms .section-copy p:not(.eyebrow)", t("symptomCopy"));
+  setText('#symptoms [data-specialty="General Physician"] strong', t("generalSymptoms"));
+  setText('#symptoms [data-specialty="Cardiologist"] strong', t("heartSymptoms"));
+  setText('#symptoms [data-specialty="Dermatologist"] strong', t("skinSymptoms"));
+  setText('#symptoms [data-specialty="Gynecologist"] strong', t("womenSymptoms"));
+  setText('#symptoms [data-specialty="Pediatrician"] strong', t("childSymptoms"));
+  setText('#symptoms [data-specialty="Orthopedic Surgeon"] strong', t("boneSymptoms"));
   setText("#journey .eyebrow", t("journeyEyebrow"));
   setText("#journey-title", t("journeyTitle"));
   setText("#journey .section-copy p:not(.eyebrow)", t("journeyCopy"));
@@ -1237,18 +1541,50 @@ function applyTranslations() {
   setText(".trust-cards .eyebrow", t("trustEyebrow"));
   setText("#freehospitals-trust-title", t("trustTitle"));
   setText(".trust-card-grid article:nth-child(1) strong", t("freeCost"));
+  setText(".trust-card-grid article:nth-child(1) span", t("faqFreeAnswer"));
   setText(".trust-card-grid article:nth-child(2) strong", t("noHidden"));
+  setText(".trust-card-grid article:nth-child(2) span", t("noHiddenCopy"));
   setText(".trust-card-grid article:nth-child(3) strong", t("careDeskSupport"));
+  setText(".trust-card-grid article:nth-child(3) span", t("careDeskSupportCopy"));
   setText(".trust-card-grid article:nth-child(4) strong", t("hospitalsPrivate"));
+  setText(".trust-card-grid article:nth-child(4) span", t("hospitalsPrivateCopy"));
   setText(".trust-card-grid article:nth-child(5) strong", t("indiaStates"));
+  setText(".trust-card-grid article:nth-child(5) span", t("indiaStatesCopy"));
+  setText(".specialty-showcase .eyebrow", t("specialtyEyebrow"));
+  setText("#specialty-title", t("specialtyTitle"));
+  setText(".specialty-grid article:nth-child(1) h3", t("pediatricCare"));
+  setText(".specialty-grid article:nth-child(1) p", t("pediatricCopy"));
+  setText(".specialty-grid article:nth-child(2) h3", t("heartHealth"));
+  setText(".specialty-grid article:nth-child(2) p", t("heartCopy"));
+  setText(".specialty-grid article:nth-child(3) h3", t("everydayConsults"));
+  setText(".specialty-grid article:nth-child(3) p", t("everydayCopy"));
+  setText(".trust-section .eyebrow", t("trustSectionEyebrow"));
+  setText("#trust-title", t("trustSectionTitle"));
+  setText(".trust-section > div > p:not(.eyebrow)", t("trustSectionCopy"));
+  setText(".trust-list span:nth-child(1)", t("verifiedProfiles"));
+  setText(".trust-list span:nth-child(2)", t("freeContactRequests"));
+  setText(".trust-list span:nth-child(3)", t("indiaWideSearch"));
+  setText(".browse-section .eyebrow", t("browseEyebrow"));
+  setText("#browse-title", t("browseTitle"));
+  setText(".browse-section .section-copy p:not(.eyebrow)", t("browseCopy"));
+  setText(".browse-grid article:nth-child(1) h3", t("browseByCity"));
+  setText(".browse-grid article:nth-child(2) h3", t("browseBySpecialty"));
   setText(".panel-heading h2", t("refine"));
   setText("#resetFilters", t("reset"));
   setText("#nearMeButton", t("useLocation"));
   setText("#nearMeMessage", t("nearMeCopy"));
   setText("#categoryFilters h3", t("categories"));
-  setText(".filter-group:nth-of-type(2) h3", t("languages"));
-  setText(".filter-group:nth-of-type(3) h3", t("timePreference"));
-  setText(".filter-group:nth-of-type(4) h3", t("minRating"));
+  setText("#languageFilters h3", t("languages"));
+  setText("#timeFilters h3", t("timePreference"));
+  setText("#ratingFilters h3", t("minRating"));
+  document.querySelectorAll('#languageFilters input[name="language"]').forEach((input) => {
+    const label = input.closest("label");
+    if (label) label.lastChild.textContent = ` ${translateTerm(input.value)}`;
+  });
+  document.querySelectorAll('#timeFilters input[name="time"]').forEach((input) => {
+    const label = input.closest("label");
+    if (label) label.lastChild.textContent = ` ${translateTerm(input.value)}`;
+  });
   setText(".care-note h2", t("notSure"));
   setText(".care-note p", t("careNoteCopy"));
   setText("#generalEnquiryButton", t("helpFind"));
@@ -1258,9 +1594,23 @@ function applyTranslations() {
   setText("#emptyReset", t("reset"));
   setText("#emptyEnquiry", t("helpFind"));
   setText(".empty-actions .call-button", t("callDesk"));
+  setText(".faq-section .eyebrow", t("faqEyebrow"));
+  setText("#faq-title", t("faqTitle"));
+  setText(".faq-grid details:nth-child(1) summary", t("faqFreeQuestion"));
+  setText(".faq-grid details:nth-child(1) p", t("faqFreeAnswer"));
+  setText(".faq-grid details:nth-child(2) summary", t("faqHospitalQuestion"));
+  setText(".faq-grid details:nth-child(2) p", t("faqHospitalAnswer"));
+  setText(".faq-grid details:nth-child(3) summary", t("faqEmergencyQuestion"));
+  setText(".faq-grid details:nth-child(3) p", t("faqEmergencyAnswer"));
+  setText(".faq-grid details:nth-child(4) summary", t("faqWhatsappQuestion"));
+  setText(".faq-grid details:nth-child(4) p", t("faqWhatsappAnswer"));
   setText(".site-footer span", t("footerText"));
+  setText('.site-footer a[href="#doctors"]', t("doctors"));
+  setText('.site-footer a[href="#symptoms"]', t("symptoms"));
+  setText('.site-footer a[href="#faq"]', t("faq"));
   setText('.site-footer a[href="privacy.html"]', t("privacy"));
   setText('.site-footer a[href="terms.html"]', t("terms"));
+  setText(".footer-call", t("callDesk"));
   setText("#contactForm .eyebrow", t("contactDoctor"));
   setText("#contactDoctorName", selectedDoctorId.value === "0" ? t("helpMeFind") : selectedDoctorId.value ? contactDoctorName.textContent : t("requestCallback"));
   setText("#contactForm .modal-copy", t("contactCopy"));
@@ -1280,8 +1630,21 @@ function applyTranslations() {
   setText("#contactMessage", t("submitOnce"));
   setText('.mobile-contact-bar a[href^="tel"]', t("callCareDesk"));
   setText('.mobile-contact-bar a[href="#doctors"]', t("findDoctorMobile"));
+  setText("#menuToggle", t("menu"));
+  setText("#wizard-title", t("helpMeFind"));
+  setText("#findWizard .section-copy p:not(.eyebrow)", t("wizardCopy"));
+  setFieldLabel("#wizardProblem", t("wizardProblem"));
+  setFieldLabel("#wizardCity", t("wizardCity"));
+  setFieldLabel("#wizardPatient", t("wizardPatient"));
+  setFieldLabel("#wizardLanguage", t("preferredLanguage"));
+  setFieldLabel("#wizardUrgency", t("urgency"));
+  setText('#doctorWizard button[type="submit"]', t("showMatches"));
+  setText("#wizardEnquiry", t("askCareDesk"));
 
   specialtyFilter.options[0].textContent = t("allSpecialties");
+  [...specialtyFilter.options].forEach((option) => {
+    if (option.value !== "All") option.textContent = translateTerm(option.value);
+  });
   stateFilter.options[0].textContent = t("allStates");
   cityFilter.options[0].textContent = t("allCities");
   availabilityFilter.options[0].textContent = t("anyTime");
@@ -1294,6 +1657,8 @@ function applyTranslations() {
   sortSelect.options[2].textContent = t("soonest");
 
   updateAuthButton();
+  renderCategoryFilters();
+  renderBrowseLinks();
   render();
 }
 
@@ -1349,17 +1714,8 @@ sortSelect.addEventListener("change", (event) => {
 });
 
 doctorList.addEventListener("click", (event) => {
-  const saveButton = event.target.closest("[data-save]");
   const contactButton = event.target.closest("[data-contact]");
   const detailButton = event.target.closest("[data-detail]");
-
-  if (saveButton) {
-    const id = Number(saveButton.dataset.save);
-    if (listingState.saved.has(id)) listingState.saved.delete(id);
-    else listingState.saved.add(id);
-    localStorage.setItem("freehospitalsSavedDoctors", JSON.stringify([...listingState.saved]));
-    render();
-  }
 
   if (contactButton) {
     const doctor = doctors.find((item) => item.id === Number(contactButton.dataset.contact));
@@ -1573,7 +1929,7 @@ wizardEnquiry.addEventListener("click", () => {
   applyWizardFilters();
   openContactForm(careDeskDoctor(), "Find my doctor wizard enquiry");
 });
-openSavedDrawer.addEventListener("click", () => {
+openSavedDrawer?.addEventListener("click", () => {
   renderSavedDrawer();
   savedDrawer.showModal();
 });
@@ -1669,6 +2025,16 @@ document.body.addEventListener("click", (event) => {
   if (whatsappLink) trackEvent("whatsapp_click", { href: whatsappLink.getAttribute("href") });
 });
 
+menuToggle.addEventListener("click", () => {
+  const isOpen = document.body.classList.toggle("menu-open");
+  menuToggle.setAttribute("aria-expanded", String(isOpen));
+});
+
+primaryNav.addEventListener("click", () => {
+  document.body.classList.remove("menu-open");
+  menuToggle.setAttribute("aria-expanded", "false");
+});
+
 document.querySelectorAll("[data-symptom]").forEach((button) => {
   button.addEventListener("click", () => {
     listingState.search = button.dataset.symptom;
@@ -1731,7 +2097,7 @@ function renderCategoryFilters() {
   categoryFilters.innerHTML = `<h3>${t("categories")}</h3>${specialties
     .map(
       (specialty) => `
-        <label><input type="checkbox" name="category" value="${specialty}" /> ${specialty}</label>
+        <label><input type="checkbox" name="category" value="${specialty}" /> ${translateTerm(specialty)}</label>
       `,
     )
     .join("")}`;
@@ -1750,7 +2116,7 @@ function initializeFilters() {
 
 function applySeoRouteFilters() {
   const parts = window.location.pathname.split("/").filter(Boolean);
-  const offset = ["hi", "gu"].includes(parts[0]) ? 1 : 0;
+  const offset = supportedLanguages.includes(parts[0]) && parts[0] !== "en" ? 1 : 0;
   if (parts[offset] !== "doctors" || parts.length < offset + 3) return;
 
   const specialtySlug = parts[offset + 1];

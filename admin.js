@@ -40,6 +40,7 @@ const stateCities = {
 let doctors = [];
 let selectedId = null;
 let requests = [];
+let analytics = {};
 const requestFilters = {
   search: "",
   status: "all",
@@ -85,6 +86,15 @@ const exportDoctorsCsv = document.querySelector("#exportDoctorsCsv");
 const exportRequestsCsv = document.querySelector("#exportRequestsCsv");
 const importDoctorsCsv = document.querySelector("#importDoctorsCsv");
 const downloadBackup = document.querySelector("#downloadBackup");
+const analyticsUpdated = document.querySelector("#analyticsUpdated");
+const analyticsKpis = document.querySelector("#analyticsKpis");
+const analyticsFunnel = document.querySelector("#analyticsFunnel");
+const analyticsSources = document.querySelector("#analyticsSources");
+const analyticsDemand = document.querySelector("#analyticsDemand");
+const analyticsCoverage = document.querySelector("#analyticsCoverage");
+const analyticsQuality = document.querySelector("#analyticsQuality");
+const analyticsRecent = document.querySelector("#analyticsRecent");
+const analyticsRecommendations = document.querySelector("#analyticsRecommendations");
 
 function setMessage(message, type = "") {
   adminMessage.textContent = message;
@@ -349,6 +359,7 @@ function renderDoctorTable() {
       },
     )
     .join("");
+  renderAdminAnalytics();
 }
 
 function mostCommon(values) {
@@ -358,6 +369,192 @@ function mostCommon(values) {
   }, new Map());
   const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
   return top ? `${top[0]} (${top[1]})` : "-";
+}
+
+function countBy(items, getter) {
+  return items.reduce((map, item) => {
+    const value = getter(item) || "Not provided";
+    map.set(value, (map.get(value) || 0) + 1);
+    return map;
+  }, new Map());
+}
+
+function topEntries(items, getter, limit = 6) {
+  return [...countBy(items, getter).entries()].sort((a, b) => b[1] - a[1]).slice(0, limit);
+}
+
+function percent(value, total) {
+  if (!total) return "0%";
+  return `${Math.round((value / total) * 100)}%`;
+}
+
+function daysAgo(days) {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  return date.toISOString().slice(0, 10);
+}
+
+function analyticsMetric(label, value, note = "") {
+  return `
+    <article>
+      <span>${escapeHtml(label)}</span>
+      <strong>${escapeHtml(value)}</strong>
+      ${note ? `<small>${escapeHtml(note)}</small>` : ""}
+    </article>
+  `;
+}
+
+function analyticsRows(rows, total = 0) {
+  return rows.length
+    ? rows
+        .map(([label, value, note]) => {
+          const width = total ? Math.max(4, Math.round((Number(value) / total) * 100)) : 0;
+          return `
+            <div class="analytics-row">
+              <div>
+                <strong>${escapeHtml(label)}</strong>
+                ${note ? `<span>${escapeHtml(note)}</span>` : ""}
+              </div>
+              <b>${escapeHtml(value)}</b>
+              ${total ? `<i style="width:${width}%"></i>` : ""}
+            </div>
+          `;
+        })
+        .join("")
+    : `<p class="form-note">No data yet.</p>`;
+}
+
+function renderAdminAnalytics(analyticsData = analytics) {
+  analytics = analyticsData || {};
+  if (!analyticsKpis) return;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const sevenDaysAgo = daysAgo(7);
+  const publishedDoctors = doctors.filter((doctor) => doctor.published !== false);
+  const draftDoctors = doctors.filter((doctor) => doctor.published === false);
+  const verifiedDoctors = publishedDoctors.filter((doctor) => doctor.verified !== false);
+  const hospitalDoctors = publishedDoctors.filter((doctor) => doctor.practiceType === "Hospital Affiliated");
+  const privateDoctors = publishedDoctors.filter((doctor) => doctor.practiceType === "Private Clinic");
+  const completeScores = publishedDoctors.map(profileCompleteness);
+  const averageCompleteness = completeScores.length
+    ? Math.round(completeScores.reduce((sum, score) => sum + score, 0) / completeScores.length)
+    : 0;
+
+  const totalRequests = requests.length;
+  const requestsToday = requests.filter((request) => String(request.createdAt || "").slice(0, 10) === today).length;
+  const requestsLast7 = requests.filter((request) => String(request.createdAt || "").slice(0, 10) >= sevenDaysAgo).length;
+  const closedRequests = requests.filter((request) => request.status === "closed").length;
+  const bookedRequests = requests.filter((request) => request.status === "appointment fixed").length;
+  const openRequests = requests.filter((request) => request.status !== "closed").length;
+  const overdueFollowUps = requests.filter((request) => request.followUpDate && request.followUpDate < today && request.status !== "closed").length;
+  const highPriority = requests.filter((request) => request.priority === "high").length;
+  const responseActions = Number(analytics.callClicks || 0) + Number(analytics.whatsappClicks || 0);
+  const requestClicks = Number(analytics.requestClicks || 0);
+  const profileViews = Number(analytics.profileViews || 0);
+
+  analyticsUpdated.textContent = `Updated ${new Date().toLocaleString()}`;
+  analyticsKpis.innerHTML = [
+    analyticsMetric("Patient requests", totalRequests, `${requestsToday} today, ${requestsLast7} in 7 days`),
+    analyticsMetric("Open CRM work", openRequests, `${overdueFollowUps} overdue follow-ups`),
+    analyticsMetric("Booking rate", percent(bookedRequests, totalRequests), `${bookedRequests} booked requests`),
+    analyticsMetric("Closure rate", percent(closedRequests, totalRequests), `${closedRequests} closed requests`),
+    analyticsMetric("Contact intent", responseActions, `${analytics.callClicks || 0} calls, ${analytics.whatsappClicks || 0} WhatsApp`),
+    analyticsMetric("Doctor quality", `${averageCompleteness}%`, "average profile completeness"),
+    analyticsMetric("Published doctors", publishedDoctors.length, `${draftDoctors.length} draft/hidden`),
+    analyticsMetric("Verified coverage", percent(verifiedDoctors.length, publishedDoctors.length), `${verifiedDoctors.length}/${publishedDoctors.length} doctors`),
+  ].join("");
+
+  const statusRows = topEntries(requests, (request) => request.status || "new", 8);
+  analyticsFunnel.innerHTML = analyticsRows(
+    [
+      ["Profile views", profileViews, "Public doctor profile opens"],
+      ["Request clicks", requestClicks, "Contact-request button clicks"],
+      ["Saved requests", totalRequests, "Requests in admin CRM"],
+      ["Contact actions", responseActions, "Call and WhatsApp clicks"],
+      ["Appointments booked", bookedRequests, "CRM status"],
+      ["Closed", closedRequests, "CRM status"],
+      ...statusRows.map(([status, count]) => [`Status: ${status}`, count, "Current request stage"]),
+    ],
+    Math.max(profileViews, requestClicks, totalRequests, responseActions, 1),
+  );
+
+  analyticsSources.innerHTML = analyticsRows(
+    [
+      ...topEntries(requests, (request) => request.source || "Doctor contact form", 8).map(([source, count]) => [source, count, "Saved request source"]),
+      ["Call clicks", analytics.callClicks || 0, "Public site"],
+      ["WhatsApp clicks", analytics.whatsappClicks || 0, "Public site"],
+      ["Wizard submits", analytics.wizardSubmits || 0, "Find my doctor flow"],
+    ],
+    Math.max(totalRequests, analytics.callClicks || 0, analytics.whatsappClicks || 0, 1),
+  );
+
+  analyticsDemand.innerHTML = analyticsRows(
+    [
+      ...topEntries(requests, (request) => request.patientCity || request.doctorCity, 5).map(([city, count]) => [`City: ${city}`, count, "Patient demand"]),
+      ...topEntries(requests, (request) => request.doctorSpecialty, 5).map(([specialty, count]) => [`Specialty: ${specialty}`, count, "Patient demand"]),
+      ...topEntries(requests, (request) => request.doctorName, 5).map(([doctor, count]) => [`Doctor: ${doctor}`, count, "Request demand"]),
+    ],
+    Math.max(totalRequests, 1),
+  );
+
+  analyticsCoverage.innerHTML = analyticsRows(
+    [
+      ["Hospital affiliated doctors", hospitalDoctors.length, `${percent(hospitalDoctors.length, publishedDoctors.length)} of published`],
+      ["Private clinic doctors", privateDoctors.length, `${percent(privateDoctors.length, publishedDoctors.length)} of published`],
+      ["States covered", new Set(publishedDoctors.map((doctor) => doctor.state).filter(Boolean)).size, "Published doctors"],
+      ["Cities covered", new Set(publishedDoctors.map((doctor) => doctor.city).filter(Boolean)).size, "Published doctors"],
+      ...topEntries(publishedDoctors, (doctor) => doctor.state, 5).map(([state, count]) => [`State: ${state}`, count, "Doctor supply"]),
+      ...topEntries(publishedDoctors, (doctor) => doctor.specialty, 5).map(([specialty, count]) => [`Specialty: ${specialty}`, count, "Doctor supply"]),
+    ],
+    Math.max(publishedDoctors.length, 1),
+  );
+
+  const missingHindi = publishedDoctors.filter((doctor) => !doctor.specialty_hi || !doctor.bio_hi || !(doctor.services_hi || []).length).length;
+  const missingRegistration = publishedDoctors.filter((doctor) => !doctor.registrationNumber).length;
+  const missingMap = publishedDoctors.filter((doctor) => !doctor.mapUrl).length;
+  const missingDocuments = publishedDoctors.filter((doctor) => !doctor.documentsChecked).length;
+  const lowCompleteness = publishedDoctors.filter((doctor) => profileCompleteness(doctor) < 70).length;
+
+  analyticsQuality.innerHTML = analyticsRows(
+    [
+      ["Average completeness", `${averageCompleteness}%`, "Across published doctors"],
+      ["Low-completeness profiles", lowCompleteness, "Below 70% complete"],
+      ["Missing Hindi content", missingHindi, "Specialty, bio, or services"],
+      ["Missing registration", missingRegistration, "Verification data gap"],
+      ["Documents not checked", missingDocuments, "Trust badge gap"],
+      ["Missing map link", missingMap, "Location usability gap"],
+    ],
+    Math.max(publishedDoctors.length, 1),
+  );
+
+  analyticsRecent.innerHTML =
+    analytics.recent?.length > 0
+      ? analytics.recent
+          .map(
+            (event) => `
+              <div class="analytics-row">
+                <div>
+                  <strong>${escapeHtml(event.type || "event")}</strong>
+                  <span>${escapeHtml(event.path || "/")} ${event.language ? `- ${escapeHtml(event.language)}` : ""}</span>
+                </div>
+                <b>${escapeHtml(String(event.createdAt || "").slice(0, 16).replace("T", " "))}</b>
+              </div>
+            `,
+          )
+          .join("")
+      : `<p class="form-note">No public activity tracked yet.</p>`;
+
+  const recommendations = [];
+  if (overdueFollowUps) recommendations.push(`Call or WhatsApp ${overdueFollowUps} overdue follow-up request${overdueFollowUps === 1 ? "" : "s"} today.`);
+  if (highPriority) recommendations.push(`Prioritize ${highPriority} high-priority patient request${highPriority === 1 ? "" : "s"} before routine calls.`);
+  if (missingHindi) recommendations.push(`Complete Hindi fields for ${missingHindi} doctor profile${missingHindi === 1 ? "" : "s"} so the Hindi site feels fully translated.`);
+  if (missingRegistration || missingDocuments) recommendations.push("Improve trust by adding registration numbers and marking documents checked for verified doctors.");
+  if (missingMap) recommendations.push(`Add Google Maps links for ${missingMap} doctor profile${missingMap === 1 ? "" : "s"} to reduce patient confusion.`);
+  if (requestClicks > totalRequests) recommendations.push("Some users click request but do not submit. Review the contact form length and mobile experience.");
+  if (!requestsLast7) recommendations.push("No requests in the last 7 days. Consider testing homepage CTAs, WhatsApp link visibility, and popular searches.");
+  if (recommendations.length === 0) recommendations.push("No urgent gaps detected. Keep adding complete doctor profiles and monitor request sources weekly.");
+
+  analyticsRecommendations.innerHTML = recommendations.map((item) => `<p>${escapeHtml(item)}</p>`).join("");
 }
 
 function filteredRequests() {
@@ -477,6 +674,7 @@ function renderRequestStats() {
   todayRequestCount.textContent = requests.filter((request) => String(request.createdAt || "").slice(0, 10) === today).length;
   topCityCount.textContent = mostCommon(requests.map((request) => request.patientCity || request.doctorCity));
   topSpecialtyCount.textContent = mostCommon(requests.map((request) => request.doctorSpecialty));
+  renderAdminAnalytics();
 }
 
 function renderRequests() {
@@ -561,13 +759,15 @@ function renderRequests() {
       : `<p class="form-note">No requests match these filters.</p>`;
 }
 
-function renderDashboard(summary = {}, submissions = []) {
+function renderDashboard(summary = {}, submissions = [], analyticsData = analytics) {
   requests = submissions.map(normalizeRequest);
+  analytics = analyticsData || {};
   doctorCount.textContent = summary.doctors || doctors.length;
   specialtyCount.textContent = summary.specialties || new Set(doctors.map((doctor) => doctor.specialty)).size;
   stateCount.textContent = summary.states || new Set(doctors.map((doctor) => doctor.state)).size;
   requestCount.textContent = summary.requests || requests.length || 0;
   renderRequests();
+  renderAdminAnalytics(analytics);
 }
 
 function duplicateDoctorWarning(doctor) {
@@ -632,6 +832,7 @@ function saveDoctorList() {
           requests: requests.length,
         },
         requests,
+        analytics,
       );
       setMessage("Saved. Refresh the public site to see the latest doctors.", "success");
     })
@@ -649,7 +850,7 @@ function loadDashboard() {
     .then(async (response) => {
       const result = await response.json();
       if (!response.ok || !result.ok) throw new Error(result.message || "Could not load dashboard.");
-      renderDashboard(result.summary, result.submissions);
+      renderDashboard(result.summary, result.submissions, result.analytics);
     })
     .catch(() => {
       renderDashboard();

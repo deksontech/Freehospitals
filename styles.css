@@ -69,6 +69,18 @@ textarea {
   align-items: center;
 }
 
+.menu-toggle {
+  display: none;
+  min-height: 38px;
+  padding: 0 12px;
+  color: var(--mint-dark);
+  background: var(--aqua);
+  border: 1px solid #b7e6de;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 900;
+}
+
 .emergency-banner {
   display: flex;
   flex-wrap: wrap;
@@ -1825,10 +1837,10 @@ output {
 }
 
 .site-footer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 18px;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto auto;
+  gap: 16px 22px;
+  align-items: center;
   padding: 26px clamp(18px, 5vw, 64px) 90px;
   color: var(--muted);
   background: var(--wash);
@@ -1836,8 +1848,35 @@ output {
   font-weight: 800;
 }
 
+.footer-brand {
+  display: grid;
+  gap: 5px;
+}
+
+.footer-brand strong {
+  color: var(--ink);
+  font-size: 1.05rem;
+}
+
+.site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .site-footer a {
   color: var(--mint-dark);
+}
+
+.footer-call {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 12px;
+  color: #fff !important;
+  background: var(--mint);
+  border-radius: 8px;
 }
 
 .legal-page {
@@ -1864,6 +1903,108 @@ output {
 .request-item p {
   margin-bottom: 0;
   color: var(--muted);
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.analytics-grid article,
+.analytics-card {
+  background: var(--wash);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.analytics-grid article {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+}
+
+.analytics-grid span,
+.analytics-row span,
+.analytics-grid small {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.analytics-grid strong {
+  color: var(--ink);
+  font-size: clamp(1.25rem, 2.6vw, 2rem);
+}
+
+.analytics-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.analytics-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.analytics-card h3 {
+  margin-bottom: 0;
+}
+
+.analytics-wide {
+  background: #fff;
+}
+
+.analytics-list {
+  display: grid;
+  gap: 10px;
+}
+
+.analytics-row {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 11px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.analytics-row > div,
+.analytics-row b {
+  position: relative;
+  z-index: 1;
+}
+
+.analytics-row > div {
+  display: grid;
+  gap: 3px;
+}
+
+.analytics-row i {
+  position: absolute;
+  inset: auto auto 0 0;
+  height: 4px;
+  background: var(--mint);
+}
+
+.analytics-recommendations {
+  display: grid;
+  gap: 10px;
+}
+
+.analytics-recommendations p {
+  margin: 0;
+  padding: 12px;
+  color: var(--ink);
+  background: var(--wash);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-weight: 800;
 }
 
 @media (max-width: 980px) {
@@ -1894,6 +2035,11 @@ output {
 
   .admin-dashboard {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .analytics-grid,
+  .analytics-layout {
+    grid-template-columns: 1fr;
   }
 
   .admin-toolbar {
@@ -2015,7 +2161,7 @@ output {
 
   .topbar {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto auto;
     gap: 8px;
     align-items: center;
     min-height: 0;
@@ -2032,8 +2178,34 @@ output {
     white-space: nowrap;
   }
 
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .nav-links {
+    position: absolute;
+    top: calc(100% + 1px);
+    right: 14px;
+    left: 14px;
     display: none;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+  }
+
+  body.menu-open .nav-links {
+    display: grid;
+    gap: 6px;
+  }
+
+  .nav-links a {
+    padding: 11px 10px;
+    border-radius: 8px;
+    background: var(--wash);
   }
 
   .urgent-link {
@@ -2060,12 +2232,12 @@ output {
   }
 
   .login-button::before {
-    content: "Login";
+    content: attr(data-short-label);
     font-size: 0.72rem;
   }
 
   .urgent-link::before {
-    content: "SOS";
+    content: attr(data-short-label);
     font-size: 0.78rem;
   }
 
@@ -2266,6 +2438,33 @@ output {
     text-align: center;
   }
 
+  .site-footer {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 24px 14px 88px;
+  }
+
+  .site-footer nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .site-footer nav a,
+  .footer-call {
+    min-height: 38px;
+    padding: 0 10px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  .footer-call {
+    color: #fff !important;
+    background: var(--mint);
+    border-color: var(--mint);
+  }
+
   .results-bar {
     align-items: stretch;
     flex-direction: column;
@@ -2364,7 +2563,7 @@ output {
 @media (max-width: 1100px) {
   .topbar {
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-columns: minmax(0, 1fr) auto auto !important;
     align-items: center !important;
     gap: 8px !important;
     min-height: 0 !important;
@@ -2382,7 +2581,33 @@ output {
   }
 
   .topbar .nav-links {
+    position: absolute !important;
+    top: calc(100% + 1px) !important;
+    right: 14px !important;
+    left: 14px !important;
     display: none !important;
+    padding: 10px !important;
+    background: #fff !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 8px !important;
+    box-shadow: var(--shadow) !important;
+  }
+
+  body.menu-open .topbar .nav-links {
+    display: grid !important;
+    gap: 6px !important;
+  }
+
+  .topbar .nav-links a {
+    padding: 11px 10px !important;
+    border-radius: 8px !important;
+    background: var(--wash) !important;
+  }
+
+  .topbar .menu-toggle {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   .topbar .top-actions {
@@ -2424,7 +2649,7 @@ output {
   }
 
   .topbar .login-button::before {
-    content: "Login";
+    content: attr(data-short-label);
     font-size: 0.72rem;
   }
 
@@ -2437,7 +2662,7 @@ output {
   }
 
   .topbar .urgent-link::before {
-    content: "SOS";
+    content: attr(data-short-label);
     font-size: 0.78rem;
   }
 }

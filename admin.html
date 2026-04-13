@@ -20,6 +20,7 @@
       </a>
       <nav>
         <a href="#dashboard">Dashboard</a>
+        <a href="#analytics">Analytics</a>
         <a href="#doctorTableSection">Doctor table</a>
         <a href="#doctorEditor">Doctors</a>
         <a href="#requests">Requests</a>
@@ -70,6 +71,54 @@
           <span>Top specialty</span>
           <strong id="topSpecialtyCount">-</strong>
         </article>
+      </section>
+
+      <section class="admin-section" id="analytics">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Analytics</p>
+            <h2>Freehospitals performance analysis</h2>
+          </div>
+          <span class="request-pill" id="analyticsUpdated">Live local data</span>
+        </div>
+        <p>
+          This tab analyzes doctors, patient requests, follow-ups, sources, profile quality, and public-site activity
+          so you can see what needs attention before production.
+        </p>
+
+        <div class="analytics-grid" id="analyticsKpis"></div>
+
+        <div class="analytics-layout">
+          <article class="analytics-card">
+            <h3>Request funnel</h3>
+            <div class="analytics-list" id="analyticsFunnel"></div>
+          </article>
+          <article class="analytics-card">
+            <h3>Source performance</h3>
+            <div class="analytics-list" id="analyticsSources"></div>
+          </article>
+          <article class="analytics-card">
+            <h3>Top demand</h3>
+            <div class="analytics-list" id="analyticsDemand"></div>
+          </article>
+          <article class="analytics-card">
+            <h3>Doctor coverage</h3>
+            <div class="analytics-list" id="analyticsCoverage"></div>
+          </article>
+          <article class="analytics-card">
+            <h3>Profile quality</h3>
+            <div class="analytics-list" id="analyticsQuality"></div>
+          </article>
+          <article class="analytics-card">
+            <h3>Recent public activity</h3>
+            <div class="analytics-list" id="analyticsRecent"></div>
+          </article>
+        </div>
+
+        <div class="analytics-card analytics-wide">
+          <h3>Recommended actions</h3>
+          <div class="analytics-recommendations" id="analyticsRecommendations"></div>
+        </div>
       </section>
 
       <section class="admin-section" id="doctorTableSection">
