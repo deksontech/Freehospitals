@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Freehospitals Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="admin-body">
+    <aside class="wp-sidebar" aria-label="Admin panel navigation">
+      <a class="brand" href="index.html" aria-label="Freehospitals home">
+        <span class="brand-mark">+</span>
+        <span>Freehospitals</span>
+      </a>
+      <nav>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#doctorTableSection">Doctor table</a>
+        <a href="#doctorEditor">Doctors</a>
+        <a href="#requests">Requests</a>
+        <a href="#dataTools">Import / Export</a>
+        <a href="#settings">Settings</a>
+      </nav>
+      <a class="public-link" href="index.html">View public site</a>
+    </aside>
+
+    <main class="wp-admin-main">
+      <header class="wp-admin-bar">
+        <div>
+          <p class="eyebrow">Freehospitals admin</p>
+          <h1>Dashboard</h1>
+        </div>
+        <div class="top-actions">
+          <button class="login-button" id="saveDoctorsTop" type="button">Save changes</button>
+          <button class="danger-button" id="logoutAdmin" type="button">Logout</button>
+        </div>
+      </header>
+
+      <section class="admin-dashboard" id="dashboard" aria-label="Dashboard summary">
+        <article>
+          <span>Total doctors</span>
+          <strong id="doctorCount">0</strong>
+        </article>
+        <article>
+          <span>Specialties</span>
+          <strong id="specialtyCount">0</strong>
+        </article>
+        <article>
+          <span>States covered</span>
+          <strong id="stateCount">0</strong>
+        </article>
+        <article>
+          <span>Saved requests</span>
+          <strong id="requestCount">0</strong>
+        </article>
+        <article>
+          <span>New today</span>
+          <strong id="todayRequestCount">0</strong>
+        </article>
+        <article>
+          <span>Top city</span>
+          <strong id="topCityCount">-</strong>
+        </article>
+        <article>
+          <span>Top specialty</span>
+          <strong id="topSpecialtyCount">-</strong>
+        </article>
+      </section>
+
+      <section class="admin-section" id="doctorTableSection">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Doctor table</p>
+            <h2>Manage doctors faster</h2>
+          </div>
+        </div>
+        <div class="admin-toolbar">
+          <input id="adminDoctorSearch" type="search" placeholder="Search name, specialty, city, hospital" />
+          <select id="adminStatusFilter">
+            <option value="all">All statuses</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft/hidden</option>
+            <option value="featured">Featured</option>
+            <option value="hospital">Hospital affiliated</option>
+            <option value="private">Private clinic</option>
+          </select>
+          <select id="bulkAction">
+            <option value="">Bulk action</option>
+            <option value="publish">Publish</option>
+            <option value="unpublish">Unpublish</option>
+            <option value="feature">Mark featured</option>
+            <option value="unfeature">Remove featured</option>
+            <option value="delete">Delete</option>
+          </select>
+          <button id="applyBulkAction" type="button">Apply</button>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th><input id="selectAllDoctors" type="checkbox" /></th>
+                <th>Name</th>
+                <th>Specialty</th>
+                <th>City</th>
+                <th>Hospital/Clinic</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminDoctorTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="admin-grid" id="doctorEditor">
+        <aside class="admin-list-panel">
+          <div class="panel-heading">
+            <h2>Doctors</h2>
+            <button id="newDoctor" type="button">New</button>
+          </div>
+          <div class="admin-doctor-list" id="adminDoctorList"></div>
+        </aside>
+
+        <form class="admin-form" id="doctorForm">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Profile details</p>
+              <h2 id="editorTitle">Add doctor</h2>
+            </div>
+            <button class="danger-button" id="deleteDoctor" type="button">Delete</button>
+          </div>
+
+          <input id="doctorId" name="id" type="hidden" />
+
+          <div class="form-grid">
+            <label class="field" for="doctorName">
+              <span>Doctor name</span>
+              <input id="doctorName" name="name" type="text" placeholder="Dr. Full Name" required />
+            </label>
+            <label class="field" for="doctorSpecialty">
+              <span>Specialty</span>
+              <input id="doctorSpecialty" name="specialty" type="text" placeholder="Cardiologist" required />
+            </label>
+            <label class="field" for="doctorSpecialtyHi">
+              <span>Specialty Hindi</span>
+              <input id="doctorSpecialtyHi" name="specialty_hi" type="text" placeholder="हृदय रोग विशेषज्ञ" />
+            </label>
+            <label class="field" for="doctorSpecialtyGu">
+              <span>Specialty Gujarati</span>
+              <input id="doctorSpecialtyGu" name="specialty_gu" type="text" placeholder="હૃદય રોગ નિષ્ણાત" />
+            </label>
+            <label class="field" for="doctorPracticeType">
+              <span>Practice type</span>
+              <select id="doctorPracticeType" name="practiceType" required>
+                <option value="Hospital Affiliated">Hospital affiliated</option>
+                <option value="Private Clinic">Private clinic only</option>
+              </select>
+            </label>
+            <label class="field" for="doctorHospitalName">
+              <span>Hospital name</span>
+              <input id="doctorHospitalName" name="hospitalName" type="text" placeholder="Apollo Hospital, Fortis, or leave blank" />
+            </label>
+            <label class="field" for="doctorState">
+              <span>State</span>
+              <select id="doctorState" name="state" required></select>
+            </label>
+            <label class="field" for="doctorCity">
+              <span>City</span>
+              <select id="doctorCity" name="city" required></select>
+            </label>
+            <label class="field" for="doctorRating">
+              <span>Rating</span>
+              <input id="doctorRating" name="rating" type="number" min="0" max="5" step="0.1" value="4.5" required />
+            </label>
+            <label class="field" for="doctorReviews">
+              <span>Reviews</span>
+              <input id="doctorReviews" name="reviews" type="number" min="0" step="1" value="0" required />
+            </label>
+            <label class="field" for="doctorExperience">
+              <span>Experience</span>
+              <input id="doctorExperience" name="experience" type="number" min="0" step="1" value="1" required />
+            </label>
+            <label class="field" for="doctorAvailability">
+              <span>Availability</span>
+              <select id="doctorAvailability" name="availability" required>
+                <option value="Today">Today</option>
+                <option value="Tomorrow">Tomorrow</option>
+                <option value="This week">This week</option>
+                <option value="Call to confirm">Call to confirm</option>
+              </select>
+            </label>
+            <label class="field" for="doctorTimeOfDay">
+              <span>Time preference</span>
+              <select id="doctorTimeOfDay" name="timeOfDay" required>
+                <option value="Morning">Morning</option>
+                <option value="Afternoon">Afternoon</option>
+                <option value="Evening">Evening</option>
+              </select>
+            </label>
+            <label class="field" for="doctorNextSlot">
+              <span>Next slot</span>
+              <input id="doctorNextSlot" name="nextSlot" type="text" placeholder="11:30 AM" required />
+            </label>
+            <label class="field" for="doctorVisits">
+              <span>Visit types</span>
+              <input id="doctorVisits" name="visits" type="text" placeholder="Clinic, Video" required />
+            </label>
+            <label class="field" for="doctorLanguages">
+              <span>Languages</span>
+              <input id="doctorLanguages" name="languages" type="text" placeholder="English, Hindi" required />
+            </label>
+            <label class="field" for="doctorServices">
+              <span>Services</span>
+              <input id="doctorServices" name="services" type="text" placeholder="Fever, BP, vaccination" />
+            </label>
+            <label class="field" for="doctorServicesHi">
+              <span>Services Hindi</span>
+              <input id="doctorServicesHi" name="services_hi" type="text" placeholder="बुखार, बीपी, टीकाकरण" />
+            </label>
+            <label class="field" for="doctorServicesGu">
+              <span>Services Gujarati</span>
+              <input id="doctorServicesGu" name="services_gu" type="text" placeholder="તાવ, BP, રસીકરણ" />
+            </label>
+            <label class="field" for="doctorEducation">
+              <span>Education</span>
+              <input id="doctorEducation" name="education" type="text" placeholder="MD, MS, DM" />
+            </label>
+            <label class="field" for="doctorRegistrationNumber">
+              <span>Registration number</span>
+              <input id="doctorRegistrationNumber" name="registrationNumber" type="text" placeholder="Medical council registration number" />
+            </label>
+            <label class="field" for="doctorYearsVerified">
+              <span>Years verified</span>
+              <input id="doctorYearsVerified" name="yearsVerified" type="number" min="0" step="1" value="0" />
+            </label>
+            <label class="field" for="doctorAddress">
+              <span>Clinic or hospital address</span>
+              <input id="doctorAddress" name="address" type="text" placeholder="Full address or landmark" />
+            </label>
+            <label class="field" for="doctorMapUrl">
+              <span>Google Maps URL</span>
+              <input id="doctorMapUrl" name="mapUrl" type="url" placeholder="https://www.google.com/maps/..." />
+            </label>
+            <label class="field" for="doctorImage">
+              <span>Image URL</span>
+              <input id="doctorImage" name="image" type="text" placeholder="https://... or uploaded image data" />
+            </label>
+            <label class="field" for="doctorImageUpload">
+              <span>Upload image</span>
+              <input id="doctorImageUpload" name="imageUpload" type="file" accept="image/*" />
+            </label>
+          </div>
+
+          <img class="admin-image-preview" id="adminImagePreview" src="" alt="Doctor image preview" />
+
+          <div class="admin-toggle-row">
+            <label class="consent-line" for="doctorPublished">
+              <input id="doctorPublished" name="published" type="checkbox" checked />
+              <span>Published on public site</span>
+            </label>
+            <label class="consent-line" for="doctorFeatured">
+              <input id="doctorFeatured" name="featured" type="checkbox" />
+              <span>Featured doctor</span>
+            </label>
+            <label class="consent-line" for="doctorVerified">
+              <input id="doctorVerified" name="verified" type="checkbox" checked />
+              <span>Verified profile</span>
+            </label>
+            <label class="consent-line" for="doctorDocumentsChecked">
+              <input id="doctorDocumentsChecked" name="documentsChecked" type="checkbox" />
+              <span>Documents checked</span>
+            </label>
+          </div>
+
+          <label class="field" for="doctorBio">
+            <span>Bio</span>
+            <textarea id="doctorBio" name="bio" placeholder="Short profile description" required></textarea>
+          </label>
+          <div class="form-grid compact">
+            <label class="field" for="doctorBioHi">
+              <span>Bio Hindi</span>
+              <textarea id="doctorBioHi" name="bio_hi" placeholder="Hindi profile description"></textarea>
+            </label>
+            <label class="field" for="doctorBioGu">
+              <span>Bio Gujarati</span>
+              <textarea id="doctorBioGu" name="bio_gu" placeholder="Gujarati profile description"></textarea>
+            </label>
+          </div>
+
+          <div class="contact-actions">
+            <button class="primary-button" type="submit">Apply to list</button>
+            <button class="save-button" id="saveDoctors" type="button">Save changes</button>
+          </div>
+          <p class="form-note" id="adminMessage">Changes are saved to data/doctors.json.</p>
+        </form>
+      </section>
+
+      <section class="admin-section" id="requests">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Requests</p>
+            <h2>Patient request CRM</h2>
+          </div>
+        </div>
+        <div class="admin-toolbar request-toolbar">
+          <input id="requestSearch" type="search" placeholder="Search patient, phone, doctor, city" />
+          <select id="requestStatusFilter">
+            <option value="all">All statuses</option>
+            <option value="new">New</option>
+            <option value="contacted">Contacted</option>
+            <option value="doctor shared">Doctor shared</option>
+            <option value="appointment fixed">Appointment booked</option>
+            <option value="follow up">Follow up</option>
+            <option value="closed">Closed</option>
+          </select>
+          <select id="requestPriorityFilter">
+            <option value="all">All priorities</option>
+            <option value="high">High priority</option>
+            <option value="normal">Normal priority</option>
+            <option value="low">Low priority</option>
+          </select>
+          <button id="exportRequestsCsv" type="button">Export requests CSV</button>
+        </div>
+        <div class="request-crm-summary">
+          <span><strong id="newRequestCount">0</strong> new</span>
+          <span><strong id="followUpRequestCount">0</strong> follow-ups</span>
+          <span><strong id="highPriorityRequestCount">0</strong> high priority</span>
+        </div>
+        <div class="request-list" id="requestList"></div>
+      </section>
+
+      <section class="admin-section" id="dataTools">
+        <p class="eyebrow">Import / Export</p>
+        <h2>Doctor data tools</h2>
+        <p>Export your doctor list as CSV, or import a CSV with matching columns.</p>
+        <div class="contact-actions">
+          <button class="primary-button" id="exportDoctorsCsv" type="button">Export doctors CSV</button>
+          <label class="call-button" for="importDoctorsCsv">Import doctors CSV</label>
+          <input id="importDoctorsCsv" type="file" accept=".csv,text/csv" hidden />
+          <button class="save-button" id="downloadBackup" type="button">Download JSON backup</button>
+        </div>
+      </section>
+
+      <section class="admin-section" id="settings">
+        <p class="eyebrow">Settings</p>
+        <h2>Admin settings</h2>
+        <p>
+          Change the admin password in `.env` using `ADMIN_PASSWORD=your-new-password`, then restart the server.
+          Patient request notifications are sent to `CONTACT_TO`, currently vishal@deksontech.com. Keep `.env` private.
+        </p>
+      </section>
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>

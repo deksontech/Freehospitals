@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Freehospitals Doctor Listings</title>
+    <meta
+      name="description"
+      content="Find verified doctors across India by specialty, state, city, hospital affiliation, language, and availability."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Freehospitals home">
+        <span class="brand-mark">+</span>
+        <span>Freehospitals</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#doctors">Doctors</a>
+        <a href="#specialties">Specialties</a>
+        <a href="#symptoms">Symptoms</a>
+        <a href="#faq">FAQ</a>
+        <a href="#help">Help</a>
+      </nav>
+      <div class="top-actions">
+        <label class="language-switcher" for="languageSelect">
+          <span>Language</span>
+          <select id="languageSelect" aria-label="Choose language">
+            <option value="en">English</option>
+            <option value="hi">हिन्दी</option>
+            <option value="gu">ગુજરાતી</option>
+          </select>
+        </label>
+        <button class="login-button" id="openAuth" type="button">Login / Sign up</button>
+        <a class="urgent-link" href="tel:108">Need urgent care?</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="emergency-banner" aria-label="Emergency notice">
+        <strong>Medical emergency?</strong>
+        <span>Call local emergency services or visit the nearest hospital immediately. Freehospitals helps with doctor discovery and contact support.</span>
+      </section>
+
+      <section class="search-panel" aria-labelledby="page-title">
+        <div class="search-copy">
+          <p class="eyebrow">Find the right doctor faster</p>
+          <h1 id="page-title">Book trusted care near you.</h1>
+          <p>
+            Compare verified doctors by specialty, experience, patient rating,
+            language, and the soonest available appointment.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-link" href="#doctors">Find a doctor</a>
+            <a class="secondary-link" href="#journey">How it works</a>
+            <button class="secondary-link button-link" id="openWizard" type="button">Find my doctor</button>
+            <button class="secondary-link button-link" id="openSavedDrawer" type="button">Saved doctors</button>
+          </div>
+        </div>
+
+        <form class="finder" id="finder" aria-label="Doctor search filters">
+          <label class="field wide" for="searchInput">
+            <span>Doctor, symptom, or specialty</span>
+            <input
+              id="searchInput"
+              name="search"
+              type="search"
+              placeholder="Try cardiologist, skin, fever"
+              autocomplete="off"
+            />
+            <div class="search-suggestions" id="searchSuggestions" hidden></div>
+          </label>
+
+          <label class="field" for="specialtyFilter">
+            <span>Specialty</span>
+            <select id="specialtyFilter" name="specialty">
+              <option value="All">All specialties</option>
+            </select>
+          </label>
+
+          <label class="field" for="stateFilter">
+            <span>State</span>
+            <select id="stateFilter" name="state">
+              <option value="All">All states</option>
+            </select>
+          </label>
+
+          <label class="field" for="cityFilter">
+            <span>City</span>
+            <select id="cityFilter" name="city">
+              <option value="All">All cities</option>
+            </select>
+          </label>
+
+          <label class="field" for="availabilityFilter">
+            <span>Availability</span>
+            <select id="availabilityFilter" name="availability">
+              <option value="All">Any time</option>
+              <option value="Today">Today</option>
+              <option value="Tomorrow">Tomorrow</option>
+              <option value="This week">This week</option>
+              <option value="Call to confirm">Call to confirm</option>
+            </select>
+          </label>
+
+          <label class="field wide" for="hospitalFilter">
+            <span>Hospital or clinic</span>
+            <input
+              id="hospitalFilter"
+              name="hospital"
+              type="search"
+              placeholder="Search Apollo, Fortis, City Hospital, or private clinic"
+              autocomplete="off"
+            />
+          </label>
+        </form>
+        <div class="quick-searches" aria-label="Popular searches">
+          <span>Popular:</span>
+          <button type="button" data-quick-specialty="Cardiologist" data-quick-state="Delhi" data-quick-city="New Delhi">Cardiologist in Delhi</button>
+          <button type="button" data-quick-specialty="Dermatologist" data-quick-state="Maharashtra" data-quick-city="Mumbai">Dermatologist in Mumbai</button>
+          <button type="button" data-quick-specialty="Gynecologist" data-quick-state="Uttar Pradesh" data-quick-city="Noida">Gynecologist in Noida</button>
+          <button type="button" data-quick-specialty="Orthopedic Surgeon" data-quick-state="Haryana" data-quick-city="Gurugram">Orthopedic in Gurugram</button>
+        </div>
+      </section>
+
+      <section class="wizard-section" id="findWizard" aria-labelledby="wizard-title" hidden>
+        <div class="section-copy">
+          <p class="eyebrow">Guided search</p>
+          <h2 id="wizard-title">Find my doctor</h2>
+          <p>Answer a few quick questions and we will set up the search for you.</p>
+        </div>
+        <form class="wizard-card" id="doctorWizard">
+          <label class="field">
+            <span>What problem are you facing?</span>
+            <select id="wizardProblem">
+              <option value="">Select concern</option>
+              <option value="General Physician">Fever, cough, weakness</option>
+              <option value="Cardiologist">Chest pain or BP</option>
+              <option value="Dermatologist">Skin, acne, hair fall</option>
+              <option value="Gynecologist">Pregnancy, PCOS, periods</option>
+              <option value="Pediatrician">Child fever or vaccination</option>
+              <option value="Orthopedic Surgeon">Back pain, joint pain, injury</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Which city are you in?</span>
+            <input id="wizardCity" type="text" placeholder="Delhi, Noida, Ahmedabad" />
+          </label>
+          <label class="field">
+            <span>Who is the patient?</span>
+            <select id="wizardPatient">
+              <option value="">Adult or child</option>
+              <option value="adult">Adult</option>
+              <option value="child">Child</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Preferred language</span>
+            <select id="wizardLanguage">
+              <option value="">Any language</option>
+              <option value="Hindi">Hindi</option>
+              <option value="English">English</option>
+              <option value="Gujarati">Gujarati</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Urgency</span>
+            <select id="wizardUrgency">
+              <option value="All">Routine</option>
+              <option value="Today">Today</option>
+              <option value="Tomorrow">Tomorrow</option>
+            </select>
+          </label>
+          <div class="contact-actions">
+            <button class="primary-button" type="submit">Show matches</button>
+            <button class="save-button" id="wizardEnquiry" type="button">Ask care desk</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="symptom-section" id="symptoms" aria-labelledby="symptom-title">
+        <div class="section-copy">
+          <p class="eyebrow">Search by symptom</p>
+          <h2 id="symptom-title">Not sure which specialist you need?</h2>
+          <p>Choose what feels closest. We will point the search toward the right category.</p>
+        </div>
+        <div class="symptom-grid">
+          <button type="button" data-symptom="Fever cough weakness" data-specialty="General Physician">
+            <strong>Fever, cough, weakness</strong>
+            <span>General Physician</span>
+          </button>
+          <button type="button" data-symptom="Chest pain blood pressure heart" data-specialty="Cardiologist">
+            <strong>Chest pain or BP</strong>
+            <span>Cardiologist</span>
+          </button>
+          <button type="button" data-symptom="Acne rash hair fall skin" data-specialty="Dermatologist">
+            <strong>Skin, acne, hair fall</strong>
+            <span>Dermatologist</span>
+          </button>
+          <button type="button" data-symptom="Pregnancy PCOS periods" data-specialty="Gynecologist">
+            <strong>Pregnancy, PCOS, periods</strong>
+            <span>Gynecologist</span>
+          </button>
+          <button type="button" data-symptom="Child fever vaccination" data-specialty="Pediatrician">
+            <strong>Child fever or vaccine</strong>
+            <span>Pediatrician</span>
+          </button>
+          <button type="button" data-symptom="Joint pain fracture sports injury" data-specialty="Orthopedic Surgeon">
+            <strong>Joint pain or injury</strong>
+            <span>Orthopedic Surgeon</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="insights" aria-label="Freehospitals highlights">
+        <article>
+          <strong>120+</strong>
+          <span>verified doctors</span>
+        </article>
+        <article>
+          <strong>24x7</strong>
+          <span>request support</span>
+        </article>
+        <article>
+          <strong>4.8</strong>
+          <span>average patient rating</span>
+        </article>
+      </section>
+
+      <section class="feature-band" id="journey" aria-labelledby="journey-title">
+        <div class="section-copy">
+          <p class="eyebrow">Simple care journey</p>
+          <h2 id="journey-title">From search to callback in minutes.</h2>
+          <p>
+            Find a doctor, submit one request, and let the care desk help you connect.
+          </p>
+        </div>
+        <div class="steps">
+          <article>
+            <span>01</span>
+            <h3>Find a doctor</h3>
+            <p>Search by symptom, specialty, state, city, hospital, language, and availability.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Submit request</h3>
+            <p>Share patient details, health concern, and the best time to be contacted.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Care desk connects</h3>
+            <p>The Freehospitals care desk helps you with the next call, WhatsApp, or email step.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="trust-cards" aria-labelledby="freehospitals-trust-title">
+        <div class="section-copy">
+          <p class="eyebrow">Why patients use Freehospitals</p>
+          <h2 id="freehospitals-trust-title">Clear, free, and easy to act on.</h2>
+        </div>
+        <div class="trust-card-grid">
+          <article><strong>Free of Cost</strong><span>No charge to submit a doctor contact request.</span></article>
+          <article><strong>No hidden charges</strong><span>Any clinic or hospital terms are confirmed before the visit.</span></article>
+          <article><strong>Care desk support</strong><span>A centralized team helps patients connect with the right next step.</span></article>
+          <article><strong>Hospitals and private clinics</strong><span>Search both hospital-affiliated doctors and private clinic doctors.</span></article>
+          <article><strong>Available across Indian states</strong><span>Browse doctors by state and city as the network grows.</span></article>
+        </div>
+      </section>
+
+      <section class="specialty-showcase" id="specialties" aria-labelledby="specialty-title">
+        <div class="section-copy">
+          <p class="eyebrow">Popular specialties</p>
+          <h2 id="specialty-title">Care that matches the moment.</h2>
+        </div>
+        <div class="specialty-grid">
+          <article>
+            <img
+              src="https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=640&q=80"
+              alt="Doctor checking a child's heartbeat"
+            />
+            <h3>Pediatric Care</h3>
+            <p>Fever, nutrition, vaccines, newborn support, and growth concerns.</p>
+          </article>
+          <article>
+            <img
+              src="https://images.unsplash.com/photo-1612277795421-9bc7706a4a34?auto=format&fit=crop&w=640&q=80"
+              alt="Doctor discussing heart health with a patient"
+            />
+            <h3>Heart Health</h3>
+            <p>Blood pressure, cholesterol, rhythm concerns, and prevention plans.</p>
+          </article>
+          <article>
+            <img
+              src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=640&q=80"
+              alt="Modern clinic care room"
+            />
+            <h3>Everyday Consults</h3>
+            <p>General medicine, skin, ENT, orthopedics, and women's health.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="trust-section" aria-labelledby="trust-title">
+        <img
+          src="https://images.unsplash.com/photo-1550831107-1553da8c8464?auto=format&fit=crop&w=900&q=80"
+          alt="Doctor speaking with a patient in a clinic"
+        />
+        <div>
+          <p class="eyebrow">Built for confidence</p>
+          <h2 id="trust-title">Clear information before the first call.</h2>
+          <p>
+            Every listing keeps the essentials easy to scan: specialty, hospital or clinic, city, availability,
+            language, and supported visit options.
+          </p>
+          <div class="trust-list">
+            <span>Verified profiles</span>
+            <span>Free contact requests</span>
+            <span>India-wide location search</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="browse-section" aria-labelledby="browse-title">
+        <div class="section-copy">
+          <p class="eyebrow">Browse faster</p>
+          <h2 id="browse-title">Start with a city or specialty.</h2>
+          <p>Choose a popular location or doctor category and we will take you straight to matching doctors.</p>
+        </div>
+        <div class="browse-grid">
+          <article>
+            <h3>Browse by city</h3>
+            <div class="browse-links" id="browseCities"></div>
+          </article>
+          <article>
+            <h3>Browse by specialty</h3>
+            <div class="browse-links" id="browseSpecialties"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-grid" id="doctors">
+        <aside class="sidebar" aria-label="Listing controls">
+          <div class="panel">
+            <div class="panel-heading">
+              <h2>Refine Results</h2>
+              <button type="button" id="resetFilters">Reset</button>
+              <button type="button" id="closeFilters">Close</button>
+            </div>
+            <button class="near-me-button" type="button" id="nearMeButton">Use my location</button>
+            <p class="form-note" id="nearMeMessage">Choose state and city, or allow location to find nearby options.</p>
+            <div class="filter-group" id="categoryFilters">
+              <h3>Categories</h3>
+            </div>
+            <div class="filter-group">
+              <h3>Languages</h3>
+              <label><input type="checkbox" name="language" value="English" /> English</label>
+              <label><input type="checkbox" name="language" value="Hindi" /> Hindi</label>
+            <label><input type="checkbox" name="language" value="Gujarati" /> Gujarati</label>
+            </div>
+            <div class="filter-group">
+              <h3>Time Preference</h3>
+              <label><input type="checkbox" name="time" value="Morning" /> Morning</label>
+              <label><input type="checkbox" name="time" value="Afternoon" /> Afternoon</label>
+              <label><input type="checkbox" name="time" value="Evening" /> Evening</label>
+            </div>
+            <div class="filter-group">
+              <h3>Minimum Rating</h3>
+              <input id="ratingRange" type="range" min="4" max="5" step="0.1" value="4" />
+              <output id="ratingOutput" for="ratingRange">4.0+</output>
+            </div>
+          </div>
+
+          <div class="care-note" id="help">
+            <img
+              src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=720&q=80"
+              alt="Clinician reviewing patient notes on a tablet"
+            />
+            <h2>Not sure who to choose?</h2>
+            <p>Share symptoms and preferences. A care coordinator can help match the right specialist.</p>
+            <button class="primary-button" id="generalEnquiryButton" type="button">Help me find a doctor</button>
+          </div>
+        </aside>
+
+        <section class="results" aria-live="polite">
+          <div class="results-bar">
+            <div>
+              <p id="resultCount">Showing doctors</p>
+              <h2>Recommended Matches</h2>
+            </div>
+            <label class="sort-control" for="sortSelect">
+              <span>Sort by</span>
+              <select id="sortSelect">
+                <option value="recommended">Recommended</option>
+                <option value="rating">Highest rating</option>
+                <option value="soonest">Soonest available</option>
+              </select>
+            </label>
+            <button class="filter-toggle" id="openFilters" type="button">Filter results</button>
+          </div>
+
+          <div class="doctor-list" id="doctorList"></div>
+          <div class="empty-state" id="emptyState" hidden>
+            <h2>No doctors match those filters.</h2>
+            <p id="emptyStateCopy">Try widening the location, availability, or rating range.</p>
+            <div class="nearby-suggestions" id="nearbySuggestions"></div>
+            <div class="empty-actions">
+              <button class="primary-button" type="button" id="emptyReset">Reset filters</button>
+              <button class="save-button" type="button" id="emptyEnquiry">Help me find a doctor</button>
+              <a class="call-button" href="tel:+918586930497">Call care desk</a>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="faq-section" id="faq" aria-labelledby="faq-title">
+        <div class="section-copy">
+          <p class="eyebrow">Common questions</p>
+          <h2 id="faq-title">Clear answers before you contact.</h2>
+        </div>
+        <div class="faq-grid">
+          <details open>
+            <summary>Is the contact request free?</summary>
+            <p>Yes. The request is free of cost. Any medical consultation terms are confirmed by the care desk or clinic.</p>
+          </details>
+          <details>
+            <summary>Can I find hospital-affiliated doctors?</summary>
+            <p>Yes. Use the hospital or clinic search field to find doctors linked to a hospital, or search private clinic doctors.</p>
+          </details>
+          <details>
+            <summary>What should I do in an emergency?</summary>
+            <p>Call emergency services immediately. This website is for discovery and contact support, not emergency care.</p>
+          </details>
+          <details>
+            <summary>Can I use WhatsApp?</summary>
+            <p>Yes. Doctor cards and profiles include WhatsApp and call options for the centralized care desk.</p>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Freehospitals helps patients discover doctors and request contact support.</span>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms</a>
+    </footer>
+
+    <div class="feedback-widget" id="feedbackWidget" aria-label="Page feedback">
+      <span>Was this page helpful?</span>
+      <button type="button" data-feedback="yes">Yes</button>
+      <button type="button" data-feedback="no">No</button>
+    </div>
+
+    <dialog class="modal" id="authModal">
+      <form class="modal-card" id="authForm" method="dialog">
+        <div class="modal-heading">
+          <div>
+            <p class="eyebrow">Your account</p>
+            <h2 id="authTitle">Login to Freehospitals</h2>
+          </div>
+          <button class="icon-button" type="button" data-close="authModal" aria-label="Close login form">x</button>
+        </div>
+        <p class="modal-copy">
+          Save shortlisted doctors and fill contact forms faster. New here? Create an account in the same form.
+        </p>
+        <label class="field" for="authName">
+          <span>Full name</span>
+          <input id="authName" name="name" type="text" placeholder="Your name" />
+        </label>
+        <label class="field" for="authEmail">
+          <span>Email</span>
+          <input id="authEmail" name="email" type="email" placeholder="you@example.com" required />
+        </label>
+        <label class="field" for="authPhone">
+          <span>Mobile number</span>
+          <input id="authPhone" name="phone" type="tel" placeholder="10 digit mobile number" />
+        </label>
+        <label class="field" for="authPassword">
+          <span>Password</span>
+          <input id="authPassword" name="password" type="password" placeholder="Minimum 6 characters" required />
+        </label>
+        <button class="primary-button" type="submit">Continue</button>
+        <p class="form-note" id="authMessage">This demo stores login details only in this browser.</p>
+      </form>
+    </dialog>
+
+    <dialog class="modal" id="contactModal">
+      <form class="modal-card" id="contactForm">
+        <div class="modal-heading">
+          <div>
+            <p class="eyebrow">Contact doctor</p>
+            <h2 id="contactDoctorName">Request a callback</h2>
+          </div>
+          <button class="icon-button" type="button" data-close="contactModal" aria-label="Close contact form">x</button>
+        </div>
+        <p class="modal-copy">
+          Share your details and preferred time. We will save this request for the care desk, then you can call,
+          WhatsApp, or email directly.
+        </p>
+        <input id="selectedDoctorId" name="doctorId" type="hidden" />
+        <label class="hidden-field" for="website">
+          <span>Website</span>
+          <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+        </label>
+        <label class="field" for="patientName">
+          <span>Patient name</span>
+          <input id="patientName" name="patientName" type="text" placeholder="Patient full name" required />
+        </label>
+        <label class="field" for="patientPhone">
+          <span>Mobile number</span>
+          <input id="patientPhone" name="patientPhone" type="tel" placeholder="10 digit mobile number" pattern="^(\+91|91|0)?[6-9][0-9]{9}$" required />
+        </label>
+        <label class="field" for="patientEmail">
+          <span>Email</span>
+          <input id="patientEmail" name="patientEmail" type="email" placeholder="you@example.com" required />
+        </label>
+        <label class="field" for="patientCity">
+          <span>City</span>
+          <input id="patientCity" name="patientCity" type="text" placeholder="Your city" required />
+        </label>
+        <div class="form-grid compact">
+          <label class="field" for="patientAge">
+            <span>Age</span>
+            <input id="patientAge" name="patientAge" type="number" min="0" max="120" placeholder="Age" />
+          </label>
+          <label class="field" for="patientGender">
+            <span>Gender</span>
+            <select id="patientGender" name="patientGender">
+              <option value="">Prefer not to say</option>
+              <option value="Female">Female</option>
+              <option value="Male">Male</option>
+              <option value="Other">Other</option>
+            </select>
+          </label>
+        </div>
+        <label class="field" for="preferredContact">
+          <span>Preferred contact method</span>
+          <div class="choice-chips" data-choice-group="preferredContact">
+            <button type="button" data-choice="Phone call">Call</button>
+            <button type="button" data-choice="WhatsApp">WhatsApp</button>
+            <button type="button" data-choice="Email">Email</button>
+          </div>
+          <select id="preferredContact" name="preferredContact">
+            <option value="Phone call">Phone call</option>
+            <option value="WhatsApp">WhatsApp</option>
+            <option value="Email">Email</option>
+          </select>
+        </label>
+        <label class="field" for="preferredTime">
+          <span>Preferred time</span>
+          <div class="choice-chips" data-choice-group="preferredTime">
+            <button type="button" data-choice="Morning">Morning</button>
+            <button type="button" data-choice="Afternoon">Afternoon</button>
+            <button type="button" data-choice="Evening">Evening</button>
+            <button type="button" data-choice="Anytime today">Anytime today</button>
+            <button type="button" data-choice="Tomorrow">Tomorrow</button>
+          </div>
+          <input id="preferredTime" name="preferredTime" type="text" placeholder="Today evening, tomorrow morning" />
+        </label>
+        <label class="field" for="patientMessage">
+          <span>Health concern</span>
+          <div class="choice-chips" data-choice-group="patientMessage">
+            <button type="button" data-choice="Fever">Fever</button>
+            <button type="button" data-choice="Pain">Pain</button>
+            <button type="button" data-choice="Skin issue">Skin issue</button>
+            <button type="button" data-choice="Pregnancy">Pregnancy</button>
+            <button type="button" data-choice="Child care">Child care</button>
+            <button type="button" data-choice="Follow-up visit">Follow-up visit</button>
+          </div>
+          <textarea id="patientMessage" name="patientMessage" placeholder="Briefly describe what you need help with" required></textarea>
+        </label>
+        <label class="consent-line" for="patientConsent">
+          <input id="patientConsent" name="patientConsent" type="checkbox" required />
+          <span>I agree that Freehospitals may contact me by phone, WhatsApp, or email about this request.</span>
+        </label>
+        <div class="contact-actions">
+          <button class="primary-button" type="submit">Submit request</button>
+          <a class="whatsapp-button" id="whatsappButton" href="https://wa.me/918586930497" target="_blank" rel="noreferrer">WhatsApp care desk</a>
+          <a class="call-button" href="tel:+918586930497">Call +91 8586930497</a>
+          <a class="call-button" id="emailButton" href="#" hidden>Open email app</a>
+        </div>
+        <div class="success-card" id="successCard" hidden>
+          <strong>Your request has been saved.</strong>
+          <span>Care desk will contact you soon. You can also call or WhatsApp now.</span>
+          <div class="contact-actions">
+            <a class="call-button" href="tel:+918586930497">Call now</a>
+            <a class="whatsapp-button" href="https://wa.me/918586930497" target="_blank" rel="noreferrer">WhatsApp now</a>
+            <button class="save-button" id="anotherRequest" type="button">Submit another request</button>
+          </div>
+        </div>
+        <p class="form-note" id="contactMessage">Submit once, then choose call, WhatsApp, or email.</p>
+      </form>
+    </dialog>
+
+    <dialog class="modal detail-modal" id="doctorDetailModal">
+      <article class="modal-card" id="doctorDetailContent"></article>
+    </dialog>
+
+    <dialog class="modal detail-modal" id="savedDrawer">
+      <article class="modal-card">
+        <div class="modal-heading">
+          <div>
+            <p class="eyebrow">Shortlist</p>
+            <h2>Your saved doctors</h2>
+          </div>
+          <button class="icon-button" type="button" data-close="savedDrawer" aria-label="Close saved doctors">x</button>
+        </div>
+        <div class="saved-list" id="savedList"></div>
+      </article>
+    </dialog>
+
+    <div class="mobile-contact-bar" aria-label="Quick contact">
+      <a href="tel:+918586930497">Call Care Desk</a>
+      <a href="https://wa.me/918586930497" target="_blank" rel="noreferrer">WhatsApp</a>
+      <a href="#doctors">Find Doctor</a>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,4 @@
+data/contact-requests.json
+data/users.json
+node_modules/
+.env

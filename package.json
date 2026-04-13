@@ -1,0 +1,13 @@
+{
+  "name": "freehospitals-doctor-listing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Doctor listing website with login demo and contact request backend.",
+  "scripts": {
+    "start": "C:\\Progra~1\\nodejs\\node.exe server.js",
+    "check": "C:\\Progra~1\\nodejs\\node.exe --check app.js && C:\\Progra~1\\nodejs\\node.exe --check admin.js && C:\\Progra~1\\nodejs\\node.exe --check admin-login.js && C:\\Progra~1\\nodejs\\node.exe --check server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

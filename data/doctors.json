@@ -1,0 +1,276 @@
+[
+  {
+    "id": 1,
+    "name": "Dr. Ananya Mehtas",
+    "specialty": "Cardiologist",
+    "practiceType": "Hospital Affiliated",
+    "hospitalName": "Sterling Hospital",
+    "state": "Gujarat",
+    "city": "Ahmedabad",
+    "rating": 4.9,
+    "reviews": 328,
+    "availability": "Today",
+    "timeOfDay": "Morning",
+    "nextSlot": "11:30 AM",
+    "experience": 14,
+    "visits": [
+      "Clinic",
+      "Video"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "services": [
+      "Hypertension",
+      "Cholesterol",
+      "ECG review",
+      "Preventive heart checks"
+    ],
+    "education": "MD Cardiology, DM Cardiology",
+    "address": "Sterling Hospital, Memnagar, Ahmedabad",
+    "mapUrl": "",
+    "image": "https://randomuser.me/api/portraits/women/68.jpg",
+    "featured": true,
+    "published": true,
+    "bio": "Heart rhythm, hypertension, cholesterol care, and preventive cardiac checkups."
+  },
+  {
+    "id": 2,
+    "name": "Dr. Rohan Shah",
+    "specialty": "Dermatologist",
+    "practiceType": "Private Clinic",
+    "hospitalName": "",
+    "state": "Gujarat",
+    "city": "Surat",
+    "rating": 4.8,
+    "reviews": 214,
+    "availability": "Tomorrow",
+    "timeOfDay": "Morning",
+    "nextSlot": "10:00 AM",
+    "experience": 9,
+    "visits": [
+      "Clinic",
+      "Video"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "services": [
+      "Acne",
+      "Hair fall",
+      "Skin allergy",
+      "Pigmentation"
+    ],
+    "education": "MD Dermatology",
+    "address": "Shah Skin Clinic, Adajan, Surat",
+    "mapUrl": "",
+    "image": "https://randomuser.me/api/portraits/men/32.jpg",
+    "featured": true,
+    "published": true,
+    "bio": "Acne, hair fall, allergy, pigmentation, and long-term skin health plans."
+  },
+  {
+    "id": 3,
+    "name": "Dr. Nisha Kapoor",
+    "specialty": "Pediatrician",
+    "practiceType": "Hospital Affiliated",
+    "hospitalName": "Nanavati Max Super Speciality Hospital",
+    "state": "Maharashtra",
+    "city": "Mumbai",
+    "rating": 4.7,
+    "reviews": 187,
+    "availability": "Today",
+    "timeOfDay": "Afternoon",
+    "nextSlot": "3:15 PM",
+    "experience": 11,
+    "visits": [
+      "Clinic",
+      "Home"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "services": [
+      "Vaccination",
+      "Newborn care",
+      "Child fever",
+      "Growth tracking"
+    ],
+    "education": "MD Pediatrics",
+    "address": "Nanavati Max Super Speciality Hospital, Mumbai",
+    "mapUrl": "",
+    "image": "https://randomuser.me/api/portraits/women/45.jpg",
+    "featured": false,
+    "published": true,
+    "bio": "Newborn care, vaccinations, child nutrition, fever, cough, and growth tracking."
+  },
+  {
+    "id": 4,
+    "name": "Dr. Kabir Sethi",
+    "specialty": "Orthopedic Surgeon",
+    "practiceType": "Private Clinic",
+    "hospitalName": "",
+    "state": "Delhi",
+    "city": "New Delhi",
+    "rating": 4.6,
+    "reviews": 156,
+    "availability": "This week",
+    "timeOfDay": "Morning",
+    "nextSlot": "Wed 5:30 PM",
+    "experience": 16,
+    "visits": [
+      "Clinic"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "services": [],
+    "education": "",
+    "address": "",
+    "mapUrl": "",
+    "image": "https://randomuser.me/api/portraits/men/75.jpg",
+    "featured": false,
+    "published": true,
+    "bio": "Joint pain, sports injuries, fracture care, arthritis, and recovery planning."
+  },
+  {
+    "id": 5,
+    "name": "Dr. Farah Contractor",
+    "specialty": "Gynecologist",
+    "practiceType": "Private Clinic",
+    "hospitalName": "",
+    "state": "Karnataka",
+    "city": "Bengaluru",
+    "rating": 4.9,
+    "reviews": 271,
+    "availability": "Tomorrow",
+    "timeOfDay": "Afternoon",
+    "nextSlot": "1:45 PM",
+    "experience": 13,
+    "visits": [
+      "Clinic",
+      "Video"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "services": [
+      "Pregnancy care",
+      "PCOS",
+      "Fertility guidance",
+      "Preventive screening"
+    ],
+    "education": "MS Obstetrics and Gynecology",
+    "address": "Farah Women Clinic, Indiranagar, Bengaluru",
+    "mapUrl": "",
+    "image": "https://randomuser.me/api/portraits/women/12.jpg",
+    "featured": true,
+    "published": true,
+    "bio": "Pregnancy care, PCOS, menstrual health, fertility guidance, and preventive screening."
+  },
+  {
+    "id": 6,
+    "name": "Dr. Sameer Iyer",
+    "specialty": "General Physician",
+    "practiceType": "Private Clinic",
+    "hospitalName": "",
+    "state": "Tamil Nadu",
+    "city": "Chennai",
+    "rating": 4.5,
+    "reviews": 442,
+    "availability": "Today",
+    "timeOfDay": "Morning",
+    "nextSlot": "7:00 PM",
+    "experience": 18,
+    "visits": [
+      "Clinic",
+      "Video",
+      "Home"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "services": [],
+    "education": "",
+    "address": "",
+    "mapUrl": "",
+    "image": "https://randomuser.me/api/portraits/men/41.jpg",
+    "featured": false,
+    "published": true,
+    "bio": "Fever, infections, diabetes follow-ups, blood pressure, fatigue, and annual checks."
+  },
+  {
+    "id": 7,
+    "name": "Dr. Priya Menon",
+    "specialty": "Neurologist",
+    "practiceType": "Hospital Affiliated",
+    "hospitalName": "Aster Medcity",
+    "state": "Kerala",
+    "city": "Kochi",
+    "rating": 4.8,
+    "reviews": 132,
+    "availability": "This week",
+    "timeOfDay": "Morning",
+    "nextSlot": "Fri 12:00 PM",
+    "experience": 15,
+    "visits": [
+      "Clinic",
+      "Video"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "services": [
+      "Migraine",
+      "Seizures",
+      "Nerve pain",
+      "Stroke follow-up"
+    ],
+    "education": "DM Neurology",
+    "address": "Aster Medcity, Kochi",
+    "mapUrl": "",
+    "image": "https://randomuser.me/api/portraits/women/33.jpg",
+    "featured": false,
+    "published": true,
+    "bio": "Headaches, migraine, seizures, nerve pain, stroke follow-up, and memory concerns."
+  },
+  {
+    "id": 8,
+    "name": "Dr. Arjun Bansal",
+    "specialty": "ENT Specialist",
+    "practiceType": "Private Clinic",
+    "hospitalName": "",
+    "state": "Rajasthan",
+    "city": "Jaipur",
+    "rating": 4.6,
+    "reviews": 205,
+    "availability": "Tomorrow",
+    "timeOfDay": "Morning",
+    "nextSlot": "4:20 PM",
+    "experience": 12,
+    "visits": [
+      "Clinic"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "services": [],
+    "education": "",
+    "address": "",
+    "mapUrl": "",
+    "image": "https://randomuser.me/api/portraits/men/22.jpg",
+    "featured": false,
+    "published": true,
+    "bio": "Ear pain, sinus, tonsils, hearing issues, throat infections, and allergy care."
+  }
+]

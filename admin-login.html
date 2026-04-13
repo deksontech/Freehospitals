@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Freehospitals Admin Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="login-page">
+    <main class="login-shell">
+      <form class="login-card" id="adminLoginForm">
+        <a class="brand" href="index.html" aria-label="Freehospitals home">
+          <span class="brand-mark">+</span>
+          <span>Freehospitals</span>
+        </a>
+        <div>
+          <p class="eyebrow">Admin login</p>
+          <h1>Welcome back.</h1>
+          <p>Use the admin password from your `.env` file to manage doctors and settings.</p>
+        </div>
+        <label class="field" for="adminPassword">
+          <span>Password</span>
+          <input id="adminPassword" name="password" type="password" placeholder="Admin password" required />
+        </label>
+        <button class="primary-button" type="submit">Login</button>
+        <p class="form-note" id="loginMessage">Default password is in `.env` until you change it.</p>
+      </form>
+    </main>
+
+    <script src="admin-login.js"></script>
+  </body>
+</html>
