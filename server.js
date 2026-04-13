@@ -8,6 +8,7 @@ const rootDir = __dirname;
 const dataDir = path.join(rootDir, "data");
 const submissionsFile = path.join(dataDir, "contact-requests.json");
 const doctorsFile = path.join(dataDir, "doctors.json");
+const hospitalsFile = path.join(dataDir, "hospitals.json");
 const usersFile = path.join(dataDir, "users.json");
 const analyticsFile = path.join(dataDir, "analytics-events.json");
 
@@ -204,6 +205,37 @@ async function readDoctors() {
   }
 }
 
+function normalizeHospital(hospital, index) {
+  return {
+    id: Number(hospital.id) || Date.now() + index,
+    name: String(hospital.name || "").trim(),
+    type: String(hospital.type || "Hospital").trim(),
+    state: String(hospital.state || "").trim(),
+    city: String(hospital.city || "").trim(),
+    address: String(hospital.address || "").trim(),
+    specialties: normalizeList(hospital.specialties),
+    services: normalizeList(hospital.services),
+    phone: String(hospital.phone || "").trim(),
+    email: String(hospital.email || "").trim(),
+    website: String(hospital.website || "").trim(),
+    mapUrl: String(hospital.mapUrl || "").trim(),
+    description: String(hospital.description || "").trim(),
+    verified: Boolean(hospital.verified),
+    published: hospital.published !== false,
+    image: String(hospital.image || "").trim(),
+  };
+}
+
+async function readHospitals() {
+  try {
+    const hospitals = JSON.parse(await fs.readFile(hospitalsFile, "utf8"));
+    return Array.isArray(hospitals) ? hospitals.map(normalizeHospital) : [];
+  } catch (error) {
+    if (error.code === "ENOENT") return [];
+    throw error;
+  }
+}
+
 async function readSubmissions() {
   try {
     const submissions = JSON.parse(await fs.readFile(submissionsFile, "utf8"));
@@ -346,11 +378,45 @@ async function handleDoctorsGet(res) {
   }
 }
 
+async function handleHospitalsGet(res) {
+  try {
+    jsonResponse(res, 200, { ok: true, hospitals: await readHospitals() });
+  } catch (error) {
+    jsonResponse(res, 500, { ok: false, message: "Could not load hospitals.", detail: error.message });
+  }
+}
+
+function validateHospital(hospital, index) {
+  const required = ["name", "type", "state", "city", "description"];
+  const missing = required.filter((field) => !String(hospital[field] || "").trim());
+  return missing.length ? `Hospital ${index + 1} is missing: ${missing.join(", ")}` : "";
+}
+
+async function handleHospitalsSave(req, res) {
+  try {
+    const payload = await readJsonBody(req);
+    const hospitals = Array.isArray(payload.hospitals) ? payload.hospitals : [];
+    const validationError = hospitals.map(validateHospital).find(Boolean);
+    if (validationError) {
+      jsonResponse(res, 400, { ok: false, message: validationError });
+      return;
+    }
+    const normalizedHospitals = hospitals.map(normalizeHospital);
+    await fs.mkdir(dataDir, { recursive: true });
+    await fs.writeFile(hospitalsFile, `${JSON.stringify(normalizedHospitals, null, 2)}\n`);
+    jsonResponse(res, 200, { ok: true, hospitals: normalizedHospitals, message: "Hospital list saved." });
+  } catch (error) {
+    jsonResponse(res, 500, { ok: false, message: "Could not save hospitals.", detail: error.message });
+  }
+}
+
 async function handleSitemap(res) {
   try {
     const doctors = await readDoctors();
+    const hospitals = await readHospitals();
     const urls = [
       "http://localhost:3000/",
+      "http://localhost:3000/hospitals.html",
       "http://localhost:3000/privacy.html",
       "http://localhost:3000/terms.html",
       ...["", "/hi", "/gu"].flatMap((prefix) =>
@@ -360,6 +426,7 @@ async function handleSitemap(res) {
           return `http://localhost:3000${prefix}/doctors/${specialty}/${city}`;
         }),
       ),
+      ...hospitals.map((hospital) => `http://localhost:3000/hospitals.html#${String(hospital.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`),
     ];
     const body = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls
       .map((url) => `  <url><loc>${url}</loc></url>`)
@@ -763,9 +830,20 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (req.method === "GET" && pathname === "/api/hospitals") {
+    handleHospitalsGet(res);
+    return;
+  }
+
   if (req.method === "POST" && pathname === "/api/doctors") {
     if (!requireAdmin(req, res)) return;
     handleDoctorsSave(req, res);
+    return;
+  }
+
+  if (req.method === "POST" && pathname === "/api/hospitals") {
+    if (!requireAdmin(req, res)) return;
+    handleHospitalsSave(req, res);
     return;
   }
 

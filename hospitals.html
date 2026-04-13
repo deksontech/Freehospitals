@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Affiliated Hospitals | Freehospitals</title>
+    <meta name="description" content="Search affiliated hospitals on Freehospitals by state, city, hospital type, specialty, and services." />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="Freehospitals home">
+        <span class="brand-mark">+</span>
+        <span>Freehospitals</span>
+      </a>
+      <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
+        <a href="index.html#doctors">Doctors</a>
+        <a href="hospitals.html">Affiliated Hospitals</a>
+        <a href="index.html#symptoms">Symptoms</a>
+        <a href="index.html#faq">FAQ</a>
+      </nav>
+      <div class="top-actions">
+        <a class="urgent-link" href="tel:108">Need urgent care?</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="search-panel hospital-hero">
+        <div class="search-copy">
+          <p class="eyebrow">Affiliated hospitals</p>
+          <h1>Find hospitals connected with care support.</h1>
+          <p>Search by hospital name, city, state, specialty, or service. The Freehospitals care desk can help you connect.</p>
+          <div class="hero-actions">
+            <a class="primary-link" href="#hospitals">Search hospitals</a>
+            <a class="secondary-link" href="index.html#doctors">Find doctors</a>
+          </div>
+        </div>
+        <form class="finder" id="hospitalFinder">
+          <label class="field wide" for="hospitalSearch">
+            <span>Hospital, specialty, service, or city</span>
+            <input id="hospitalSearch" type="search" placeholder="Try cardiology, emergency, Ahmedabad" />
+          </label>
+          <label class="field" for="hospitalType">
+            <span>Hospital type</span>
+            <select id="hospitalType"></select>
+          </label>
+          <label class="field" for="hospitalState">
+            <span>State</span>
+            <select id="hospitalState"></select>
+          </label>
+          <label class="field" for="hospitalCity">
+            <span>City</span>
+            <select id="hospitalCity"></select>
+          </label>
+          <label class="field wide" for="hospitalService">
+            <span>Specialty or service</span>
+            <select id="hospitalService"></select>
+          </label>
+        </form>
+      </section>
+
+      <section class="content-grid hospital-results" id="hospitals">
+        <aside class="sidebar">
+          <div class="panel">
+            <div class="panel-heading">
+              <h2>Search criteria</h2>
+              <button type="button" id="resetHospitalFilters">Reset</button>
+            </div>
+            <p class="form-note">Use quick filters to refine the hospital list.</p>
+            <div class="filter-group" id="hospitalTypeFilters">
+              <h3>Hospital types</h3>
+            </div>
+            <div class="filter-group" id="hospitalServiceFilters">
+              <h3>Services and specialties</h3>
+            </div>
+            <div class="filter-group" id="hospitalTrustFilters">
+              <h3>Trust</h3>
+              <label><input type="checkbox" id="verifiedHospitalsOnly" /> Verified hospitals only</label>
+            </div>
+          </div>
+        </aside>
+        <section class="results">
+          <div class="results-bar">
+            <div>
+              <p id="hospitalCount">Loading hospitals</p>
+              <h2>Affiliated hospital matches</h2>
+            </div>
+          </div>
+          <div class="hospital-list" id="hospitalList"></div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-brand">
+        <strong>Freehospitals</strong>
+        <span>Freehospitals helps patients discover doctors and request contact support.</span>
+      </div>
+      <nav aria-label="Footer navigation">
+        <a href="index.html#doctors">Doctors</a>
+        <a href="hospitals.html">Affiliated Hospitals</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms</a>
+      </nav>
+      <a class="footer-call" href="tel:+918586930497">Call care desk</a>
+    </footer>
+    <script src="hospitals.js"></script>
+  </body>
+</html>

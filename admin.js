@@ -38,7 +38,9 @@ const stateCities = {
 };
 
 let doctors = [];
+let hospitals = [];
 let selectedId = null;
+let selectedHospitalId = null;
 let requests = [];
 let analytics = {};
 const requestFilters = {
@@ -86,6 +88,14 @@ const exportDoctorsCsv = document.querySelector("#exportDoctorsCsv");
 const exportRequestsCsv = document.querySelector("#exportRequestsCsv");
 const importDoctorsCsv = document.querySelector("#importDoctorsCsv");
 const downloadBackup = document.querySelector("#downloadBackup");
+const adminHospitalList = document.querySelector("#adminHospitalList");
+const hospitalForm = document.querySelector("#hospitalForm");
+const hospitalMessage = document.querySelector("#hospitalMessage");
+const newHospital = document.querySelector("#newHospital");
+const saveHospitals = document.querySelector("#saveHospitals");
+const deleteHospital = document.querySelector("#deleteHospital");
+const adminHospitalState = document.querySelector("#adminHospitalState");
+const adminHospitalCity = document.querySelector("#adminHospitalCity");
 const analyticsUpdated = document.querySelector("#analyticsUpdated");
 const analyticsKpis = document.querySelector("#analyticsKpis");
 const analyticsFunnel = document.querySelector("#analyticsFunnel");
@@ -144,6 +154,146 @@ function updateCityOptions(cityValue = "") {
   const cities = stateCities[doctorState.value] || [];
   fillSelect(doctorCity, cities);
   doctorCity.value = cities.includes(cityValue) ? cityValue : cities[0] || "";
+}
+
+function updateHospitalCityOptions(cityValue = "") {
+  const cities = stateCities[adminHospitalState.value] || [];
+  fillSelect(adminHospitalCity, cities);
+  adminHospitalCity.value = cities.includes(cityValue) ? cityValue : cities[0] || "";
+}
+
+function blankHospital() {
+  return {
+    id: Date.now(),
+    name: "",
+    type: "Multi-specialty Hospital",
+    state: "Gujarat",
+    city: "Ahmedabad",
+    address: "",
+    specialties: [],
+    services: [],
+    phone: "+91 8586930497",
+    email: "",
+    website: "",
+    mapUrl: "",
+    description: "",
+    verified: true,
+    published: true,
+    image: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=900&q=80",
+  };
+}
+
+function hospitalFromForm() {
+  const formData = new FormData(hospitalForm);
+  return {
+    id: Number(formData.get("id")) || Date.now(),
+    name: String(formData.get("name") || "").trim(),
+    type: String(formData.get("type") || "").trim(),
+    state: String(formData.get("state") || "").trim(),
+    city: String(formData.get("city") || "").trim(),
+    address: String(formData.get("address") || "").trim(),
+    specialties: listFromText(formData.get("specialties")),
+    services: listFromText(formData.get("services")),
+    phone: String(formData.get("phone") || "").trim(),
+    email: String(formData.get("email") || "").trim(),
+    website: String(formData.get("website") || "").trim(),
+    mapUrl: String(formData.get("mapUrl") || "").trim(),
+    description: String(formData.get("description") || "").trim(),
+    verified: formData.get("verified") === "on",
+    published: formData.get("published") === "on",
+    image: String(formData.get("image") || "").trim(),
+  };
+}
+
+function fillHospitalForm(hospital) {
+  selectedHospitalId = hospital.id;
+  const fields = hospitalForm.elements;
+  fields.id.value = hospital.id;
+  fields.name.value = hospital.name || "";
+  fields.type.value = hospital.type || "";
+  adminHospitalState.value = hospital.state || "Gujarat";
+  updateHospitalCityOptions(hospital.city);
+  fields.address.value = hospital.address || "";
+  fields.phone.value = hospital.phone || "";
+  fields.email.value = hospital.email || "";
+  fields.website.value = hospital.website || "";
+  fields.mapUrl.value = hospital.mapUrl || "";
+  fields.image.value = hospital.image || "";
+  fields.specialties.value = (hospital.specialties || []).join(", ");
+  fields.services.value = (hospital.services || []).join(", ");
+  fields.description.value = hospital.description || "";
+  fields.verified.checked = Boolean(hospital.verified);
+  fields.published.checked = hospital.published !== false;
+}
+
+function setHospitalMessage(message, type = "") {
+  hospitalMessage.textContent = message;
+  hospitalMessage.className = type ? `form-note ${type}` : "form-note";
+}
+
+function renderHospitalList() {
+  if (!adminHospitalList) return;
+  adminHospitalList.innerHTML = hospitals
+    .map(
+      (hospital) => `
+        <button class="admin-doctor-button ${hospital.id === selectedHospitalId ? "active" : ""}" type="button" data-hospital-id="${hospital.id}">
+          <strong>${escapeHtml(hospital.name || "Untitled hospital")}</strong>
+          <span>${escapeHtml(hospital.type || "No type")} - ${escapeHtml(hospital.city || "No city")}</span>
+          <span>${hospital.published === false ? "Draft" : "Published"}${hospital.verified ? " - Verified" : ""}</span>
+        </button>
+      `,
+    )
+    .join("");
+}
+
+function applyHospitalToList() {
+  const hospital = hospitalFromForm();
+  const index = hospitals.findIndex((item) => item.id === hospital.id);
+  if (index >= 0) hospitals[index] = hospital;
+  else hospitals.unshift(hospital);
+  selectedHospitalId = hospital.id;
+  renderHospitalList();
+  fillHospitalForm(hospital);
+  setHospitalMessage("Applied to list. Click Save hospitals to publish it.", "success");
+}
+
+function saveHospitalList() {
+  saveHospitals.disabled = true;
+  setHospitalMessage("Saving hospitals...");
+  fetch("/api/hospitals", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ hospitals }),
+  })
+    .then(async (response) => {
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.message || "Save failed.");
+      hospitals = result.hospitals;
+      renderHospitalList();
+      setHospitalMessage("Hospitals saved. Refresh the public hospital page to see changes.", "success");
+    })
+    .catch((error) => setHospitalMessage(error.message, "error"))
+    .finally(() => {
+      saveHospitals.disabled = false;
+    });
+}
+
+function loadHospitals() {
+  fetch("/api/hospitals")
+    .then(async (response) => {
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.message || "Could not load hospitals.");
+      hospitals = result.hospitals;
+      selectedHospitalId = hospitals[0]?.id || null;
+      renderHospitalList();
+      fillHospitalForm(hospitals[0] || blankHospital());
+    })
+    .catch((error) => {
+      hospitals = [];
+      renderHospitalList();
+      fillHospitalForm(blankHospital());
+      setHospitalMessage(`${error.message} Open this page through npm start.`, "error");
+    });
 }
 
 function blankDoctor() {
@@ -867,6 +1017,7 @@ function loadDoctors() {
       renderDoctorList();
       renderDoctorTable();
       fillForm(doctors[0] || blankDoctor());
+      loadHospitals();
       loadDashboard();
     })
     .catch((error) => {
@@ -879,9 +1030,12 @@ function loadDoctors() {
 }
 
 fillSelect(doctorState, Object.keys(stateCities).sort());
+fillSelect(adminHospitalState, Object.keys(stateCities).sort());
 updateCityOptions();
+updateHospitalCityOptions();
 
 doctorState.addEventListener("change", () => updateCityOptions());
+adminHospitalState.addEventListener("change", () => updateHospitalCityOptions());
 doctorPracticeType.addEventListener("change", updateHospitalField);
 
 doctorImageUpload.addEventListener("change", () => {
@@ -918,6 +1072,37 @@ newDoctor.addEventListener("click", () => {
   fillForm(blankDoctor());
   setMessage("Fill the profile, then apply it to the list.", "");
 });
+
+adminHospitalList.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-hospital-id]");
+  if (!button) return;
+  const hospital = hospitals.find((item) => item.id === Number(button.dataset.hospitalId));
+  if (hospital) {
+    fillHospitalForm(hospital);
+    renderHospitalList();
+  }
+});
+
+hospitalForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  applyHospitalToList();
+});
+
+newHospital.addEventListener("click", () => {
+  fillHospitalForm(blankHospital());
+  setHospitalMessage("Fill the hospital details, then apply it to the list.", "");
+});
+
+deleteHospital.addEventListener("click", () => {
+  if (!selectedHospitalId) return;
+  hospitals = hospitals.filter((hospital) => hospital.id !== selectedHospitalId);
+  selectedHospitalId = hospitals[0]?.id || null;
+  renderHospitalList();
+  fillHospitalForm(hospitals[0] || blankHospital());
+  setHospitalMessage("Removed from the list. Click Save hospitals to publish it.", "success");
+});
+
+saveHospitals.addEventListener("click", saveHospitalList);
 
 deleteDoctor.addEventListener("click", () => {
   if (!selectedId) return;

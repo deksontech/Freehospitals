@@ -750,6 +750,12 @@ textarea {
   margin-top: 22px;
 }
 
+.hospital-filter-panel {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
 .filter-group h3 {
   margin-bottom: 0;
   font-size: 0.92rem;
@@ -855,6 +861,43 @@ output {
   gap: 18px;
   padding: 18px;
   box-shadow: 0 10px 26px rgba(23, 32, 29, 0.06);
+}
+
+.hospital-list {
+  display: grid;
+  gap: 16px;
+}
+
+.hospital-card {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr) 180px;
+  gap: 18px;
+  padding: 18px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 10px 26px rgba(23, 32, 29, 0.06);
+}
+
+.hospital-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.hospital-card h3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.hospital-hero {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.72)),
+    url("https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1800&q=80") center / cover;
 }
 
 .doctor-photo {
@@ -2099,6 +2142,15 @@ output {
     grid-template-columns: 96px minmax(0, 1fr);
   }
 
+  .hospital-card {
+    grid-template-columns: 140px minmax(0, 1fr);
+  }
+
+  .hospital-card .doctor-action {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .doctor-photo {
     width: 96px;
     height: 96px;
@@ -2491,6 +2543,17 @@ output {
   .doctor-card {
     gap: 12px;
     padding: 12px;
+  }
+
+  .hospital-card {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .hospital-card img {
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
 
   .doctor-main h3 {

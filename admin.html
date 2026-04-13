@@ -11,6 +11,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   </head>
   <body class="admin-body">
     <aside class="wp-sidebar" aria-label="Admin panel navigation">
@@ -23,6 +24,7 @@
         <a href="#analytics">Analytics</a>
         <a href="#doctorTableSection">Doctor table</a>
         <a href="#doctorEditor">Doctors</a>
+        <a href="#hospitalManager">Hospitals</a>
         <a href="#requests">Requests</a>
         <a href="#dataTools">Import / Export</a>
         <a href="#settings">Settings</a>
@@ -118,6 +120,93 @@
         <div class="analytics-card analytics-wide">
           <h3>Recommended actions</h3>
           <div class="analytics-recommendations" id="analyticsRecommendations"></div>
+        </div>
+      </section>
+
+      <section class="admin-section" id="hospitalManager">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Affiliated hospitals</p>
+            <h2>Add, edit, and remove hospitals</h2>
+          </div>
+          <div class="contact-actions">
+            <button id="newHospital" type="button">New hospital</button>
+            <button class="login-button" id="saveHospitals" type="button">Save hospitals</button>
+          </div>
+        </div>
+        <div class="admin-grid hospital-admin-grid">
+          <aside class="admin-list-panel">
+            <div class="panel-heading">
+              <h2>Hospital list</h2>
+            </div>
+            <div class="admin-doctor-list" id="adminHospitalList"></div>
+          </aside>
+          <form class="admin-form" id="hospitalForm">
+            <input id="hospitalId" name="id" type="hidden" />
+            <div class="form-grid">
+              <label class="field" for="adminHospitalName">
+                <span>Hospital name</span>
+                <input id="adminHospitalName" name="name" required />
+              </label>
+              <label class="field" for="adminHospitalType">
+                <span>Hospital type</span>
+                <input id="adminHospitalType" name="type" placeholder="Multi-specialty Hospital" required />
+              </label>
+              <label class="field" for="adminHospitalState">
+                <span>State</span>
+                <select id="adminHospitalState" name="state" required></select>
+              </label>
+              <label class="field" for="adminHospitalCity">
+                <span>City</span>
+                <select id="adminHospitalCity" name="city" required></select>
+              </label>
+              <label class="field" for="adminHospitalAddress">
+                <span>Address</span>
+                <input id="adminHospitalAddress" name="address" placeholder="Area, city" />
+              </label>
+              <label class="field" for="adminHospitalPhone">
+                <span>Phone</span>
+                <input id="adminHospitalPhone" name="phone" placeholder="+91 8586930497" />
+              </label>
+              <label class="field" for="adminHospitalSpecialties">
+                <span>Specialties</span>
+                <input id="adminHospitalSpecialties" name="specialties" placeholder="Cardiology, Pediatrics" />
+              </label>
+              <label class="field" for="adminHospitalServices">
+                <span>Services</span>
+                <input id="adminHospitalServices" name="services" placeholder="OPD, Emergency, Diagnostics" />
+              </label>
+              <label class="field" for="adminHospitalWebsite">
+                <span>Website</span>
+                <input id="adminHospitalWebsite" name="website" type="url" />
+              </label>
+              <label class="field" for="adminHospitalMap">
+                <span>Map URL</span>
+                <input id="adminHospitalMap" name="mapUrl" type="url" />
+              </label>
+              <label class="field" for="adminHospitalImage">
+                <span>Image URL</span>
+                <input id="adminHospitalImage" name="image" />
+              </label>
+              <label class="field" for="adminHospitalEmail">
+                <span>Email</span>
+                <input id="adminHospitalEmail" name="email" type="email" />
+              </label>
+              <label class="field wide" for="adminHospitalDescription">
+                <span>Description</span>
+                <textarea id="adminHospitalDescription" name="description" required></textarea>
+              </label>
+            </div>
+            <div class="admin-toggle-row">
+              <label><input id="adminHospitalVerified" name="verified" type="checkbox" /> Verified</label>
+              <label><input id="adminHospitalPublished" name="published" type="checkbox" checked /> Published</label>
+            </div>
+            <div class="contact-actions">
+              <button class="primary-button" type="submit">Apply hospital</button>
+              <button class="danger-button" id="deleteHospital" type="button">Delete hospital</button>
+            </div>
+            <p class="form-note" id="hospitalMessage">Hospitals are saved to data/hospitals.json.</p>
+          </form>
         </div>
       </section>
 
