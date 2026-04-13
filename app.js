@@ -630,7 +630,6 @@ const openFilters = document.querySelector("#openFilters");
 const closeFilters = document.querySelector("#closeFilters");
 const browseCities = document.querySelector("#browseCities");
 const browseSpecialties = document.querySelector("#browseSpecialties");
-const feedbackWidget = document.querySelector("#feedbackWidget");
 
 const searchSynonyms = {
   "skin doctor": "Dermatologist",
@@ -1542,6 +1541,7 @@ resetFilters.addEventListener("click", () => {
   document.querySelectorAll('input[type="checkbox"]').forEach((input) => {
     input.checked = false;
   });
+  document.body.classList.remove("filters-open");
   render();
 });
 
@@ -1553,6 +1553,12 @@ openFilters.addEventListener("click", () => {
   trackEvent("filter_drawer_open");
 });
 closeFilters.addEventListener("click", () => document.body.classList.remove("filters-open"));
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") document.body.classList.remove("filters-open");
+});
+document.querySelector(".sidebar").addEventListener("click", (event) => {
+  if (event.target.classList.contains("sidebar")) document.body.classList.remove("filters-open");
+});
 openWizard.addEventListener("click", () => {
   findWizard.hidden = !findWizard.hidden;
   trackEvent("wizard_toggle", { open: !findWizard.hidden });
@@ -1661,13 +1667,6 @@ document.body.addEventListener("click", (event) => {
   const whatsappLink = event.target.closest('a[href*="wa.me"]');
   if (callLink) trackEvent("call_click", { href: callLink.getAttribute("href") });
   if (whatsappLink) trackEvent("whatsapp_click", { href: whatsappLink.getAttribute("href") });
-});
-
-feedbackWidget.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-feedback]");
-  if (!button) return;
-  trackEvent("feedback", { value: button.dataset.feedback });
-  feedbackWidget.innerHTML = "<span>Thanks for the feedback.</span>";
 });
 
 document.querySelectorAll("[data-symptom]").forEach((button) => {
