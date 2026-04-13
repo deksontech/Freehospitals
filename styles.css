@@ -29,6 +29,11 @@ body {
   font-family: "Inter", Arial, sans-serif;
 }
 
+main {
+  display: flex;
+  flex-direction: column;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -317,6 +322,7 @@ h1 {
 }
 
 .wizard-section {
+  order: 1;
   padding: clamp(34px, 6vw, 72px) clamp(18px, 5vw, 64px);
   background: #fff;
 }
@@ -416,10 +422,12 @@ textarea {
 }
 
 .feature-band {
+  order: 4;
   background: var(--wash);
 }
 
 .trust-cards {
+  order: 5;
   background: #fff;
 }
 
@@ -465,6 +473,14 @@ textarea {
 .symptom-section,
 .faq-section {
   background: var(--wash);
+}
+
+.symptom-section {
+  order: 3;
+}
+
+.faq-section {
+  order: 9;
 }
 
 .symptom-grid button {
@@ -553,6 +569,7 @@ textarea {
 }
 
 .specialty-showcase {
+  order: 6;
   background: #fff;
 }
 
@@ -578,6 +595,7 @@ textarea {
 }
 
 .trust-section {
+  order: 7;
   display: grid;
   grid-template-columns: minmax(280px, 0.9fr) minmax(280px, 1.1fr);
   gap: clamp(24px, 5vw, 56px);
@@ -594,6 +612,7 @@ textarea {
 }
 
 .browse-section {
+  order: 8;
   background: #fff;
 }
 
@@ -654,6 +673,7 @@ textarea {
 }
 
 .content-grid {
+  order: 2;
   display: grid;
   grid-template-columns: 310px minmax(0, 1fr);
   gap: 26px;
@@ -1955,6 +1975,14 @@ output {
     padding-bottom: 78px;
   }
 
+  .insights,
+  .trust-cards,
+  .specialty-showcase,
+  .trust-section,
+  .browse-section {
+    display: none;
+  }
+
   .admin-body {
     display: block;
   }
@@ -2034,7 +2062,7 @@ output {
 
   .search-panel {
     gap: 16px;
-    padding: 24px 14px 16px;
+    padding: 18px 14px 12px;
     background:
       linear-gradient(90deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.86)),
       url("https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1200&q=80") center / cover;
@@ -2043,13 +2071,13 @@ output {
   h1 {
     max-width: 12ch;
     margin-bottom: 10px;
-    font-size: 2.45rem;
+    font-size: 2.15rem;
     line-height: 1;
   }
 
   .search-copy p:last-child {
-    font-size: 0.98rem;
-    line-height: 1.55;
+    font-size: 0.94rem;
+    line-height: 1.5;
   }
 
   .hero-actions {
@@ -2071,6 +2099,11 @@ output {
     padding: 12px;
   }
 
+  .finder input,
+  .finder select {
+    min-height: 42px;
+  }
+
   .quick-searches {
     gap: 6px;
     margin-top: 10px;
@@ -2090,7 +2123,7 @@ output {
   .browse-section,
   .symptom-section,
   .faq-section {
-    padding: 32px 14px;
+    padding: 28px 14px;
   }
 
   .wizard-card {
@@ -2140,7 +2173,8 @@ output {
   }
 
   .content-grid {
-    padding: 28px 14px 40px;
+    padding: 20px 14px 34px;
+    background: #fff;
   }
 
   body.filters-open .sidebar {
@@ -2198,6 +2232,16 @@ output {
   .results-bar {
     align-items: stretch;
     flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .results-bar p {
+    margin-bottom: 4px;
+  }
+
+  .results-bar h2 {
+    font-size: 1.12rem;
   }
 
   .sort-control {
@@ -2210,7 +2254,7 @@ output {
 
   .doctor-card {
     gap: 12px;
-    padding: 14px;
+    padding: 12px;
   }
 
   .doctor-main h3 {
@@ -2228,6 +2272,7 @@ output {
 
   .actions {
     grid-template-columns: 1fr 1fr;
+    gap: 7px;
   }
 
   .actions .book-button,
@@ -2253,11 +2298,11 @@ output {
 
 @media (max-width: 540px) {
   .search-panel {
-    padding-top: 22px;
+    padding-top: 16px;
   }
 
   h1 {
-    font-size: 2.2rem;
+    font-size: 2rem;
   }
 
   .content-grid {
