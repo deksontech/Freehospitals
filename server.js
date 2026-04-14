@@ -215,6 +215,8 @@ function normalizeHospital(hospital, index) {
     address: String(hospital.address || "").trim(),
     specialties: normalizeList(hospital.specialties),
     services: normalizeList(hospital.services),
+    departments: normalizeList(hospital.departments || hospital.specialties),
+    timings: String(hospital.timings || "Call to confirm").trim(),
     phone: String(hospital.phone || "").trim(),
     email: String(hospital.email || "").trim(),
     website: String(hospital.website || "").trim(),
@@ -276,6 +278,11 @@ function summarizeEvents(events) {
     whatsappClicks: counts.whatsapp_click || 0,
     profileViews: counts.view_profile || 0,
     requestClicks: counts.request_click || 0,
+    hospitalViews: counts.hospital_view || 0,
+    hospitalRequestClicks: counts.hospital_request_click || 0,
+    hospitalCallClicks: counts.hospital_call_click || 0,
+    hospitalWhatsappClicks: counts.hospital_whatsapp_click || 0,
+    hospitalSearches: counts.hospital_search || 0,
     wizardSubmits: counts.wizard_submit || 0,
     feedbackYes,
     feedbackNo,
@@ -318,6 +325,7 @@ function normalizeDoctor(doctor, index) {
     specialty_gu: String(doctor.specialty_gu || "").trim(),
     practiceType,
     hospitalName: practiceType === "Hospital Affiliated" ? String(doctor.hospitalName || "").trim() : "",
+    hospitalId: practiceType === "Hospital Affiliated" ? Number(doctor.hospitalId) || 0 : 0,
     state: String(doctor.state || "").trim(),
     city: String(doctor.city || "").trim(),
     rating: Math.min(5, Math.max(0, Number(doctor.rating) || 4.5)),
@@ -469,6 +477,11 @@ async function handleTrack(req, res) {
       "view_profile",
       "request_click",
       "request_submitted",
+      "hospital_view",
+      "hospital_request_click",
+      "hospital_call_click",
+      "hospital_whatsapp_click",
+      "hospital_search",
       "search_suggestion_click",
       "browse_city_click",
       "browse_specialty_click",
@@ -626,9 +639,10 @@ async function handleDoctorsSave(req, res) {
 
 function emailBody(submission) {
   return [
-    "New doctor contact request",
+    `New ${submission.requestType || "doctor"} contact request`,
     "",
     `Doctor: ${submission.doctorName} - ${submission.doctorSpecialty}`,
+    submission.hospitalName ? `Hospital: ${submission.hospitalName}` : "",
     `Affiliation: ${submission.doctorAffiliation || "Not provided"}`,
     `Doctor location: ${submission.doctorCity}, ${submission.doctorState}`,
     `Patient name: ${submission.patientName}`,
@@ -640,9 +654,10 @@ function emailBody(submission) {
     `Preferred contact: ${submission.preferredContact || "Phone call"}`,
     `Preferred time: ${submission.preferredTime || "Not provided"}`,
     `Source: ${submission.source || "Doctor contact form"}`,
+    `Consent: ${submission.consentAt || "Not captured"} (${submission.consentVersion || "no version"})`,
     "",
     `Health concern: ${submission.patientMessage}`,
-  ].join("\n");
+  ].filter((line) => line !== "").join("\n");
 }
 
 async function sendViaResend(submission) {
@@ -698,12 +713,15 @@ async function handleContact(req, res) {
       assignedTo: String(payload.assignedTo || "").trim(),
       followUpDate: String(payload.followUpDate || "").trim(),
       followUpTime: String(payload.followUpTime || "").trim(),
+      requestType: String(payload.requestType || "doctor").trim(),
       source: String(payload.source || "Doctor contact form").trim(),
       doctorName: String(payload.doctorName).trim(),
       doctorSpecialty: String(payload.doctorSpecialty).trim(),
       doctorAffiliation: String(payload.doctorAffiliation || "").trim(),
       doctorCity: String(payload.doctorCity || "").trim(),
       doctorState: String(payload.doctorState || "").trim(),
+      hospitalId: String(payload.hospitalId || "").trim(),
+      hospitalName: String(payload.hospitalName || "").trim(),
       patientName: String(payload.patientName).trim(),
       patientPhone: String(payload.patientPhone).trim(),
       patientEmail: String(payload.patientEmail).trim(),
@@ -713,6 +731,10 @@ async function handleContact(req, res) {
       preferredContact: String(payload.preferredContact || "Phone call").trim(),
       preferredTime: String(payload.preferredTime || "").trim(),
       patientMessage: String(payload.patientMessage).trim(),
+      consentText: String(payload.consentText || "I consent to Freehospitals contacting me about this request.").trim(),
+      consentVersion: String(payload.consentVersion || "2026-04-14").trim(),
+      consentAt: String(payload.consentAt || new Date().toISOString()).trim(),
+      sensitive: Boolean(payload.sensitive),
     };
 
     await storeSubmission(submission);
@@ -750,6 +772,8 @@ async function serveStatic(req, res) {
   const pathname = routePath(req);
   const filePath = pathname.startsWith("/doctors/") || pathname.startsWith("/hi/doctors/") || pathname.startsWith("/gu/doctors/")
     ? path.join(rootDir, "index.html")
+    : pathname.startsWith("/hospitals/")
+      ? path.join(rootDir, "hospitals.html")
     : safeStaticPath(pathname);
 
   if (!filePath) {

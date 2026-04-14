@@ -5,56 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Affiliated Hospitals | Freehospitals</title>
     <meta name="description" content="Search affiliated hospitals on Freehospitals by state, city, hospital type, specialty, and services." />
-    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=20260413-2" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css?v=20260413-2" />
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="index.html" aria-label="Freehospitals home">
+      <a class="brand" href="/index.html" aria-label="Freehospitals home">
         <span class="brand-mark">+</span>
         <span>Freehospitals</span>
       </a>
       <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
-        <a href="index.html#doctors">Doctors</a>
-        <a href="hospitals.html">Affiliated Hospitals</a>
-        <a href="index.html#symptoms">Symptoms</a>
-        <a href="index.html#faq">FAQ</a>
+        <a href="/index.html#doctors" data-i18n="navDoctors">Doctors</a>
+        <a href="/hospitals.html" data-i18n="navHospitals">Affiliated Hospitals</a>
+        <a href="/index.html#symptoms" data-i18n="navSymptoms">Symptoms</a>
+        <a href="/index.html#faq" data-i18n="navFaq">FAQ</a>
       </nav>
       <div class="top-actions">
-        <a class="urgent-link" href="tel:108">Need urgent care?</a>
+        <label class="language-switcher" for="hospitalLanguageSelect">
+          <span data-i18n="language">Language</span>
+          <select id="hospitalLanguageSelect" aria-label="Choose language">
+            <option value="en">English</option>
+            <option value="hi">Hindi</option>
+          </select>
+        </label>
+        <a class="urgent-link" href="tel:108" data-i18n="urgentCare">Need urgent care?</a>
       </div>
     </header>
 
     <main>
       <section class="search-panel hospital-hero">
         <div class="search-copy">
-          <p class="eyebrow">Affiliated hospitals</p>
-          <h1>Find hospitals connected with care support.</h1>
-          <p>Search by hospital name, city, state, specialty, or service. The Freehospitals care desk can help you connect.</p>
+          <p class="eyebrow" data-i18n="affiliatedHospitals">Affiliated hospitals</p>
+          <h1 data-i18n="hospitalHeroTitle">Find hospitals connected with care support.</h1>
+          <p data-i18n="hospitalHeroText">Search by hospital name, city, state, specialty, or service. The Freehospitals care desk can help you connect.</p>
           <div class="hero-actions">
-            <a class="primary-link" href="#hospitals">Search hospitals</a>
-            <a class="secondary-link" href="index.html#doctors">Find doctors</a>
+            <a class="primary-link" href="#hospitals" data-i18n="searchHospitals">Search hospitals</a>
+            <a class="secondary-link" href="/index.html#doctors" data-i18n="findDoctors">Find doctors</a>
           </div>
         </div>
         <form class="finder" id="hospitalFinder">
           <label class="field wide" for="hospitalSearch">
-            <span>Hospital, specialty, service, or city</span>
+            <span data-i18n="hospitalSearchLabel">Hospital, specialty, service, or city</span>
             <input id="hospitalSearch" type="search" placeholder="Try cardiology, emergency, Ahmedabad" />
           </label>
           <label class="field" for="hospitalType">
-            <span>Hospital type</span>
+            <span data-i18n="hospitalType">Hospital type</span>
             <select id="hospitalType"></select>
           </label>
           <label class="field" for="hospitalState">
-            <span>State</span>
+            <span data-i18n="state">State</span>
             <select id="hospitalState"></select>
           </label>
           <label class="field" for="hospitalCity">
-            <span>City</span>
+            <span data-i18n="city">City</span>
             <select id="hospitalCity"></select>
           </label>
           <label class="field wide" for="hospitalService">
-            <span>Specialty or service</span>
+            <span data-i18n="specialtyOrService">Specialty or service</span>
             <select id="hospitalService"></select>
           </label>
         </form>
@@ -64,19 +71,19 @@
         <aside class="sidebar">
           <div class="panel">
             <div class="panel-heading">
-              <h2>Search criteria</h2>
-              <button type="button" id="resetHospitalFilters">Reset</button>
+              <h2 data-i18n="searchCriteria">Search criteria</h2>
+              <button type="button" id="resetHospitalFilters" data-i18n="reset">Reset</button>
             </div>
-            <p class="form-note">Use quick filters to refine the hospital list.</p>
+            <p class="form-note" data-i18n="quickFilters">Use quick filters to refine the hospital list.</p>
             <div class="filter-group" id="hospitalTypeFilters">
-              <h3>Hospital types</h3>
+              <h3 data-i18n="hospitalTypes">Hospital types</h3>
             </div>
             <div class="filter-group" id="hospitalServiceFilters">
-              <h3>Services and specialties</h3>
+              <h3 data-i18n="servicesSpecialties">Services and specialties</h3>
             </div>
             <div class="filter-group" id="hospitalTrustFilters">
-              <h3>Trust</h3>
-              <label><input type="checkbox" id="verifiedHospitalsOnly" /> Verified hospitals only</label>
+              <h3 data-i18n="trust">Trust</h3>
+              <label><input type="checkbox" id="verifiedHospitalsOnly" /> <span data-i18n="verifiedHospitalsOnly">Verified hospitals only</span></label>
             </div>
           </div>
         </aside>
@@ -84,27 +91,68 @@
           <div class="results-bar">
             <div>
               <p id="hospitalCount">Loading hospitals</p>
-              <h2>Affiliated hospital matches</h2>
+              <h2 data-i18n="hospitalMatches">Affiliated hospital matches</h2>
             </div>
           </div>
           <div class="hospital-list" id="hospitalList"></div>
         </section>
       </section>
+      <div id="hospitalDetail" hidden></div>
     </main>
+
+    <dialog class="modal" id="hospitalRequestModal">
+      <form class="modal-card" id="hospitalRequestForm">
+        <div class="modal-heading">
+          <div>
+            <p class="eyebrow" data-i18n="hospitalRequest">Hospital request</p>
+            <h2 id="hospitalRequestTitle">Request help</h2>
+          </div>
+          <button class="icon-button" type="button" data-close-hospital-request aria-label="Close">x</button>
+        </div>
+        <p class="form-note error" data-i18n="emergencyDisclaimer">For medical emergencies, call local emergency services or visit the nearest hospital immediately. Freehospitals helps with discovery and coordination only.</p>
+        <input name="hospitalId" type="hidden" />
+        <label class="field">
+          <span data-i18n="patientName">Patient name</span>
+          <input name="patientName" required />
+        </label>
+        <label class="field">
+          <span data-i18n="mobileNumber">Mobile number</span>
+          <input name="patientPhone" required />
+        </label>
+        <label class="field">
+          <span data-i18n="email">Email</span>
+          <input name="patientEmail" type="email" required />
+        </label>
+        <label class="field">
+          <span data-i18n="city">City</span>
+          <input name="patientCity" required />
+        </label>
+        <label class="field">
+          <span data-i18n="helpWith">What do you need help with?</span>
+          <textarea name="patientMessage" required></textarea>
+        </label>
+        <label class="consent-line">
+          <input name="patientConsent" type="checkbox" required />
+          <span data-i18n="hospitalConsent">I agree that Freehospitals may contact me about this hospital request.</span>
+        </label>
+        <button class="primary-button" type="submit" data-i18n="submitRequest">Submit request</button>
+        <p class="form-note" id="hospitalRequestMessage">Submit once, then call or WhatsApp the care desk.</p>
+      </form>
+    </dialog>
 
     <footer class="site-footer">
       <div class="footer-brand">
         <strong>Freehospitals</strong>
-        <span>Freehospitals helps patients discover doctors and request contact support.</span>
+        <span data-i18n="footerText">Freehospitals helps patients discover doctors and request contact support.</span>
       </div>
       <nav aria-label="Footer navigation">
-        <a href="index.html#doctors">Doctors</a>
-        <a href="hospitals.html">Affiliated Hospitals</a>
-        <a href="privacy.html">Privacy Policy</a>
-        <a href="terms.html">Terms</a>
+        <a href="/index.html#doctors" data-i18n="navDoctors">Doctors</a>
+        <a href="/hospitals.html" data-i18n="navHospitals">Affiliated Hospitals</a>
+        <a href="/privacy.html" data-i18n="privacy">Privacy Policy</a>
+        <a href="/terms.html" data-i18n="terms">Terms</a>
       </nav>
-      <a class="footer-call" href="tel:+918586930497">Call care desk</a>
+      <a class="footer-call" href="tel:+918586930497" data-i18n="callCareDesk">Call care desk</a>
     </footer>
-    <script src="hospitals.js"></script>
+    <script src="/hospitals.js"></script>
   </body>
 </html>

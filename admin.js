@@ -78,6 +78,7 @@ const doctorImageUpload = document.querySelector("#doctorImageUpload");
 const adminImagePreview = document.querySelector("#adminImagePreview");
 const doctorPracticeType = document.querySelector("#doctorPracticeType");
 const doctorHospitalName = document.querySelector("#doctorHospitalName");
+const doctorHospitalId = document.querySelector("#doctorHospitalId");
 const adminDoctorTable = document.querySelector("#adminDoctorTable");
 const adminDoctorSearch = document.querySelector("#adminDoctorSearch");
 const adminStatusFilter = document.querySelector("#adminStatusFilter");
@@ -136,6 +137,9 @@ function normalizeRequest(request) {
     followUpDate: request.followUpDate || "",
     followUpTime: request.followUpTime || "",
     source: request.source || "Doctor contact form",
+    requestType: request.requestType || "doctor",
+    hospitalName: request.hospitalName || "",
+    sensitive: Boolean(request.sensitive),
     notes: request.notes || "",
   };
 }
@@ -172,6 +176,8 @@ function blankHospital() {
     address: "",
     specialties: [],
     services: [],
+    departments: [],
+    timings: "Call to confirm",
     phone: "+91 8586930497",
     email: "",
     website: "",
@@ -194,6 +200,8 @@ function hospitalFromForm() {
     address: String(formData.get("address") || "").trim(),
     specialties: listFromText(formData.get("specialties")),
     services: listFromText(formData.get("services")),
+    departments: listFromText(formData.get("departments")),
+    timings: String(formData.get("timings") || "Call to confirm").trim(),
     phone: String(formData.get("phone") || "").trim(),
     email: String(formData.get("email") || "").trim(),
     website: String(formData.get("website") || "").trim(),
@@ -221,6 +229,8 @@ function fillHospitalForm(hospital) {
   fields.image.value = hospital.image || "";
   fields.specialties.value = (hospital.specialties || []).join(", ");
   fields.services.value = (hospital.services || []).join(", ");
+  if (fields.departments) fields.departments.value = (hospital.departments || []).join(", ");
+  if (fields.timings) fields.timings.value = hospital.timings || "";
   fields.description.value = hospital.description || "";
   fields.verified.checked = Boolean(hospital.verified);
   fields.published.checked = hospital.published !== false;
@@ -235,15 +245,19 @@ function renderHospitalList() {
   if (!adminHospitalList) return;
   adminHospitalList.innerHTML = hospitals
     .map(
-      (hospital) => `
+      (hospital) => {
+        const linkedCount = doctors.filter((doctor) => Number(doctor.hospitalId) === Number(hospital.id)).length;
+        return `
         <button class="admin-doctor-button ${hospital.id === selectedHospitalId ? "active" : ""}" type="button" data-hospital-id="${hospital.id}">
           <strong>${escapeHtml(hospital.name || "Untitled hospital")}</strong>
           <span>${escapeHtml(hospital.type || "No type")} - ${escapeHtml(hospital.city || "No city")}</span>
-          <span>${hospital.published === false ? "Draft" : "Published"}${hospital.verified ? " - Verified" : ""}</span>
+          <span>${hospital.published === false ? "Draft" : "Published"}${hospital.verified ? " - Verified" : ""} - ${linkedCount} doctor${linkedCount === 1 ? "" : "s"} linked</span>
         </button>
-      `,
+      `;
+      },
     )
     .join("");
+  renderAdminAnalytics();
 }
 
 function applyHospitalToList() {
@@ -253,6 +267,7 @@ function applyHospitalToList() {
   else hospitals.unshift(hospital);
   selectedHospitalId = hospital.id;
   renderHospitalList();
+  renderHospitalSelectOptions();
   fillHospitalForm(hospital);
   setHospitalMessage("Applied to list. Click Save hospitals to publish it.", "success");
 }
@@ -270,6 +285,7 @@ function saveHospitalList() {
       if (!response.ok || !result.ok) throw new Error(result.message || "Save failed.");
       hospitals = result.hospitals;
       renderHospitalList();
+      renderHospitalSelectOptions();
       setHospitalMessage("Hospitals saved. Refresh the public hospital page to see changes.", "success");
     })
     .catch((error) => setHospitalMessage(error.message, "error"))
@@ -286,11 +302,13 @@ function loadHospitals() {
       hospitals = result.hospitals;
       selectedHospitalId = hospitals[0]?.id || null;
       renderHospitalList();
+      renderHospitalSelectOptions();
       fillHospitalForm(hospitals[0] || blankHospital());
     })
     .catch((error) => {
       hospitals = [];
       renderHospitalList();
+      renderHospitalSelectOptions();
       fillHospitalForm(blankHospital());
       setHospitalMessage(`${error.message} Open this page through npm start.`, "error");
     });
@@ -305,6 +323,7 @@ function blankDoctor() {
     specialty_gu: "",
     practiceType: "Private Clinic",
     hospitalName: "",
+    hospitalId: 0,
     state: "Gujarat",
     city: "Ahmedabad",
     rating: 4.5,
@@ -336,16 +355,20 @@ function blankDoctor() {
 
 function doctorFromForm() {
   const formData = new FormData(doctorForm);
+  const practiceType = String(formData.get("practiceType") || "Private Clinic");
+  const linkedHospitalId = practiceType === "Hospital Affiliated" ? Number(formData.get("hospitalId") || 0) : 0;
+  const linkedHospital = hospitals.find((hospital) => Number(hospital.id) === linkedHospitalId);
   return {
     id: Number(formData.get("id")) || Date.now(),
     name: String(formData.get("name") || "").trim(),
     specialty: String(formData.get("specialty") || "").trim(),
     specialty_hi: String(formData.get("specialty_hi") || "").trim(),
     specialty_gu: String(formData.get("specialty_gu") || "").trim(),
-    practiceType: String(formData.get("practiceType") || "Private Clinic"),
-    hospitalName: String(formData.get("hospitalName") || "").trim(),
-    state: String(formData.get("state") || "").trim(),
-    city: String(formData.get("city") || "").trim(),
+    practiceType,
+    hospitalName: practiceType === "Hospital Affiliated" ? String(linkedHospital?.name || formData.get("hospitalName") || "").trim() : "",
+    hospitalId: linkedHospitalId,
+    state: String(linkedHospital?.state || formData.get("state") || "").trim(),
+    city: String(linkedHospital?.city || formData.get("city") || "").trim(),
     rating: Number(formData.get("rating") || 4.5),
     reviews: Number(formData.get("reviews") || 0),
     availability: String(formData.get("availability") || "Today"),
@@ -384,6 +407,7 @@ function fillForm(doctor) {
   fields.specialty_gu.value = doctor.specialty_gu || "";
   fields.practiceType.value = doctor.practiceType || (doctor.hospitalName ? "Hospital Affiliated" : "Private Clinic");
   fields.hospitalName.value = doctor.hospitalName || "";
+  if (fields.hospitalId) fields.hospitalId.value = doctor.hospitalId || matchingHospitalId(doctor) || 0;
   updateHospitalField();
   doctorState.value = doctor.state;
   updateCityOptions(doctor.city);
@@ -420,8 +444,50 @@ function fillForm(doctor) {
 function updateHospitalField() {
   const isHospitalAffiliated = doctorPracticeType.value === "Hospital Affiliated";
   doctorHospitalName.disabled = !isHospitalAffiliated;
+  if (doctorHospitalId) doctorHospitalId.disabled = !isHospitalAffiliated;
   doctorHospitalName.placeholder = isHospitalAffiliated ? "Apollo Hospital, Fortis, City Hospital" : "Private clinic only";
-  if (!isHospitalAffiliated) doctorHospitalName.value = "";
+  if (!isHospitalAffiliated) {
+    doctorHospitalName.value = "";
+    if (doctorHospitalId) doctorHospitalId.value = "0";
+  }
+}
+
+function matchingHospitalId(doctor) {
+  const hospital = hospitals.find((item) => {
+    const sameName = item.name && doctor.hospitalName && item.name.trim().toLowerCase() === doctor.hospitalName.trim().toLowerCase();
+    const samePlace = item.city === doctor.city && item.state === doctor.state;
+    return sameName && samePlace;
+  });
+  return hospital?.id || 0;
+}
+
+function hospitalForDoctor(doctor) {
+  return hospitals.find((hospital) => Number(hospital.id) === Number(doctor.hospitalId || matchingHospitalId(doctor)));
+}
+
+function renderHospitalSelectOptions() {
+  if (!doctorHospitalId) return;
+  const currentValue = doctorHospitalId.value || "0";
+  doctorHospitalId.innerHTML = [
+    `<option value="0">No linked hospital</option>`,
+    ...hospitals
+      .slice()
+      .sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")))
+      .map((hospital) => `<option value="${hospital.id}">${escapeHtml(hospital.name)} - ${escapeHtml(hospital.city || "No city")}</option>`),
+  ].join("");
+  doctorHospitalId.value = hospitals.some((hospital) => String(hospital.id) === currentValue) ? currentValue : "0";
+}
+
+function applyLinkedHospitalToDoctorForm() {
+  const hospital = hospitals.find((item) => Number(item.id) === Number(doctorHospitalId?.value));
+  if (!hospital) return;
+  doctorPracticeType.value = "Hospital Affiliated";
+  doctorHospitalName.value = hospital.name || "";
+  doctorState.value = hospital.state || doctorState.value;
+  updateCityOptions(hospital.city || doctorCity.value);
+  doctorForm.elements.address.value = hospital.address || doctorForm.elements.address.value;
+  doctorForm.elements.mapUrl.value = hospital.mapUrl || doctorForm.elements.mapUrl.value;
+  updateHospitalField();
 }
 
 function renderDoctorList() {
@@ -471,6 +537,7 @@ function profileCompleteness(doctor) {
     doctor.registrationNumber,
     doctor.address,
     doctor.mapUrl,
+    doctor.practiceType !== "Hospital Affiliated" || doctor.hospitalId || matchingHospitalId(doctor),
     doctor.services?.length,
     doctor.languages?.length,
     doctor.visits?.length,
@@ -492,13 +559,18 @@ function renderDoctorTable() {
     .map(
       (doctor) => {
         const score = profileCompleteness(doctor);
+        const linkedHospital = hospitalForDoctor(doctor);
+        const hospitalText =
+          doctor.practiceType === "Hospital Affiliated"
+            ? `${doctor.hospitalName || "Hospital missing"}${linkedHospital ? "" : " (not linked)"}`
+            : "Private clinic only";
         return `
         <tr>
           <td><input type="checkbox" data-row-select="${doctor.id}" /></td>
           <td><strong>${doctor.name || "Untitled doctor"}</strong>${doctor.featured ? "<span class=\"table-pill\">Featured</span>" : ""}<span class="table-pill ${completenessClass(score)}">${score}% complete</span></td>
           <td>${doctor.specialty || "-"}</td>
           <td>${doctor.city || "-"}, ${doctor.state || "-"}</td>
-          <td>${doctor.practiceType === "Hospital Affiliated" ? doctor.hospitalName || "Hospital missing" : "Private clinic only"}</td>
+          <td>${escapeHtml(hospitalText)}</td>
           <td>${doctor.published === false ? "Draft" : "Published"}</td>
           <td>
             <button type="button" data-table-edit="${doctor.id}">Edit</button>
@@ -585,6 +657,13 @@ function renderAdminAnalytics(analyticsData = analytics) {
   const verifiedDoctors = publishedDoctors.filter((doctor) => doctor.verified !== false);
   const hospitalDoctors = publishedDoctors.filter((doctor) => doctor.practiceType === "Hospital Affiliated");
   const privateDoctors = publishedDoctors.filter((doctor) => doctor.practiceType === "Private Clinic");
+  const publishedHospitals = hospitals.filter((hospital) => hospital.published !== false);
+  const draftHospitals = hospitals.filter((hospital) => hospital.published === false);
+  const hospitalsWithNoDoctors = publishedHospitals.filter(
+    (hospital) => !publishedDoctors.some((doctor) => Number(doctor.hospitalId) === Number(hospital.id)),
+  );
+  const hospitalsMissingMap = publishedHospitals.filter((hospital) => !hospital.mapUrl).length;
+  const hospitalsMissingPhone = publishedHospitals.filter((hospital) => !hospital.phone).length;
   const completeScores = publishedDoctors.map(profileCompleteness);
   const averageCompleteness = completeScores.length
     ? Math.round(completeScores.reduce((sum, score) => sum + score, 0) / completeScores.length)
@@ -599,6 +678,7 @@ function renderAdminAnalytics(analyticsData = analytics) {
   const overdueFollowUps = requests.filter((request) => request.followUpDate && request.followUpDate < today && request.status !== "closed").length;
   const highPriority = requests.filter((request) => request.priority === "high").length;
   const responseActions = Number(analytics.callClicks || 0) + Number(analytics.whatsappClicks || 0);
+  const hospitalActions = Number(analytics.hospitalCallClicks || 0) + Number(analytics.hospitalWhatsappClicks || 0) + Number(analytics.hospitalRequestClicks || 0);
   const requestClicks = Number(analytics.requestClicks || 0);
   const profileViews = Number(analytics.profileViews || 0);
 
@@ -609,8 +689,10 @@ function renderAdminAnalytics(analyticsData = analytics) {
     analyticsMetric("Booking rate", percent(bookedRequests, totalRequests), `${bookedRequests} booked requests`),
     analyticsMetric("Closure rate", percent(closedRequests, totalRequests), `${closedRequests} closed requests`),
     analyticsMetric("Contact intent", responseActions, `${analytics.callClicks || 0} calls, ${analytics.whatsappClicks || 0} WhatsApp`),
+    analyticsMetric("Hospital intent", hospitalActions, `${analytics.hospitalCallClicks || 0} calls, ${analytics.hospitalWhatsappClicks || 0} WhatsApp, ${analytics.hospitalRequestClicks || 0} requests`),
     analyticsMetric("Doctor quality", `${averageCompleteness}%`, "average profile completeness"),
     analyticsMetric("Published doctors", publishedDoctors.length, `${draftDoctors.length} draft/hidden`),
+    analyticsMetric("Published hospitals", publishedHospitals.length, `${draftHospitals.length} draft/hidden`),
     analyticsMetric("Verified coverage", percent(verifiedDoctors.length, publishedDoctors.length), `${verifiedDoctors.length}/${publishedDoctors.length} doctors`),
   ].join("");
 
@@ -621,6 +703,7 @@ function renderAdminAnalytics(analyticsData = analytics) {
       ["Request clicks", requestClicks, "Contact-request button clicks"],
       ["Saved requests", totalRequests, "Requests in admin CRM"],
       ["Contact actions", responseActions, "Call and WhatsApp clicks"],
+      ["Hospital actions", hospitalActions, "Hospital call, WhatsApp, and request clicks"],
       ["Appointments booked", bookedRequests, "CRM status"],
       ["Closed", closedRequests, "CRM status"],
       ...statusRows.map(([status, count]) => [`Status: ${status}`, count, "Current request stage"]),
@@ -633,6 +716,9 @@ function renderAdminAnalytics(analyticsData = analytics) {
       ...topEntries(requests, (request) => request.source || "Doctor contact form", 8).map(([source, count]) => [source, count, "Saved request source"]),
       ["Call clicks", analytics.callClicks || 0, "Public site"],
       ["WhatsApp clicks", analytics.whatsappClicks || 0, "Public site"],
+      ["Hospital views", analytics.hospitalViews || 0, "Hospital detail pages"],
+      ["Hospital searches", analytics.hospitalSearches || 0, "Hospital search page"],
+      ["Hospital request clicks", analytics.hospitalRequestClicks || 0, "Hospital request CTAs"],
       ["Wizard submits", analytics.wizardSubmits || 0, "Find my doctor flow"],
     ],
     Math.max(totalRequests, analytics.callClicks || 0, analytics.whatsappClicks || 0, 1),
@@ -653,16 +739,20 @@ function renderAdminAnalytics(analyticsData = analytics) {
       ["Private clinic doctors", privateDoctors.length, `${percent(privateDoctors.length, publishedDoctors.length)} of published`],
       ["States covered", new Set(publishedDoctors.map((doctor) => doctor.state).filter(Boolean)).size, "Published doctors"],
       ["Cities covered", new Set(publishedDoctors.map((doctor) => doctor.city).filter(Boolean)).size, "Published doctors"],
+      ["Hospitals listed", publishedHospitals.length, "Published hospitals"],
+      ["Hospitals with no linked doctors", hospitalsWithNoDoctors.length, "Relationship gap"],
       ...topEntries(publishedDoctors, (doctor) => doctor.state, 5).map(([state, count]) => [`State: ${state}`, count, "Doctor supply"]),
       ...topEntries(publishedDoctors, (doctor) => doctor.specialty, 5).map(([specialty, count]) => [`Specialty: ${specialty}`, count, "Doctor supply"]),
+      ...topEntries(publishedHospitals, (hospital) => hospital.city, 5).map(([city, count]) => [`Hospital city: ${city}`, count, "Hospital supply"]),
     ],
-    Math.max(publishedDoctors.length, 1),
+    Math.max(publishedDoctors.length, publishedHospitals.length, 1),
   );
 
   const missingHindi = publishedDoctors.filter((doctor) => !doctor.specialty_hi || !doctor.bio_hi || !(doctor.services_hi || []).length).length;
   const missingRegistration = publishedDoctors.filter((doctor) => !doctor.registrationNumber).length;
   const missingMap = publishedDoctors.filter((doctor) => !doctor.mapUrl).length;
   const missingDocuments = publishedDoctors.filter((doctor) => !doctor.documentsChecked).length;
+  const unlinkedHospitalDoctors = publishedDoctors.filter((doctor) => doctor.practiceType === "Hospital Affiliated" && !hospitalForDoctor(doctor)).length;
   const lowCompleteness = publishedDoctors.filter((doctor) => profileCompleteness(doctor) < 70).length;
 
   analyticsQuality.innerHTML = analyticsRows(
@@ -673,8 +763,12 @@ function renderAdminAnalytics(analyticsData = analytics) {
       ["Missing registration", missingRegistration, "Verification data gap"],
       ["Documents not checked", missingDocuments, "Trust badge gap"],
       ["Missing map link", missingMap, "Location usability gap"],
+      ["Hospital doctors not linked", unlinkedHospitalDoctors, "Use linked hospital dropdown"],
+      ["Hospitals missing map URL", hospitalsMissingMap, "Location usability gap"],
+      ["Hospitals missing phone", hospitalsMissingPhone, "Care desk/contact gap"],
+      ["Hospitals with no doctors", hospitalsWithNoDoctors.length, "Relationship gap"],
     ],
-    Math.max(publishedDoctors.length, 1),
+    Math.max(publishedDoctors.length, publishedHospitals.length, 1),
   );
 
   analyticsRecent.innerHTML =
@@ -700,6 +794,9 @@ function renderAdminAnalytics(analyticsData = analytics) {
   if (missingHindi) recommendations.push(`Complete Hindi fields for ${missingHindi} doctor profile${missingHindi === 1 ? "" : "s"} so the Hindi site feels fully translated.`);
   if (missingRegistration || missingDocuments) recommendations.push("Improve trust by adding registration numbers and marking documents checked for verified doctors.");
   if (missingMap) recommendations.push(`Add Google Maps links for ${missingMap} doctor profile${missingMap === 1 ? "" : "s"} to reduce patient confusion.`);
+  if (unlinkedHospitalDoctors) recommendations.push(`Link ${unlinkedHospitalDoctors} hospital-affiliated doctor${unlinkedHospitalDoctors === 1 ? "" : "s"} to hospital records for cleaner pages and analytics.`);
+  if (hospitalsWithNoDoctors.length) recommendations.push(`Review ${hospitalsWithNoDoctors.length} hospital${hospitalsWithNoDoctors.length === 1 ? "" : "s"} with no linked doctors.`);
+  if (hospitalsMissingMap || hospitalsMissingPhone) recommendations.push("Complete hospital map links and phone numbers so patients can act from hospital pages.");
   if (requestClicks > totalRequests) recommendations.push("Some users click request but do not submit. Review the contact form length and mobile experience.");
   if (!requestsLast7) recommendations.push("No requests in the last 7 days. Consider testing homepage CTAs, WhatsApp link visibility, and popular searches.");
   if (recommendations.length === 0) recommendations.push("No urgent gaps detected. Keep adding complete doctor profiles and monitor request sources weekly.");
@@ -720,6 +817,8 @@ function filteredRequests() {
       request.doctorName,
       request.doctorSpecialty,
       request.doctorAffiliation,
+      request.hospitalName,
+      request.requestType,
       request.patientMessage,
       request.assignedTo,
       request.source,
@@ -849,10 +948,12 @@ function renderRequests() {
                   </div>
                 </div>
                 <span>${escapeHtml(request.doctorAffiliation || "Affiliation not provided")}</span>
+                ${request.hospitalName ? `<span>Hospital: ${escapeHtml(request.hospitalName)}</span>` : ""}
                 <span>${escapeHtml(request.patientPhone)} - ${escapeHtml(request.patientEmail || "Email not provided")}</span>
                 <span>${escapeHtml(request.patientCity || "City not provided")} - ${escapeHtml(request.preferredContact || "Phone call")} - ${escapeHtml(request.preferredTime || "Any time")}</span>
                 <span>Age: ${escapeHtml(request.patientAge || "Not provided")} - Gender: ${escapeHtml(request.patientGender || "Not provided")}</span>
-                <span>Source: ${escapeHtml(request.source || "Doctor contact form")}</span>
+                <span>Source: ${escapeHtml(request.source || "Doctor contact form")} - Type: ${escapeHtml(request.requestType || "doctor")}</span>
+                <span>Consent: ${escapeHtml(request.consentAt ? String(request.consentAt).slice(0, 16).replace("T", " ") : "Not captured")}</span>
                 <p>${escapeHtml(request.patientMessage)}</p>
                 <div class="request-controls">
                   <label>
@@ -886,6 +987,10 @@ function renderRequests() {
                     <span>Follow-up time</span>
                     <input data-request-followup-time type="time" value="${escapeHtml(request.followUpTime)}" />
                   </label>
+                  <label class="consent-line">
+                    <input data-request-sensitive type="checkbox" ${request.sensitive ? "checked" : ""} />
+                    <span>Mark sensitive</span>
+                  </label>
                 </div>
                 <div class="request-timeline" aria-label="Request timeline">
                   ${["new", "contacted", "doctor shared", "appointment fixed", "closed"]
@@ -899,6 +1004,7 @@ function renderRequests() {
                   <button type="button" data-outcome="asked to call later">Call later</button>
                   <button type="button" data-outcome="doctor shared">Doctor shared</button>
                   <button type="button" data-outcome="appointment fixed">Appointment booked</button>
+                  <button type="button" data-delete-request>Delete request</button>
                 </div>
                 ${requestActionLinks(request)}
                 ${whatsappTemplates(request)}
@@ -1037,6 +1143,7 @@ updateHospitalCityOptions();
 doctorState.addEventListener("change", () => updateCityOptions());
 adminHospitalState.addEventListener("change", () => updateHospitalCityOptions());
 doctorPracticeType.addEventListener("change", updateHospitalField);
+doctorHospitalId?.addEventListener("change", applyLinkedHospitalToDoctorForm);
 
 doctorImageUpload.addEventListener("change", () => {
   const file = doctorImageUpload.files[0];
@@ -1098,6 +1205,7 @@ deleteHospital.addEventListener("click", () => {
   hospitals = hospitals.filter((hospital) => hospital.id !== selectedHospitalId);
   selectedHospitalId = hospitals[0]?.id || null;
   renderHospitalList();
+  renderHospitalSelectOptions();
   fillHospitalForm(hospitals[0] || blankHospital());
   setHospitalMessage("Removed from the list. Click Save hospitals to publish it.", "success");
 });
@@ -1184,7 +1292,7 @@ function downloadFile(filename, content, type) {
 }
 
 exportDoctorsCsv.addEventListener("click", () => {
-  const columns = ["name", "specialty", "specialty_hi", "specialty_gu", "practiceType", "hospitalName", "state", "city", "availability", "timeOfDay", "nextSlot", "experience", "languages", "visits", "services", "services_hi", "services_gu", "education", "registrationNumber", "yearsVerified", "verified", "documentsChecked", "published", "featured", "bio", "bio_hi", "bio_gu"];
+  const columns = ["name", "specialty", "specialty_hi", "specialty_gu", "practiceType", "hospitalId", "hospitalName", "state", "city", "availability", "timeOfDay", "nextSlot", "experience", "languages", "visits", "services", "services_hi", "services_gu", "education", "registrationNumber", "yearsVerified", "verified", "documentsChecked", "published", "featured", "bio", "bio_hi", "bio_gu"];
   const rows = doctors.map((doctor) =>
     columns
       .map((column) => csvEscape(Array.isArray(doctor[column]) ? doctor[column].join(", ") : doctor[column]))
@@ -1194,7 +1302,11 @@ exportDoctorsCsv.addEventListener("click", () => {
 });
 
 downloadBackup.addEventListener("click", () => {
-  downloadFile("freehospitals-doctors-backup.json", `${JSON.stringify(doctors, null, 2)}\n`, "application/json");
+  downloadFile(
+    "freehospitals-full-backup.json",
+    `${JSON.stringify({ exportedAt: new Date().toISOString(), doctors, hospitals, requests }, null, 2)}\n`,
+    "application/json",
+  );
 });
 
 exportRequestsCsv.addEventListener("click", () => {
@@ -1209,6 +1321,8 @@ exportRequestsCsv.addEventListener("click", () => {
     "patientPhone",
     "patientEmail",
     "patientCity",
+    "requestType",
+    "hospitalName",
     "doctorName",
     "doctorSpecialty",
     "doctorAffiliation",
@@ -1217,6 +1331,10 @@ exportRequestsCsv.addEventListener("click", () => {
     "patientMessage",
     "notes",
     "source",
+    "sensitive",
+    "consentAt",
+    "consentVersion",
+    "consentText",
   ];
   const rows = filteredRequests().map((request) => columns.map((column) => csvEscape(request[column])).join(","));
   downloadFile("freehospitals-requests.csv", `${columns.join(",")}\n${rows.join("\n")}\n`, "text/csv");
@@ -1238,6 +1356,7 @@ importDoctorsCsv.addEventListener("change", () => {
         ...row,
         rating: Number(row.rating || 4.5),
         reviews: Number(row.reviews || 0),
+        hospitalId: Number(row.hospitalId || 0),
         experience: Number(row.experience || 1),
         languages: listFromText(row.languages),
         visits: listFromText(row.visits),
@@ -1284,11 +1403,21 @@ requestList.addEventListener("change", (event) => {
   if (event.target.matches("[data-request-assigned]")) request.assignedTo = event.target.value;
   if (event.target.matches("[data-request-followup]")) request.followUpDate = event.target.value;
   if (event.target.matches("[data-request-followup-time]")) request.followUpTime = event.target.value;
+  if (event.target.matches("[data-request-sensitive]")) request.sensitive = event.target.checked;
   if (event.target.matches("[data-request-notes]")) request.notes = event.target.value;
   renderRequestStats();
   saveRequests();
 });
 requestList.addEventListener("click", (event) => {
+  const deleteButton = event.target.closest("[data-delete-request]");
+  if (deleteButton) {
+    const item = event.target.closest("[data-request-id]");
+    requests = requests.filter((entry) => entry.id !== item?.dataset.requestId);
+    renderRequests();
+    saveRequests();
+    return;
+  }
+
   const button = event.target.closest("[data-outcome]");
   if (!button) return;
 

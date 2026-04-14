@@ -760,6 +760,7 @@ let doctors = [
     bio: "Ear pain, sinus, tonsils, hearing issues, throat infections, and allergy care.",
   },
 ];
+let hospitals = [];
 
 let currentContactSource = "Doctor listing contact form";
 
@@ -786,6 +787,7 @@ try {
 
 const doctorList = document.querySelector("#doctorList");
 const resultCount = document.querySelector("#resultCount");
+const activeFilterList = document.querySelector("#activeFilterList");
 const emptyState = document.querySelector("#emptyState");
 const ratingRange = document.querySelector("#ratingRange");
 const ratingOutput = document.querySelector("#ratingOutput");
@@ -795,6 +797,8 @@ const stateFilter = document.querySelector("#stateFilter");
 const cityFilter = document.querySelector("#cityFilter");
 const availabilityFilter = document.querySelector("#availabilityFilter");
 const searchInput = document.querySelector("#searchInput");
+const listingSearchInput = document.querySelector("#listingSearchInput");
+const listingSearchButton = document.querySelector("#listingSearchButton");
 const sortSelect = document.querySelector("#sortSelect");
 const resetFilters = document.querySelector("#resetFilters");
 const openAuth = document.querySelector("#openAuth");
@@ -961,6 +965,7 @@ function normalizeDoctorForUi(doctor) {
     ...doctor,
     practiceType: doctor.practiceType || (doctor.hospitalName ? "Hospital Affiliated" : "Private Clinic"),
     hospitalName: doctor.hospitalName || "",
+    hospitalId: Number(doctor.hospitalId) || 0,
     visits: Array.isArray(doctor.visits) ? doctor.visits : [],
     languages: Array.isArray(doctor.languages) ? doctor.languages : [],
     services: Array.isArray(doctor.services) ? doctor.services : [],
@@ -1075,10 +1080,31 @@ function trustBadges(doctor) {
 }
 
 function affiliationLine(doctor) {
+  const hospital = hospitalForDoctor(doctor);
   if (doctor.practiceType === "Care Desk") return t("careDeskMatch");
-  return doctor.practiceType === "Hospital Affiliated" && doctor.hospitalName
-    ? `${t("affiliatedTo")} ${doctor.hospitalName}`
+  return doctor.practiceType === "Hospital Affiliated" && (hospital || doctor.hospitalName)
+    ? `${t("affiliatedTo")} ${hospital?.name || doctor.hospitalName}`
     : t("privateClinic");
+}
+
+function hospitalForDoctor(doctor) {
+  return hospitals.find((hospital) => hospital.id === Number(doctor.hospitalId)) ||
+    hospitals.find((hospital) => hospital.name && hospital.name.toLowerCase() === String(doctor.hospitalName || "").toLowerCase());
+}
+
+function hospitalMiniCard(hospital) {
+  if (!hospital) return "";
+  return `
+    <div class="linked-hospital-card">
+      <strong>${hospital.name}</strong>
+      <span>${hospital.type} - ${hospital.city}, ${hospital.state}</span>
+      <span>${hospital.timings || "Call to confirm"}</span>
+      <div class="contact-actions">
+        <a class="detail-button" href="/hospitals/${slugify(hospital.name)}">View hospital</a>
+        <a class="call-button" href="tel:+918586930497">Call</a>
+      </div>
+    </div>
+  `;
 }
 
 function isValidIndianPhone(value) {
@@ -1166,46 +1192,125 @@ function doctorCard(doctor) {
     <article class="doctor-card">
       <img class="doctor-photo" src="${doctor.image}" alt="${displayDoctor.displayName}" />
       <div class="doctor-main">
-        <h3>${displayDoctor.displayName}${doctor.verified ? `<span class="verified-badge">${t("verified")}</span>` : ""}</h3>
-        <p class="specialty-line">${displayDoctor.displaySpecialty} ${t("inLocation")} ${doctor.city}, ${doctor.state}</p>
-        <p class="affiliation-line">${affiliationLine(doctor)}</p>
-        ${doctor.address ? `<p class="meta-line">${doctor.address}</p>` : ""}
-        <p class="meta-line">${t("yearsExperience", { years: doctor.experience })} - ${doctor.languages.map(translateTerm).join(", ")}</p>
-        <div class="trust-badges" aria-label="Doctor highlights">
-          ${trustBadges(doctor).map((badge) => `<span>${badge}</span>`).join("")}
+        <div class="doctor-card-head">
+          <h3>${displayDoctor.displayName}</h3>
+          ${doctor.verified ? `<span class="verified-badge">${t("verified")}</span>` : ""}
         </div>
-        <p class="bio">${displayDoctor.displayBio}</p>
-        <div class="chips" aria-label="Visit options">
+        <p class="specialty-line">${displayDoctor.displaySpecialty}</p>
+        <p class="affiliation-line">${affiliationLine(doctor)}</p>
+        <p class="meta-line">${doctor.city}, ${doctor.state}</p>
+        <p class="doctor-credential">${doctor.experience}+ Years, ${doctor.education || doctor.registrationNumber || displayDoctor.displaySpecialty}</p>
+        <div class="doctor-card-divider"></div>
+        <p class="meta-line location-line">${affiliationLine(doctor)}</p>
+        <div class="trust-badges compact" aria-label="Doctor highlights">
+          ${trustBadges(doctor).slice(0, 3).map((badge) => `<span>${badge}</span>`).join("")}
+        </div>
+        <div class="chips compact" aria-label="Visit options">
           ${displayDoctor.displayServices.map((service) => `<span class="chip">${service}</span>`).join("") || doctor.visits.map((visit) => `<span class="chip">${visit}</span>`).join("")}
         </div>
       </div>
       <div class="doctor-action">
-        <div>
-          <p class="rating">${t("rating")} ${doctor.rating.toFixed(1)} (${doctor.reviews})</p>
-          <p class="fee">${t("freeOfCost")}</p>
-          <p class="availability">${translateTerm(doctor.availability)} - ${doctor.nextSlot}</p>
-        </div>
-        <div class="actions">
-          <a class="whatsapp-button" href="${whatsAppUrl(doctor, "Doctor card WhatsApp")}" target="_blank" rel="noreferrer">WhatsApp</a>
-          <a class="call-button" href="tel:+918586930497">Call</a>
-          <button class="detail-button" type="button" data-detail="${doctor.id}">${t("viewProfile")}</button>
-          <button class="book-button" type="button" data-contact="${doctor.id}" data-source="Doctor card request">${t("requestContact")}</button>
-        </div>
+        <button class="book-button" type="button" data-contact="${doctor.id}" data-source="Doctor card request">${t("requestContact")}</button>
+        <a class="call-button" href="tel:+918586930497">Call Now</a>
+        <a class="whatsapp-button" href="${whatsAppUrl(doctor, "Doctor card WhatsApp")}" target="_blank" rel="noreferrer">WhatsApp</a>
+        <button class="detail-button" type="button" data-detail="${doctor.id}">${t("viewProfile")}</button>
       </div>
     </article>
   `;
+}
+
+function activeCriteria() {
+  const items = [];
+  if (listingState.search) items.push(["Search", listingState.search, () => {
+    listingState.search = "";
+    searchInput.value = "";
+    if (listingSearchInput) listingSearchInput.value = "";
+  }]);
+  if (listingState.hospital) items.push(["Hospital", listingState.hospital, () => {
+    listingState.hospital = "";
+    hospitalFilter.value = "";
+  }]);
+  if (listingState.specialty !== "All") items.push(["Specialty", translateTerm(listingState.specialty), () => {
+    listingState.specialty = "All";
+    specialtyFilter.value = "All";
+  }]);
+  if (listingState.state !== "All") items.push(["State", listingState.state, () => {
+    listingState.state = "All";
+    listingState.city = "All";
+    stateFilter.value = "All";
+    updateCityOptions();
+  }]);
+  if (listingState.city !== "All") items.push(["City", listingState.city, () => {
+    listingState.city = "All";
+    cityFilter.value = "All";
+  }]);
+  if (listingState.availability !== "All") items.push(["Availability", translateTerm(listingState.availability), () => {
+    listingState.availability = "All";
+    availabilityFilter.value = "All";
+  }]);
+  listingState.categories.forEach((category) => items.push(["Category", translateTerm(category), () => {
+    listingState.categories.delete(category);
+    updateCheckboxSet("category", listingState.categories);
+  }]));
+  listingState.languages.forEach((language) => items.push(["Language", translateTerm(language), () => {
+    listingState.languages.delete(language);
+    updateCheckboxSet("language", listingState.languages);
+  }]));
+  listingState.times.forEach((time) => items.push(["Time", translateTerm(time), () => {
+    listingState.times.delete(time);
+    updateCheckboxSet("time", listingState.times);
+  }]));
+  if (listingState.rating > 4) items.push(["Rating", `${listingState.rating.toFixed(1)}+`, () => {
+    listingState.rating = 4;
+    ratingRange.value = "4";
+    ratingOutput.textContent = "4.0+";
+  }]);
+  return items;
+}
+
+function renderActiveCriteria() {
+  if (!activeFilterList) return;
+  const items = activeCriteria();
+  activeFilterList.innerHTML = items.length
+    ? items.map(([label, value], index) => `<button type="button" data-clear-criterion="${index}"><span>${label}</span>${value}<b aria-hidden="true">x</b></button>`).join("")
+    : `<p>No filters selected</p>`;
+  activeFilterList.dataset.count = String(items.length);
+}
+
+function setupCollapsibleFilters() {
+  document.querySelectorAll(".filter-group").forEach((group, index) => {
+    const heading = group.querySelector("h3");
+    if (!heading || heading.dataset.collapseReady) return;
+    heading.dataset.collapseReady = "true";
+    heading.tabIndex = 0;
+    heading.setAttribute("role", "button");
+    heading.setAttribute("aria-expanded", index === 0 ? "true" : "false");
+    if (index > 0) group.classList.add("collapsed");
+    const toggle = () => {
+      group.classList.toggle("collapsed");
+      heading.setAttribute("aria-expanded", group.classList.contains("collapsed") ? "false" : "true");
+    };
+    heading.addEventListener("click", toggle);
+    heading.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      toggle();
+    });
+  });
 }
 
 function render() {
   const results = filteredDoctors();
   doctorList.innerHTML = results.map(doctorCard).join("");
   resultCount.textContent = t("showing", { shown: results.length, total: doctors.length });
+  if (listingSearchInput && listingSearchInput.value !== listingState.search) listingSearchInput.value = listingState.search;
   emptyState.hidden = results.length > 0;
   emptyStateCopy.textContent =
     listingState.state !== "All" || listingState.city !== "All"
       ? t("noExact")
       : t("noBroad");
   renderNearbySuggestions(results.length);
+  renderActiveCriteria();
 }
 
 function trackEvent(type, details = {}) {
@@ -1245,8 +1350,19 @@ function renderBrowseLinks() {
 
 function renderSearchSuggestions() {
   const term = searchInput.value.trim().toLowerCase();
-  const matches = suggestionItems
-    .filter(([label, specialty]) => label.includes(term) || specialty.toLowerCase().includes(term))
+  const dynamicSuggestions = [
+    ...hospitals.map((hospital) => [hospital.name.toLowerCase(), hospital.name, "Hospital"]),
+    ...hospitals.flatMap((hospital) => [...(hospital.services || []), ...(hospital.specialties || [])].map((item) => [item.toLowerCase(), item, "Service"])),
+    ...[...new Set(doctors.map((doctor) => doctor.city))].map((city) => [city.toLowerCase(), city, "City"]),
+  ];
+  const matches = [
+    ...suggestionItems
+      .filter(([label, specialty]) => label.includes(term) || specialty.toLowerCase().includes(term))
+      .map(([label, specialty]) => ({ label, value: label, specialty, kind: translateTerm(specialty) })),
+    ...dynamicSuggestions
+      .filter(([searchable]) => searchable.includes(term))
+      .map(([, value, kind]) => ({ label: value, value, specialty: "", kind })),
+  ]
     .slice(0, 5);
 
   if (!term || matches.length === 0) {
@@ -1256,7 +1372,7 @@ function renderSearchSuggestions() {
   }
 
   searchSuggestions.innerHTML = matches
-    .map(([label, specialty]) => `<button type="button" data-suggestion="${label}" data-specialty="${specialty}">${label} <span>${translateTerm(specialty)}</span></button>`)
+    .map((item) => `<button type="button" data-suggestion="${item.value}" data-specialty="${item.specialty}">${item.label} <span>${item.kind}</span></button>`)
     .join("");
   searchSuggestions.hidden = false;
 }
@@ -1377,6 +1493,7 @@ function detailMarkup(doctor) {
       </div>
     </div>
     <p class="bio">${displayDoctor.displayBio}</p>
+    ${hospitalMiniCard(hospitalForDoctor(doctor))}
     ${doctor.education ? `<p class="meta-line">${doctor.education}</p>` : ""}
     ${doctor.documentsChecked || doctor.yearsVerified ? `<p class="meta-line">${doctor.documentsChecked ? t("documentsChecked") : t("documentsPending")}${doctor.yearsVerified ? ` - ${t("yearsExperience", { years: doctor.yearsVerified })}` : ""}</p>` : ""}
     <div class="detail-facts">
@@ -1577,6 +1694,9 @@ function applyTranslations() {
   setText("#languageFilters h3", t("languages"));
   setText("#timeFilters h3", t("timePreference"));
   setText("#ratingFilters h3", t("minRating"));
+  setText(".results-bar h2", currentLanguage === "hi" ? "\u0939\u092e\u093e\u0930\u0947 \u0935\u093f\u0936\u0947\u0937\u091c\u094d\u091e" : "Meet Our Experts");
+  setText(".listing-search span", currentLanguage === "hi" ? "\u0921\u0949\u0915\u094d\u091f\u0930 \u0916\u094b\u091c\u0947\u0902" : "Search for Doctors");
+  if (listingSearchInput) listingSearchInput.placeholder = currentLanguage === "hi" ? "\u0921\u0949\u0915\u094d\u091f\u0930 \u0916\u094b\u091c\u0947\u0902" : "Search for Doctors";
   document.querySelectorAll('#languageFilters input[name="language"]').forEach((input) => {
     const label = input.closest("label");
     if (label) label.lastChild.textContent = ` ${translateTerm(input.value)}`;
@@ -1588,7 +1708,6 @@ function applyTranslations() {
   setText(".care-note h2", t("notSure"));
   setText(".care-note p", t("careNoteCopy"));
   setText("#generalEnquiryButton", t("helpFind"));
-  setText(".results-bar h2", t("recommended"));
   setText(".sort-control span", t("sortBy"));
   setText("#emptyState h2", t("noDoctors"));
   setText("#emptyReset", t("reset"));
@@ -1664,7 +1783,29 @@ function applyTranslations() {
 
 searchInput.addEventListener("input", (event) => {
   listingState.search = event.target.value;
+  if (listingSearchInput && listingSearchInput.value !== event.target.value) listingSearchInput.value = event.target.value;
   renderSearchSuggestions();
+  render();
+});
+
+listingSearchInput?.addEventListener("input", (event) => {
+  listingState.search = event.target.value;
+  searchInput.value = event.target.value;
+  renderSearchSuggestions();
+  render();
+});
+
+listingSearchButton?.addEventListener("click", () => {
+  listingState.search = listingSearchInput?.value || "";
+  searchInput.value = listingState.search;
+  render();
+});
+
+activeFilterList?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-clear-criterion]");
+  if (!button) return;
+  const action = activeCriteria()[Number(button.dataset.clearCriterion)]?.[2];
+  if (action) action();
   render();
 });
 
@@ -2094,6 +2235,7 @@ languageSelect.addEventListener("change", (event) => {
 
 function renderCategoryFilters() {
   const specialties = uniqueValues("specialty");
+  const wasCollapsed = categoryFilters.classList.contains("collapsed");
   categoryFilters.innerHTML = `<h3>${t("categories")}</h3>${specialties
     .map(
       (specialty) => `
@@ -2101,7 +2243,9 @@ function renderCategoryFilters() {
       `,
     )
     .join("")}`;
+  categoryFilters.classList.toggle("collapsed", wasCollapsed);
   updateCheckboxSet("category", listingState.categories);
+  setupCollapsibleFilters();
 }
 
 function initializeFilters() {
@@ -2151,6 +2295,18 @@ function loadDoctors() {
     });
 }
 
+function loadHospitals() {
+  return fetch("/api/hospitals")
+    .then((response) => {
+      if (!response.ok) throw new Error("Hospital API unavailable.");
+      return response.json();
+    })
+    .then((result) => {
+      if (result.ok && Array.isArray(result.hospitals)) hospitals = result.hospitals;
+    })
+    .catch(() => {});
+}
+
 function loadUserSession() {
   return fetch("/api/users/me")
     .then((response) => {
@@ -2166,7 +2322,7 @@ function loadUserSession() {
     .catch(() => {});
 }
 
-Promise.all([loadDoctors(), loadUserSession()]).finally(() => {
+Promise.all([loadDoctors(), loadHospitals(), loadUserSession()]).finally(() => {
   initializeFilters();
   applyTranslations();
 });

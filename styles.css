@@ -687,8 +687,8 @@ textarea {
 .content-grid {
   order: 2;
   display: grid;
-  grid-template-columns: 310px minmax(0, 1fr);
-  gap: 26px;
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  gap: 38px;
   padding: 64px clamp(18px, 5vw, 64px) 70px;
 }
 
@@ -708,9 +708,10 @@ textarea {
 }
 
 .panel {
-  padding: 20px;
+  padding: 0;
   position: sticky;
   top: 92px;
+  overflow: hidden;
 }
 
 .panel-heading,
@@ -721,17 +722,28 @@ textarea {
   align-items: center;
 }
 
+.panel-heading {
+  min-height: 60px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--line);
+}
+
 .panel h2,
 .results-bar h2 {
   margin-bottom: 0;
   font-size: 1.2rem;
 }
 
+.results-bar h2 em {
+  font-style: italic;
+  font-weight: 900;
+}
+
 #resetFilters {
   min-height: 36px;
   padding: 0 12px;
-  color: var(--mint-dark);
-  background: var(--aqua);
+  color: #007d96;
+  background: transparent;
   border: 0;
   border-radius: 8px;
   cursor: pointer;
@@ -739,15 +751,48 @@ textarea {
 }
 
 .near-me-button {
-  width: 100%;
-  margin-top: 18px;
+  width: calc(100% - 40px);
+  margin: 18px 20px 0;
   background: var(--aqua);
+}
+
+.active-filter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 20px 0;
+}
+
+.active-filter-list p {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.active-filter-list button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 0 9px;
+  color: var(--ink);
+  background: var(--wash);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.active-filter-list span {
+  color: var(--muted);
+  font-size: 0.76rem;
 }
 
 .filter-group {
   display: grid;
-  gap: 12px;
-  margin-top: 22px;
+  gap: 11px;
+  margin: 0 20px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
 }
 
 .hospital-filter-panel {
@@ -757,8 +802,26 @@ textarea {
 }
 
 .filter-group h3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 0;
   font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.filter-group h3::after {
+  content: "-";
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.filter-group.collapsed h3::after {
+  content: "+";
+}
+
+.filter-group.collapsed > *:not(h3) {
+  display: none;
 }
 
 .filter-group label {
@@ -767,6 +830,16 @@ textarea {
   gap: 10px;
   color: var(--muted);
   font-weight: 650;
+}
+
+#categoryFilters {
+  max-height: 390px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+#categoryFilters.collapsed {
+  max-height: none;
 }
 
 .filter-group input[type="checkbox"] {
@@ -836,6 +909,7 @@ output {
 
 .results-bar {
   margin-bottom: 16px;
+  align-items: end;
 }
 
 .results-bar p {
@@ -850,16 +924,70 @@ output {
   min-width: 210px;
 }
 
+.listing-search {
+  position: relative;
+  display: grid;
+  min-width: min(100%, 330px);
+}
+
+.listing-search span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.listing-search input {
+  min-height: 44px;
+  padding-right: 56px;
+}
+
+.listing-search button {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 30px;
+  min-height: 30px;
+  overflow: hidden;
+  color: transparent;
+  background: #007d96;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.listing-search button::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+}
+
+.listing-search button::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 7px;
+  height: 2px;
+  background: #fff;
+  transform: rotate(45deg);
+}
+
 .doctor-list {
   display: grid;
+  grid-template-columns: repeat(2, minmax(360px, 1fr));
   gap: 16px;
 }
 
 .doctor-card {
   display: grid;
-  grid-template-columns: 116px minmax(0, 1fr) 210px;
-  gap: 18px;
-  padding: 18px;
+  grid-template-columns: minmax(180px, 44%) minmax(0, 1fr);
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
   box-shadow: 0 10px 26px rgba(23, 32, 29, 0.06);
 }
 
@@ -901,24 +1029,28 @@ output {
 }
 
 .doctor-photo {
-  width: 116px;
-  height: 116px;
+  width: 100%;
+  height: 230px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--aqua);
 }
 
 .doctor-main {
   min-width: 0;
+  padding: 18px 18px 16px;
+}
+
+.doctor-card-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .doctor-main h3 {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
   margin-bottom: 6px;
-  font-size: 1.25rem;
+  font-size: 1.02rem;
 }
 
 .verified-badge,
@@ -951,6 +1083,37 @@ output {
 
 .bio {
   margin-bottom: 12px;
+}
+
+.doctor-credential {
+  margin: 12px 0;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.doctor-card-divider {
+  width: 46px;
+  height: 2px;
+  margin-bottom: 12px;
+  background: #007d96;
+}
+
+.location-line {
+  position: relative;
+  padding-left: 18px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.location-line::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #007d96;
+  border-radius: 999px;
 }
 
 .chips {
@@ -987,10 +1150,41 @@ output {
 
 .doctor-action {
   display: grid;
-  align-content: space-between;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  align-content: stretch;
   justify-items: stretch;
-  gap: 12px;
-  text-align: right;
+  text-align: center;
+  border-top: 1px solid #007d96;
+}
+
+.doctor-action > * {
+  min-height: 50px;
+  border-radius: 0;
+}
+
+.doctor-action > * + * {
+  border-left: 1px solid #007d96;
+}
+
+.doctor-action .book-button {
+  color: #00617a;
+  background: #ffd45a;
+  border: 0;
+}
+
+.doctor-action .call-button,
+.doctor-action .detail-button {
+  color: #00617a;
+  background: #fff;
+  border: 0;
+}
+
+.doctor-action .whatsapp-button {
+  color: #16724f;
+  background: #e4f8eb;
+  border: 0;
 }
 
 .rating {
@@ -2139,7 +2333,7 @@ output {
   }
 
   .doctor-card {
-    grid-template-columns: 96px minmax(0, 1fr);
+    grid-template-columns: minmax(150px, 38%) minmax(0, 1fr);
   }
 
   .hospital-card {
@@ -2152,13 +2346,13 @@ output {
   }
 
   .doctor-photo {
-    width: 96px;
-    height: 96px;
+    width: 100%;
+    height: 210px;
   }
 
   .doctor-action {
     grid-column: 1 / -1;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     align-items: center;
     text-align: left;
   }
@@ -2541,8 +2735,8 @@ output {
   }
 
   .doctor-card {
-    gap: 12px;
-    padding: 12px;
+    gap: 0;
+    padding: 0;
   }
 
   .hospital-card {
@@ -2620,6 +2814,10 @@ output {
     width: 100%;
     height: auto;
     aspect-ratio: 16 / 10;
+  }
+
+  .doctor-action {
+    grid-template-columns: 1fr 1fr;
   }
 }
 

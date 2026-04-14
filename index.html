@@ -349,10 +349,11 @@
         <aside class="sidebar" aria-label="Listing controls">
           <div class="panel">
             <div class="panel-heading">
-              <h2>Refine Results</h2>
-              <button type="button" id="resetFilters">Reset</button>
+              <h2>Filter By</h2>
+              <button type="button" id="resetFilters">Clear All</button>
               <button type="button" id="closeFilters">Close</button>
             </div>
+            <div class="active-filter-list" id="activeFilterList" aria-live="polite"></div>
             <button class="near-me-button" type="button" id="nearMeButton">Use my location</button>
             <p class="form-note" id="nearMeMessage">Choose state and city, or allow location to find nearby options.</p>
             <div class="filter-group" id="categoryFilters">
@@ -391,8 +392,13 @@
           <div class="results-bar">
             <div>
               <p id="resultCount">Showing doctors</p>
-              <h2>Recommended Matches</h2>
+              <h2>Meet Our <em>Experts</em></h2>
             </div>
+            <label class="listing-search" for="listingSearchInput">
+              <span>Search for Doctors</span>
+              <input id="listingSearchInput" type="search" placeholder="Search for Doctors" />
+              <button type="button" id="listingSearchButton" aria-label="Search doctors">Search</button>
+            </label>
             <label class="sort-control" for="sortSelect">
               <span>Sort by</span>
               <select id="sortSelect">

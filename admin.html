@@ -176,6 +176,14 @@
                 <span>Services</span>
                 <input id="adminHospitalServices" name="services" placeholder="OPD, Emergency, Diagnostics" />
               </label>
+              <label class="field" for="adminHospitalDepartments">
+                <span>Departments</span>
+                <input id="adminHospitalDepartments" name="departments" placeholder="Cardiology, General Medicine, Diagnostics" />
+              </label>
+              <label class="field" for="adminHospitalTimings">
+                <span>Timings</span>
+                <input id="adminHospitalTimings" name="timings" placeholder="Mon-Sat, 9 AM to 6 PM" />
+              </label>
               <label class="field" for="adminHospitalWebsite">
                 <span>Website</span>
                 <input id="adminHospitalWebsite" name="website" type="url" />
@@ -302,6 +310,12 @@
             <label class="field" for="doctorHospitalName">
               <span>Hospital name</span>
               <input id="doctorHospitalName" name="hospitalName" type="text" placeholder="Apollo Hospital, Fortis, or leave blank" />
+            </label>
+            <label class="field" for="doctorHospitalId">
+              <span>Linked hospital</span>
+              <select id="doctorHospitalId" name="hospitalId">
+                <option value="0">No linked hospital</option>
+              </select>
             </label>
             <label class="field" for="doctorState">
               <span>State</span>
