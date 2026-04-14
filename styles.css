@@ -1740,6 +1740,7 @@ output {
 }
 
 .wp-sidebar nav a:hover,
+.wp-sidebar nav a.active,
 .public-link:hover {
   color: #fff;
   background: rgba(255, 255, 255, 0.12);
@@ -1754,6 +1755,18 @@ output {
   min-height: 100vh;
   margin-left: 248px;
   padding: 24px clamp(18px, 4vw, 42px) 70px;
+}
+
+.admin-enhanced .wp-admin-main > section[id] {
+  display: none;
+}
+
+.admin-enhanced .wp-admin-main > section[id].active-admin-panel {
+  display: grid;
+}
+
+.admin-enhanced #doctorEditor.active-admin-panel {
+  display: grid;
 }
 
 .wp-admin-bar {
@@ -1793,6 +1806,84 @@ output {
   display: grid;
   gap: 8px;
   padding: 18px;
+}
+
+.attention-summary {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.attention-summary article,
+.attention-card,
+.kanban-card {
+  background: var(--wash);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.attention-summary article {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+}
+
+.attention-summary span,
+.attention-card span,
+.kanban-card span,
+.kanban-card small {
+  color: var(--muted);
+}
+
+.attention-summary strong {
+  font-size: 1.5rem;
+}
+
+.attention-list {
+  display: grid;
+  gap: 10px;
+}
+
+.attention-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+}
+
+.attention-card span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.attention-card strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.attention-card p {
+  margin: 0;
+}
+
+.attention-card button,
+.kanban-card button {
+  min-height: 36px;
+  padding: 0 10px;
+  color: var(--mint-dark);
+  background: var(--aqua);
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.attention-card.priority-high {
+  border-color: #fac6c3;
+  background: #fff1ef;
 }
 
 .admin-dashboard span {
@@ -2004,6 +2095,59 @@ output {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.request-kanban {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(180px, 1fr));
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.kanban-column {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 180px;
+  padding: 12px;
+  background: #f8fbfa;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.kanban-column h3 {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.kanban-column h3 span {
+  color: var(--mint-dark);
+}
+
+.kanban-column > div {
+  display: grid;
+  gap: 8px;
+}
+
+.kanban-card {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+}
+
+.kanban-card.priority-high {
+  border-color: #fac6c3;
+  background: #fff1ef;
+}
+
+.kanban-card div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
 }
 
 .request-crm-summary span,
@@ -2397,8 +2541,13 @@ output {
   }
 
   .analytics-grid,
-  .analytics-layout {
+  .analytics-layout,
+  .attention-summary {
     grid-template-columns: 1fr;
+  }
+
+  .request-kanban {
+    grid-template-columns: repeat(5, minmax(220px, 1fr));
   }
 
   .admin-toolbar {
@@ -2524,6 +2673,10 @@ output {
   }
 
   .request-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .attention-card {
     grid-template-columns: 1fr;
   }
 

@@ -21,6 +21,7 @@
       </a>
       <nav>
         <a href="#dashboard">Dashboard</a>
+        <a href="#needsAttention">Needs Attention</a>
         <a href="#analytics">Analytics</a>
         <a href="#doctorTableSection">Doctor table</a>
         <a href="#doctorEditor">Doctors</a>
@@ -73,6 +74,18 @@
           <span>Top specialty</span>
           <strong id="topSpecialtyCount">-</strong>
         </article>
+      </section>
+
+      <section class="admin-section" id="needsAttention">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Quality control</p>
+            <h2>Needs attention</h2>
+          </div>
+        </div>
+        <p>Review overdue requests, incomplete profiles, missing hospital data, and doctor-hospital linking issues from one place.</p>
+        <div class="attention-summary" id="attentionSummary"></div>
+        <div class="attention-list" id="attentionList"></div>
       </section>
 
       <section class="admin-section" id="analytics">
@@ -483,6 +496,7 @@
           <span><strong id="followUpRequestCount">0</strong> follow-ups</span>
           <span><strong id="highPriorityRequestCount">0</strong> high priority</span>
         </div>
+        <div class="request-kanban" id="requestKanban" aria-label="Request kanban"></div>
         <div class="request-list" id="requestList"></div>
       </section>
 

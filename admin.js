@@ -43,6 +43,7 @@ let selectedId = null;
 let selectedHospitalId = null;
 let requests = [];
 let analytics = {};
+const adminPanelIds = ["dashboard", "needsAttention", "analytics", "doctorTableSection", "doctorEditor", "hospitalManager", "requests", "dataTools", "settings"];
 const requestFilters = {
   search: "",
   status: "all",
@@ -106,10 +107,37 @@ const analyticsCoverage = document.querySelector("#analyticsCoverage");
 const analyticsQuality = document.querySelector("#analyticsQuality");
 const analyticsRecent = document.querySelector("#analyticsRecent");
 const analyticsRecommendations = document.querySelector("#analyticsRecommendations");
+const attentionSummary = document.querySelector("#attentionSummary");
+const attentionList = document.querySelector("#attentionList");
+const requestKanban = document.querySelector("#requestKanban");
+const adminPanels = adminPanelIds.map((id) => document.querySelector(`#${id}`)).filter(Boolean);
+const adminNavLinks = document.querySelectorAll(".wp-sidebar nav a[href^='#']");
+const adminTitle = document.querySelector(".wp-admin-bar h1");
 
 function setMessage(message, type = "") {
   adminMessage.textContent = message;
   adminMessage.className = type ? `form-note ${type}` : "form-note";
+}
+
+function showAdminPanel(id, options = {}) {
+  const targetId = adminPanelIds.includes(id) ? id : "dashboard";
+  document.body.classList.add("admin-enhanced");
+  adminPanels.forEach((panel) => {
+    panel.classList.toggle("active-admin-panel", panel.id === targetId);
+    panel.hidden = panel.id !== targetId;
+  });
+  adminNavLinks.forEach((link) => {
+    const isActive = link.getAttribute("href") === `#${targetId}`;
+    link.classList.toggle("active", isActive);
+    if (isActive && adminTitle) adminTitle.textContent = link.textContent.trim();
+  });
+  if (options.updateHash !== false) history.replaceState(null, "", `#${targetId}`);
+  if (options.scroll !== false) document.querySelector(".wp-admin-main")?.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function initializeAdminPanels() {
+  const initialId = window.location.hash.replace("#", "") || "dashboard";
+  showAdminPanel(adminPanelIds.includes(initialId) ? initialId : "dashboard", { updateHash: false, scroll: false });
 }
 
 function listFromText(value) {
@@ -646,6 +674,126 @@ function analyticsRows(rows, total = 0) {
     : `<p class="form-note">No data yet.</p>`;
 }
 
+function attentionCard({ type, title, detail, action, target, priority = "normal" }) {
+  return `
+    <article class="attention-card priority-${escapeHtml(priority)}">
+      <div>
+        <span>${escapeHtml(type)}</span>
+        <strong>${escapeHtml(title)}</strong>
+        <p>${escapeHtml(detail)}</p>
+      </div>
+      <button type="button" ${target ? `data-attention-target="${escapeHtml(target)}"` : ""}>${escapeHtml(action || "Open")}</button>
+    </article>
+  `;
+}
+
+function renderNeedsAttention() {
+  if (!attentionSummary || !attentionList) return;
+  const today = new Date().toISOString().slice(0, 10);
+  const publishedDoctors = doctors.filter((doctor) => doctor.published !== false);
+  const publishedHospitals = hospitals.filter((hospital) => hospital.published !== false);
+  const items = [];
+
+  requests
+    .filter((request) => request.followUpDate && request.followUpDate <= today && request.status !== "closed")
+    .slice(0, 10)
+    .forEach((request) => {
+      items.push({
+        type: "Request",
+        title: request.patientName || "Patient request",
+        detail: `${followUpLabel(request)} for ${request.doctorName || request.hospitalName || "care desk"}`,
+        action: "Open requests",
+        target: "requests",
+        priority: request.followUpDate < today ? "high" : "normal",
+      });
+    });
+
+  publishedDoctors
+    .filter((doctor) => profileCompleteness(doctor) < 70)
+    .slice(0, 10)
+    .forEach((doctor) => {
+      items.push({
+        type: "Doctor profile",
+        title: doctor.name || "Untitled doctor",
+        detail: `${profileCompleteness(doctor)}% complete. Add missing profile, trust, location, or service details.`,
+        action: "Edit doctor",
+        target: `doctor:${doctor.id}`,
+        priority: "normal",
+      });
+    });
+
+  publishedDoctors
+    .filter((doctor) => !doctor.specialty_hi || !doctor.bio_hi || !(doctor.services_hi || []).length)
+    .slice(0, 10)
+    .forEach((doctor) => {
+      items.push({
+        type: "Hindi content",
+        title: doctor.name || "Untitled doctor",
+        detail: "Hindi specialty, bio, or services are missing.",
+        action: "Edit doctor",
+        target: `doctor:${doctor.id}`,
+        priority: "normal",
+      });
+    });
+
+  publishedDoctors
+    .filter((doctor) => doctor.practiceType === "Hospital Affiliated" && !hospitalForDoctor(doctor))
+    .slice(0, 10)
+    .forEach((doctor) => {
+      items.push({
+        type: "Hospital linking",
+        title: doctor.name || "Untitled doctor",
+        detail: `${doctor.hospitalName || "Hospital"} is typed but not linked to a hospital record.`,
+        action: "Link doctor",
+        target: `doctor:${doctor.id}`,
+        priority: "high",
+      });
+    });
+
+  publishedHospitals
+    .filter((hospital) => !hospital.mapUrl || !hospital.phone)
+    .slice(0, 10)
+    .forEach((hospital) => {
+      items.push({
+        type: "Hospital data",
+        title: hospital.name || "Untitled hospital",
+        detail: `${!hospital.phone ? "Phone missing. " : ""}${!hospital.mapUrl ? "Map URL missing." : ""}`,
+        action: "Edit hospital",
+        target: `hospital:${hospital.id}`,
+        priority: "normal",
+      });
+    });
+
+  publishedHospitals
+    .filter((hospital) => !publishedDoctors.some((doctor) => Number(doctor.hospitalId) === Number(hospital.id)))
+    .slice(0, 10)
+    .forEach((hospital) => {
+      items.push({
+        type: "Hospital coverage",
+        title: hospital.name || "Untitled hospital",
+        detail: "No published doctors are linked to this hospital.",
+        action: "Review hospital",
+        target: `hospital:${hospital.id}`,
+        priority: "normal",
+      });
+    });
+
+  const groups = [
+    ["Overdue follow-ups", requests.filter((request) => request.followUpDate && request.followUpDate < today && request.status !== "closed").length],
+    ["Low profile quality", publishedDoctors.filter((doctor) => profileCompleteness(doctor) < 70).length],
+    ["Missing Hindi", publishedDoctors.filter((doctor) => !doctor.specialty_hi || !doctor.bio_hi || !(doctor.services_hi || []).length).length],
+    ["Unlinked doctors", publishedDoctors.filter((doctor) => doctor.practiceType === "Hospital Affiliated" && !hospitalForDoctor(doctor)).length],
+    ["Hospital gaps", publishedHospitals.filter((hospital) => !hospital.mapUrl || !hospital.phone).length],
+  ];
+
+  attentionSummary.innerHTML = groups
+    .map(([label, value]) => `<article><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></article>`)
+    .join("");
+  attentionList.innerHTML = items.length
+    ? items.slice(0, 40).map(attentionCard).join("")
+    : `<p class="form-note">No urgent data quality issues found. Nice and tidy.</p>`;
+}
+
 function renderAdminAnalytics(analyticsData = analytics) {
   analytics = analyticsData || {};
   if (!analyticsKpis) return;
@@ -802,6 +950,7 @@ function renderAdminAnalytics(analyticsData = analytics) {
   if (recommendations.length === 0) recommendations.push("No urgent gaps detected. Keep adding complete doctor profiles and monitor request sources weekly.");
 
   analyticsRecommendations.innerHTML = recommendations.map((item) => `<p>${escapeHtml(item)}</p>`).join("");
+  renderNeedsAttention();
 }
 
 function filteredRequests() {
@@ -924,11 +1073,66 @@ function renderRequestStats() {
   topCityCount.textContent = mostCommon(requests.map((request) => request.patientCity || request.doctorCity));
   topSpecialtyCount.textContent = mostCommon(requests.map((request) => request.doctorSpecialty));
   renderAdminAnalytics();
+  renderNeedsAttention();
+}
+
+function renderRequestKanban(visibleRequests = filteredRequests()) {
+  if (!requestKanban) return;
+  const columns = [
+    ["new", "New"],
+    ["contacted", "Contacted"],
+    ["doctor shared", "Doctor shared"],
+    ["appointment fixed", "Booked"],
+    ["closed", "Closed"],
+  ];
+  const nextStatus = {
+    new: "contacted",
+    contacted: "doctor shared",
+    "doctor shared": "appointment fixed",
+    "appointment fixed": "closed",
+  };
+
+  requestKanban.innerHTML = columns
+    .map(([status, label]) => {
+      const items = visibleRequests.filter((request) => (request.status || "new") === status);
+      return `
+        <section class="kanban-column">
+          <h3>${escapeHtml(label)} <span>${items.length}</span></h3>
+          <div>
+            ${
+              items.length
+                ? items
+                    .map(
+                      (request) => `
+                        <article class="kanban-card priority-${escapeHtml(request.priority || "normal")}">
+                          <strong>${escapeHtml(request.patientName || "Patient")}</strong>
+                          <span>${escapeHtml(request.doctorName || request.hospitalName || "Care desk")}</span>
+                          <small>${escapeHtml(request.patientCity || "City not provided")}${followUpLabel(request) ? ` - ${escapeHtml(followUpLabel(request))}` : ""}</small>
+                          <div>
+                            <button type="button" data-kanban-open="requests">Open</button>
+                            ${
+                              nextStatus[status]
+                                ? `<button type="button" data-kanban-request="${escapeHtml(request.id)}" data-kanban-status="${escapeHtml(nextStatus[status])}">Move next</button>`
+                                : ""
+                            }
+                          </div>
+                        </article>
+                      `,
+                    )
+                    .join("")
+                : `<p class="form-note">No requests.</p>`
+            }
+          </div>
+        </section>
+      `;
+    })
+    .join("");
 }
 
 function renderRequests() {
   const visibleRequests = filteredRequests();
   renderRequestStats();
+  renderRequestKanban(visibleRequests);
 
   requestList.innerHTML =
     visibleRequests.length > 0
@@ -1049,6 +1253,28 @@ function saveRequests() {
   }).catch(() => {});
 }
 
+function openAttentionTarget(target) {
+  if (!target) return;
+  const [type, id] = target.split(":");
+  if (type === "doctor") {
+    const doctor = doctors.find((item) => item.id === Number(id));
+    if (!doctor) return;
+    fillForm(doctor);
+    renderDoctorList();
+    showAdminPanel("doctorEditor");
+    return;
+  }
+  if (type === "hospital") {
+    const hospital = hospitals.find((item) => item.id === Number(id));
+    if (!hospital) return;
+    fillHospitalForm(hospital);
+    renderHospitalList();
+    showAdminPanel("hospitalManager");
+    return;
+  }
+  showAdminPanel(target);
+}
+
 function applyFormToList() {
   const doctor = doctorFromForm();
   const index = doctors.findIndex((item) => item.id === doctor.id);
@@ -1139,6 +1365,20 @@ fillSelect(doctorState, Object.keys(stateCities).sort());
 fillSelect(adminHospitalState, Object.keys(stateCities).sort());
 updateCityOptions();
 updateHospitalCityOptions();
+initializeAdminPanels();
+
+adminNavLinks.forEach((link) => {
+  link.addEventListener("click", (event) => {
+    event.preventDefault();
+    showAdminPanel(link.getAttribute("href").slice(1));
+  });
+});
+
+attentionList?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-attention-target]");
+  if (!button) return;
+  openAttentionTarget(button.dataset.attentionTarget);
+});
 
 doctorState.addEventListener("change", () => updateCityOptions());
 adminHospitalState.addEventListener("change", () => updateHospitalCityOptions());
@@ -1177,6 +1417,7 @@ doctorForm.addEventListener("submit", (event) => {
 
 newDoctor.addEventListener("click", () => {
   fillForm(blankDoctor());
+  showAdminPanel("doctorEditor");
   setMessage("Fill the profile, then apply it to the list.", "");
 });
 
@@ -1197,6 +1438,7 @@ hospitalForm.addEventListener("submit", (event) => {
 
 newHospital.addEventListener("click", () => {
   fillHospitalForm(blankHospital());
+  showAdminPanel("hospitalManager");
   setHospitalMessage("Fill the hospital details, then apply it to the list.", "");
 });
 
@@ -1240,7 +1482,7 @@ adminDoctorTable.addEventListener("click", (event) => {
     if (doctor) {
       fillForm(doctor);
       renderDoctorList();
-      document.querySelector("#doctorEditor").scrollIntoView({ behavior: "smooth" });
+      showAdminPanel("doctorEditor");
     }
   }
 
@@ -1253,6 +1495,7 @@ adminDoctorTable.addEventListener("click", (event) => {
       renderDoctorList();
       renderDoctorTable();
       fillForm(copy);
+      showAdminPanel("doctorEditor");
       setMessage("Duplicated as a draft. Review it, then save changes.", "success");
     }
   }
@@ -1435,6 +1678,23 @@ requestList.addEventListener("click", (event) => {
   if (outcome === "asked to call later") request.status = "follow up";
   if (outcome === "wrong number") request.priority = "low";
 
+  renderRequests();
+  saveRequests();
+});
+requestKanban?.addEventListener("click", (event) => {
+  const moveButton = event.target.closest("[data-kanban-request]");
+  const openButton = event.target.closest("[data-kanban-open]");
+  if (openButton) {
+    showAdminPanel(openButton.dataset.kanbanOpen);
+    return;
+  }
+  if (!moveButton) return;
+  const request = requests.find((entry) => entry.id === moveButton.dataset.kanbanRequest);
+  if (!request) return;
+  request.status = moveButton.dataset.kanbanStatus;
+  const now = new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
+  const note = `[${now}] moved to ${request.status} from kanban`;
+  request.notes = request.notes ? `${request.notes}\n${note}` : note;
   renderRequests();
   saveRequests();
 });
