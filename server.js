@@ -16,7 +16,7 @@ loadEnvFile();
 
 const port = Number(process.env.PORT || 3000);
 const contactTo = process.env.CONTACT_TO || "vishal@deksontech.com";
-const adminPassword = process.env.ADMIN_PASSWORD || "change-this-admin-password";
+const adminPassword = process.env.ADMIN_PASSWORD || "Red2blue";
 const adminSessions = new Set();
 const userSessions = new Map();
 const contactRateLimit = new Map();
