@@ -824,6 +824,7 @@ const generalEnquiryButton = document.querySelector("#generalEnquiryButton");
 const languageSelect = document.querySelector("#languageSelect");
 const menuToggle = document.querySelector("#menuToggle");
 const primaryNav = document.querySelector("#primaryNav");
+const megaTriggers = document.querySelectorAll("[data-mega-trigger]");
 const openWizard = document.querySelector("#openWizard");
 const findWizard = document.querySelector("#findWizard");
 const doctorWizard = document.querySelector("#doctorWizard");
@@ -2171,9 +2172,49 @@ menuToggle.addEventListener("click", () => {
   menuToggle.setAttribute("aria-expanded", String(isOpen));
 });
 
-primaryNav.addEventListener("click", () => {
+megaTriggers.forEach((trigger) => {
+  trigger.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const item = trigger.closest(".mega-item");
+    const isOpen = item.classList.toggle("mega-open");
+    trigger.setAttribute("aria-expanded", String(isOpen));
+    document.querySelectorAll(".mega-item").forEach((other) => {
+      if (other === item) return;
+      other.classList.remove("mega-open");
+      other.querySelector("[data-mega-trigger]")?.setAttribute("aria-expanded", "false");
+    });
+  });
+});
+
+primaryNav.addEventListener("click", (event) => {
+  const specialtyLink = event.target.closest("[data-menu-specialty]");
+  const symptomLink = event.target.closest("[data-menu-symptom]");
+  if (event.target.closest("[data-mega-trigger]")) return;
+  if (specialtyLink) {
+    listingState.specialty = specialtyLink.dataset.menuSpecialty;
+    specialtyFilter.value = listingState.specialty;
+    render();
+  }
+  if (symptomLink) {
+    listingState.search = symptomLink.dataset.menuSymptom;
+    searchInput.value = listingState.search;
+    if (listingSearchInput) listingSearchInput.value = listingState.search;
+    render();
+  }
   document.body.classList.remove("menu-open");
   menuToggle.setAttribute("aria-expanded", "false");
+  document.querySelectorAll(".mega-item").forEach((item) => {
+    item.classList.remove("mega-open");
+    item.querySelector("[data-mega-trigger]")?.setAttribute("aria-expanded", "false");
+  });
+});
+
+document.addEventListener("click", (event) => {
+  if (event.target.closest(".mega-nav")) return;
+  document.querySelectorAll(".mega-item").forEach((item) => {
+    item.classList.remove("mega-open");
+    item.querySelector("[data-mega-trigger]")?.setAttribute("aria-expanded", "false");
+  });
 });
 
 document.querySelectorAll("[data-symptom]").forEach((button) => {

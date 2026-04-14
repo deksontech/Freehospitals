@@ -49,7 +49,7 @@ textarea {
 .topbar {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -59,6 +59,16 @@ textarea {
   background: rgba(255, 255, 255, 0.92);
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(16px);
+}
+
+@media (min-width: 1101px) {
+  .mega-item:hover .mega-menu {
+    display: grid;
+  }
+
+  .mega-item:hover .mega-trigger::after {
+    transform: rotate(225deg) translateY(-1px);
+  }
 }
 
 .brand,
@@ -120,8 +130,120 @@ textarea {
 }
 
 .nav-links a:hover,
+.mega-trigger:hover,
 .urgent-link:hover {
   color: var(--mint-dark);
+}
+
+.mega-nav {
+  position: static;
+}
+
+.mega-item {
+  position: static;
+}
+
+.mega-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.mega-trigger::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 1.8px solid currentColor;
+  border-bottom: 1.8px solid currentColor;
+  transform: rotate(45deg) translateY(-2px);
+}
+
+.mega-item.mega-open .mega-trigger::after {
+  transform: rotate(225deg) translateY(-1px);
+}
+
+.mega-menu {
+  position: absolute;
+  top: 100%;
+  left: clamp(16px, 18vw, 340px);
+  right: clamp(16px, 18vw, 340px);
+  z-index: 30;
+  display: none;
+  grid-template-columns: 290px minmax(0, 1fr);
+  gap: 24px;
+  padding: 22px 30px 30px;
+  background: #fff7f0;
+  border: 1px solid var(--line);
+  box-shadow: 0 22px 48px rgba(23, 32, 29, 0.12);
+}
+
+.mega-item.mega-open .mega-menu {
+  display: grid;
+}
+
+.compact-mega {
+  left: auto;
+  right: clamp(16px, 28vw, 520px);
+  width: min(560px, calc(100vw - 32px));
+  grid-template-columns: 1fr;
+}
+
+.health-mega {
+  left: clamp(16px, 18vw, 340px);
+  right: clamp(16px, 18vw, 340px);
+}
+
+.mega-side,
+.mega-links {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+}
+
+.mega-side {
+  border-right: 1px solid var(--line);
+  padding-right: 24px;
+}
+
+.mega-side a,
+.mega-links a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 36px;
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 750;
+}
+
+.mega-side a {
+  color: #006b83;
+  font-weight: 900;
+}
+
+.mega-side a::after {
+  content: ">";
+  color: #007d96;
+}
+
+.mega-links {
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  column-gap: 36px;
+}
+
+.mega-links.three-col {
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
 }
 
 .urgent-link {
@@ -2925,5 +3047,70 @@ output {
   .topbar .urgent-link::before {
     content: attr(data-short-label);
     font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 1100px) {
+  .topbar .mega-nav {
+    max-height: calc(100dvh - 86px) !important;
+    overflow: auto !important;
+  }
+
+  .topbar .mega-item {
+    display: grid !important;
+    gap: 6px !important;
+  }
+
+  .topbar .mega-trigger {
+    width: 100% !important;
+    justify-content: space-between !important;
+    min-height: 44px !important;
+    padding: 0 12px !important;
+    color: var(--ink) !important;
+    background: var(--wash) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 8px !important;
+    font-size: 0.86rem !important;
+    text-align: left !important;
+  }
+
+  .topbar .mega-menu {
+    position: static !important;
+    display: none !important;
+    width: 100% !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    padding: 10px !important;
+    background: #fff7f0 !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+  }
+
+  .topbar .mega-item.mega-open .mega-menu {
+    display: grid !important;
+  }
+
+  .topbar .mega-side {
+    gap: 4px !important;
+    padding-right: 0 !important;
+    padding-bottom: 8px !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--line) !important;
+  }
+
+  .topbar .mega-links,
+  .topbar .mega-links.three-col {
+    grid-template-columns: 1fr !important;
+    gap: 4px !important;
+  }
+
+  .topbar .mega-side a,
+  .topbar .mega-links a {
+    min-height: 38px !important;
+    padding: 0 8px !important;
+    background: #fff !important;
+    border-radius: 8px !important;
+    font-size: 0.88rem !important;
   }
 }
