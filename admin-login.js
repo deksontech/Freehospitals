@@ -3,7 +3,9 @@ const loginMessage = document.querySelector("#loginMessage");
 
 adminLoginForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  const password = new FormData(adminLoginForm).get("password");
+  const formData = new FormData(adminLoginForm);
+  const identifier = String(formData.get("identifier") || "").trim().toLowerCase();
+  const password = formData.get("password");
 
   loginMessage.textContent = "Checking password...";
   loginMessage.className = "form-note";
@@ -11,7 +13,7 @@ adminLoginForm.addEventListener("submit", (event) => {
   fetch("/api/admin/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ password }),
+    body: JSON.stringify({ identifier, password }),
   })
     .then(async (response) => {
       const result = await response.json();

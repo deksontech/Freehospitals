@@ -43,7 +43,22 @@ let selectedId = null;
 let selectedHospitalId = null;
 let requests = [];
 let analytics = {};
-const adminPanelIds = ["dashboard", "needsAttention", "analytics", "doctorTableSection", "doctorEditor", "hospitalManager", "requests", "dataTools", "settings"];
+let currentAdmin = null;
+let adminUsers = [];
+let selectedAdminUserId = null;
+const adminPanelIds = ["dashboard", "needsAttention", "analytics", "doctorTableSection", "doctorEditor", "hospitalManager", "requests", "dataTools", "adminUsers", "settings"];
+const permissionLabels = {
+  dashboard: "Dashboard",
+  needsAttention: "Needs Attention",
+  analytics: "Analytics",
+  doctorTableSection: "Doctor table",
+  doctorEditor: "Doctors",
+  hospitalManager: "Hospitals",
+  requests: "Requests",
+  dataTools: "Import / Export",
+  adminUsers: "Admin Access",
+  settings: "Settings",
+};
 const requestFilters = {
   search: "",
   status: "all",
@@ -110,6 +125,11 @@ const analyticsRecommendations = document.querySelector("#analyticsRecommendatio
 const attentionSummary = document.querySelector("#attentionSummary");
 const attentionList = document.querySelector("#attentionList");
 const requestKanban = document.querySelector("#requestKanban");
+const adminUserList = document.querySelector("#adminUserList");
+const adminUserForm = document.querySelector("#adminUserForm");
+const newAdminUser = document.querySelector("#newAdminUser");
+const deleteAdminUser = document.querySelector("#deleteAdminUser");
+const adminUserMessage = document.querySelector("#adminUserMessage");
 const adminPanels = adminPanelIds.map((id) => document.querySelector(`#${id}`)).filter(Boolean);
 const adminNavLinks = document.querySelectorAll(".wp-sidebar nav a[href^='#']");
 const adminTitle = document.querySelector(".wp-admin-bar h1");
@@ -119,8 +139,28 @@ function setMessage(message, type = "") {
   adminMessage.className = type ? `form-note ${type}` : "form-note";
 }
 
+function setAdminUserMessage(message, type = "") {
+  if (!adminUserMessage) return;
+  adminUserMessage.textContent = message;
+  adminUserMessage.className = type ? `form-note ${type}` : "form-note";
+}
+
+function hasPermission(permission) {
+  return currentAdmin?.role === "super_admin" || currentAdmin?.permissions?.includes(permission);
+}
+
+function visibleAdminPanels() {
+  const allowed = new Set(currentAdmin?.permissions || []);
+  return adminPanelIds.filter((id) => currentAdmin?.role === "super_admin" || allowed.has(id));
+}
+
+function firstVisibleAdminPanel() {
+  return visibleAdminPanels()[0] || "settings";
+}
+
 function showAdminPanel(id, options = {}) {
-  const targetId = adminPanelIds.includes(id) ? id : "dashboard";
+  const allowedPanels = visibleAdminPanels();
+  const targetId = allowedPanels.includes(id) ? id : firstVisibleAdminPanel();
   document.body.classList.add("admin-enhanced");
   adminPanels.forEach((panel) => {
     panel.classList.toggle("active-admin-panel", panel.id === targetId);
@@ -136,8 +176,20 @@ function showAdminPanel(id, options = {}) {
 }
 
 function initializeAdminPanels() {
-  const initialId = window.location.hash.replace("#", "") || "dashboard";
-  showAdminPanel(adminPanelIds.includes(initialId) ? initialId : "dashboard", { updateHash: false, scroll: false });
+  const initialId = window.location.hash.replace("#", "") || firstVisibleAdminPanel();
+  showAdminPanel(initialId, { updateHash: false, scroll: false });
+}
+
+function applyAdminPermissions() {
+  const allowed = new Set(visibleAdminPanels());
+  adminNavLinks.forEach((link) => {
+    const panelId = link.getAttribute("href").slice(1);
+    link.hidden = !allowed.has(panelId);
+  });
+  adminPanels.forEach((panel) => {
+    panel.hidden = !allowed.has(panel.id);
+  });
+  if (saveDoctorsTop) saveDoctorsTop.hidden = !(hasPermission("doctorEditor") || hasPermission("doctorTableSection") || hasPermission("hospitalManager"));
 }
 
 function listFromText(value) {
@@ -339,6 +391,61 @@ function loadHospitals() {
       renderHospitalSelectOptions();
       fillHospitalForm(blankHospital());
       setHospitalMessage(`${error.message} Open this page through npm start.`, "error");
+    });
+}
+
+function blankAdminUser() {
+  return {
+    id: "",
+    name: "",
+    email: "",
+    permissions: ["dashboard", "doctorEditor", "requests"],
+    role: "admin",
+  };
+}
+
+function fillAdminUserForm(adminUser) {
+  if (!adminUserForm) return;
+  selectedAdminUserId = adminUser.id || null;
+  adminUserForm.elements.id.value = adminUser.id || "";
+  adminUserForm.elements.name.value = adminUser.name || "";
+  adminUserForm.elements.email.value = adminUser.email || "";
+  adminUserForm.elements.password.value = "";
+  adminUserForm.querySelectorAll('input[name="permissions"]').forEach((input) => {
+    input.checked = (adminUser.permissions || []).includes(input.value);
+    input.disabled = adminUser.role === "super_admin";
+  });
+  if (deleteAdminUser) deleteAdminUser.disabled = !adminUser.id || adminUser.role === "super_admin";
+}
+
+function renderAdminUsers() {
+  if (!adminUserList) return;
+  adminUserList.innerHTML = adminUsers
+    .map((adminUser) => `
+      <button class="admin-doctor-button ${adminUser.id === selectedAdminUserId ? "active" : ""}" type="button" data-admin-user-id="${escapeHtml(adminUser.id)}">
+        <strong>${escapeHtml(adminUser.name || adminUser.email || "Admin user")}</strong>
+        <span>${escapeHtml(adminUser.email || "")}</span>
+        <span>${adminUser.role === "super_admin" ? "Super admin" : (adminUser.permissions || []).map((permission) => permissionLabels[permission] || permission).join(", ")}</span>
+      </button>
+    `)
+    .join("");
+}
+
+function loadAdminUsers() {
+  if (!hasPermission("adminUsers")) return Promise.resolve();
+  return fetch("/api/admin/admin-users")
+    .then(async (response) => {
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.message || "Could not load admin users.");
+      adminUsers = result.adminUsers || [];
+      fillAdminUserForm(adminUsers.find((item) => item.role !== "super_admin") || adminUsers[0] || blankAdminUser());
+      renderAdminUsers();
+    })
+    .catch((error) => {
+      adminUsers = [];
+      fillAdminUserForm(blankAdminUser());
+      renderAdminUsers();
+      setAdminUserMessage(error.message, "error");
     });
 }
 
@@ -1327,7 +1434,27 @@ function saveDoctorList() {
     });
 }
 
+function loadAdminSession() {
+  return fetch("/api/admin/me")
+    .then(async (response) => {
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error("Admin login required.");
+      currentAdmin = result.admin;
+      applyAdminPermissions();
+      initializeAdminPanels();
+      return currentAdmin;
+    })
+    .catch((error) => {
+      window.location.href = "/admin-login.html";
+      throw error;
+    });
+}
+
 function loadDashboard() {
+  if (!["dashboard", "needsAttention", "analytics", "requests"].some(hasPermission)) {
+    renderDashboard();
+    return;
+  }
   fetch("/api/admin/summary")
     .then(async (response) => {
       const result = await response.json();
@@ -1365,7 +1492,6 @@ fillSelect(doctorState, Object.keys(stateCities).sort());
 fillSelect(adminHospitalState, Object.keys(stateCities).sort());
 updateCityOptions();
 updateHospitalCityOptions();
-initializeAdminPanels();
 
 adminNavLinks.forEach((link) => {
   link.addEventListener("click", (event) => {
@@ -1622,8 +1748,78 @@ importDoctorsCsv.addEventListener("change", () => {
   reader.readAsText(file);
 });
 
+adminUserList?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-admin-user-id]");
+  if (!button) return;
+  const adminUser = adminUsers.find((item) => item.id === button.dataset.adminUserId);
+  if (!adminUser) return;
+  fillAdminUserForm(adminUser);
+  renderAdminUsers();
+});
+
+adminUserForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const formData = new FormData(adminUserForm);
+  const payload = {
+    id: String(formData.get("id") || "").trim(),
+    name: String(formData.get("name") || "").trim(),
+    email: String(formData.get("email") || "").trim().toLowerCase(),
+    password: String(formData.get("password") || ""),
+    permissions: [...adminUserForm.querySelectorAll('input[name="permissions"]:checked')].map((input) => input.value),
+  };
+
+  setAdminUserMessage("Saving admin access...");
+  fetch("/api/admin/admin-users", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  })
+    .then(async (response) => {
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.message || "Could not save admin.");
+      adminUsers = result.adminUsers || [];
+      const savedAdmin = adminUsers.find((item) => item.email === payload.email) || adminUsers[0] || blankAdminUser();
+      fillAdminUserForm(savedAdmin);
+      renderAdminUsers();
+      setAdminUserMessage(result.message || "Admin saved.", "success");
+    })
+    .catch((error) => setAdminUserMessage(error.message, "error"));
+});
+
+newAdminUser?.addEventListener("click", () => {
+  fillAdminUserForm(blankAdminUser());
+  renderAdminUsers();
+  setAdminUserMessage("Create a new admin and choose the views they can access.");
+});
+
+deleteAdminUser?.addEventListener("click", () => {
+  if (!selectedAdminUserId) return;
+  setAdminUserMessage("Removing admin...");
+  fetch("/api/admin/admin-users", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: selectedAdminUserId }),
+  })
+    .then(async (response) => {
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.message || "Could not delete admin.");
+      adminUsers = result.adminUsers || [];
+      fillAdminUserForm(adminUsers.find((item) => item.role !== "super_admin") || blankAdminUser());
+      renderAdminUsers();
+      setAdminUserMessage(result.message || "Admin removed.", "success");
+    })
+    .catch((error) => setAdminUserMessage(error.message, "error"));
+});
+
 saveDoctors.addEventListener("click", saveDoctorList);
-saveDoctorsTop.addEventListener("click", saveDoctorList);
+saveDoctorsTop.addEventListener("click", () => {
+  const activePanel = document.querySelector(".active-admin-panel")?.id;
+  if (activePanel === "hospitalManager" && hasPermission("hospitalManager")) {
+    saveHospitalList();
+    return;
+  }
+  if (hasPermission("doctorEditor") || hasPermission("doctorTableSection")) saveDoctorList();
+});
 requestSearch.addEventListener("input", (event) => {
   requestFilters.search = event.target.value;
   renderRequests();
@@ -1711,4 +1907,7 @@ logoutAdmin.addEventListener("click", () => {
     window.location.href = "/admin-login.html";
   });
 });
-loadDoctors();
+loadAdminSession().then(() => {
+  loadDoctors();
+  loadAdminUsers();
+});

@@ -28,6 +28,7 @@
         <a href="#hospitalManager">Hospitals</a>
         <a href="#requests">Requests</a>
         <a href="#dataTools">Import / Export</a>
+        <a href="#adminUsers">Admin Access</a>
         <a href="#settings">Settings</a>
       </nav>
       <a class="public-link" href="index.html">View public site</a>
@@ -512,11 +513,64 @@
         </div>
       </section>
 
+      <section class="admin-section" id="adminUsers">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Super admin</p>
+            <h2>Create admins and control access</h2>
+          </div>
+        </div>
+        <p>Create sub-admin accounts and choose exactly which parts of the panel they can open.</p>
+        <div class="admin-grid hospital-admin-grid">
+          <aside class="admin-list-panel">
+            <div class="panel-heading">
+              <h2>Admin accounts</h2>
+            </div>
+            <div class="admin-doctor-list" id="adminUserList"></div>
+          </aside>
+          <form class="admin-form" id="adminUserForm">
+            <input id="adminUserId" name="id" type="hidden" />
+            <div class="form-grid">
+              <label class="field" for="adminUserName">
+                <span>Admin name</span>
+                <input id="adminUserName" name="name" placeholder="Care desk team" required />
+              </label>
+              <label class="field" for="adminUserEmail">
+                <span>Admin email</span>
+                <input id="adminUserEmail" name="email" type="email" placeholder="team@freehospitals.in" required />
+              </label>
+              <label class="field wide" for="adminUserPassword">
+                <span>Password</span>
+                <input id="adminUserPassword" name="password" type="password" placeholder="Leave blank to keep current password when editing" />
+              </label>
+            </div>
+            <div class="permission-grid" id="adminPermissionGrid">
+              <label><input type="checkbox" name="permissions" value="dashboard" /> Dashboard</label>
+              <label><input type="checkbox" name="permissions" value="needsAttention" /> Needs Attention</label>
+              <label><input type="checkbox" name="permissions" value="analytics" /> Analytics</label>
+              <label><input type="checkbox" name="permissions" value="doctorTableSection" /> Doctor table</label>
+              <label><input type="checkbox" name="permissions" value="doctorEditor" /> Doctors</label>
+              <label><input type="checkbox" name="permissions" value="hospitalManager" /> Hospitals</label>
+              <label><input type="checkbox" name="permissions" value="requests" /> Requests</label>
+              <label><input type="checkbox" name="permissions" value="dataTools" /> Import / Export</label>
+              <label><input type="checkbox" name="permissions" value="settings" /> Settings</label>
+            </div>
+            <div class="contact-actions">
+              <button class="primary-button" type="submit">Save admin</button>
+              <button class="save-button" id="newAdminUser" type="button">New admin</button>
+              <button class="danger-button" id="deleteAdminUser" type="button">Delete admin</button>
+            </div>
+            <p class="form-note" id="adminUserMessage">Only super admin can create or update admin accounts.</p>
+          </form>
+        </div>
+      </section>
+
       <section class="admin-section" id="settings">
         <p class="eyebrow">Settings</p>
         <h2>Admin settings</h2>
         <p>
-          Change the admin password in `.env` using `ADMIN_PASSWORD=your-new-password`, then restart the server.
+          `ADMIN_PASSWORD` in `.env` is your super admin password. Use the Admin Access tab to create additional admins
+          with selected views.
           Patient request notifications are sent to `CONTACT_TO`, currently vishal@deksontech.com. Keep `.env` private.
         </p>
       </section>

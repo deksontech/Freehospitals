@@ -23,14 +23,18 @@
         <div>
           <p class="eyebrow">Admin login</p>
           <h1>Welcome back.</h1>
-          <p>Use the admin password from your `.env` file to manage doctors and settings.</p>
+          <p>Use the super admin password from `.env`, or sign in with an admin email and password.</p>
         </div>
+        <label class="field" for="adminIdentifier">
+          <span>Admin email</span>
+          <input id="adminIdentifier" name="identifier" type="email" placeholder="Leave blank for super admin login" />
+        </label>
         <label class="field" for="adminPassword">
           <span>Password</span>
           <input id="adminPassword" name="password" type="password" placeholder="Admin password" required />
         </label>
         <button class="primary-button" type="submit">Login</button>
-        <p class="form-note" id="loginMessage">Default password is in `.env` until you change it.</p>
+        <p class="form-note" id="loginMessage">Leave email blank to use the super admin password from `.env`.</p>
       </form>
     </main>
 

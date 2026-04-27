@@ -11,15 +11,28 @@ const doctorsFile = path.join(dataDir, "doctors.json");
 const hospitalsFile = path.join(dataDir, "hospitals.json");
 const usersFile = path.join(dataDir, "users.json");
 const analyticsFile = path.join(dataDir, "analytics-events.json");
+const adminUsersFile = path.join(dataDir, "admin-users.json");
 
 loadEnvFile();
 
 const port = Number(process.env.PORT || 3000);
 const contactTo = process.env.CONTACT_TO || "vishal@deksontech.com";
 const adminPassword = process.env.ADMIN_PASSWORD || "Red2blue";
-const adminSessions = new Set();
+const adminSessions = new Map();
 const userSessions = new Map();
 const contactRateLimit = new Map();
+const adminPermissions = [
+  "dashboard",
+  "needsAttention",
+  "analytics",
+  "doctorTableSection",
+  "doctorEditor",
+  "hospitalManager",
+  "requests",
+  "dataTools",
+  "settings",
+  "adminUsers",
+];
 
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -78,6 +91,49 @@ function parseCookies(req) {
 function isAdmin(req) {
   const sessionId = parseCookies(req).freehospitals_admin || parseCookies(req).carefind_admin;
   return Boolean(sessionId && adminSessions.has(sessionId));
+}
+
+function superAdminRecord() {
+  return {
+    id: "super-admin",
+    name: "Super Admin",
+    email: "superadmin@freehospitals.local",
+    role: "super_admin",
+    permissions: [...adminPermissions],
+    createdAt: new Date(0).toISOString(),
+  };
+}
+
+function currentAdmin(req) {
+  const sessionId = parseCookies(req).freehospitals_admin || parseCookies(req).carefind_admin;
+  return sessionId ? adminSessions.get(sessionId) || null : null;
+}
+
+function normalizeAdminPermissions(permissions, fallback = []) {
+  const normalized = Array.isArray(permissions) ? permissions : fallback;
+  return [...new Set(normalized.filter((permission) => adminPermissions.includes(permission)))];
+}
+
+function hasAdminPermission(req, permission) {
+  const admin = currentAdmin(req);
+  if (!admin) return false;
+  if (admin.role === "super_admin") return true;
+  return admin.permissions.includes(permission);
+}
+
+function requireAdminPermission(req, res, permission, message = "You do not have access to this admin area.") {
+  if (!requireAdmin(req, res)) return false;
+  if (hasAdminPermission(req, permission)) return true;
+  jsonResponse(res, 403, { ok: false, message });
+  return false;
+}
+
+function requireAnyAdminPermission(req, res, permissions, message = "You do not have access to this admin area.") {
+  if (!requireAdmin(req, res)) return false;
+  if (currentAdmin(req)?.role === "super_admin") return true;
+  if (permissions.some((permission) => hasAdminPermission(req, permission))) return true;
+  jsonResponse(res, 403, { ok: false, message });
+  return false;
 }
 
 function hashPassword(password, salt = randomBytes(16).toString("hex")) {
@@ -305,6 +361,34 @@ async function saveUsers(users) {
   await fs.writeFile(usersFile, `${JSON.stringify(users, null, 2)}\n`);
 }
 
+function normalizeAdminUser(admin, index) {
+  return {
+    id: String(admin.id || `admin-${Date.now()}-${index}`),
+    name: String(admin.name || "").trim(),
+    email: String(admin.email || "").trim().toLowerCase(),
+    passwordHash: String(admin.passwordHash || "").trim(),
+    permissions: normalizeAdminPermissions(admin.permissions, ["dashboard"]),
+    createdAt: String(admin.createdAt || new Date().toISOString()),
+    updatedAt: String(admin.updatedAt || admin.createdAt || new Date().toISOString()),
+    role: "admin",
+  };
+}
+
+async function readAdminUsers() {
+  try {
+    const admins = JSON.parse(await fs.readFile(adminUsersFile, "utf8"));
+    return Array.isArray(admins) ? admins.map(normalizeAdminUser).filter((admin) => admin.email && admin.passwordHash) : [];
+  } catch (error) {
+    if (error.code === "ENOENT") return [];
+    throw error;
+  }
+}
+
+async function saveAdminUsers(adminUsers) {
+  await fs.mkdir(dataDir, { recursive: true });
+  await fs.writeFile(adminUsersFile, `${JSON.stringify(adminUsers.map(normalizeAdminUser), null, 2)}\n`);
+}
+
 function normalizeList(value) {
   if (Array.isArray(value)) return value.map(String).map((item) => item.trim()).filter(Boolean);
   return String(value || "")
@@ -513,20 +597,51 @@ async function handleTrack(req, res) {
 async function handleAdminLogin(req, res) {
   try {
     const payload = await readJsonBody(req);
+    const identifier = String(payload.identifier || "").trim().toLowerCase();
+    const password = String(payload.password || "");
+    let admin = null;
 
-    if (!safeCompare(payload.password || "", adminPassword)) {
-      jsonResponse(res, 401, { ok: false, message: "Incorrect admin password." });
+    if (!identifier && safeCompare(password, adminPassword)) {
+      admin = superAdminRecord();
+    } else {
+      const adminUsers = await readAdminUsers();
+      const matchedAdmin = adminUsers.find((item) => item.email === identifier);
+      if (matchedAdmin && verifyPassword(password, matchedAdmin.passwordHash)) {
+        admin = { ...matchedAdmin, role: "admin" };
+      }
+    }
+
+    if (!admin) {
+      jsonResponse(res, 401, { ok: false, message: "Incorrect admin login details." });
       return;
     }
 
     const sessionId = randomBytes(32).toString("hex");
-    adminSessions.add(sessionId);
+    adminSessions.set(sessionId, {
+      id: admin.id,
+      name: admin.name,
+      email: admin.email,
+      role: admin.role,
+      permissions: normalizeAdminPermissions(admin.permissions, adminPermissions),
+    });
     res.writeHead(200, {
       "Content-Type": "application/json; charset=utf-8",
       "Cache-Control": "no-store",
       "Set-Cookie": `freehospitals_admin=${sessionId}; HttpOnly; Path=/; SameSite=Lax; Max-Age=28800`,
     });
-    res.end(JSON.stringify({ ok: true, message: "Logged in." }));
+    res.end(
+      JSON.stringify({
+        ok: true,
+        message: "Logged in.",
+        admin: {
+          id: admin.id,
+          name: admin.name,
+          email: admin.email,
+          role: admin.role,
+          permissions: normalizeAdminPermissions(admin.permissions, adminPermissions),
+        },
+      }),
+    );
   } catch (error) {
     jsonResponse(res, 500, { ok: false, message: "Could not log in.", detail: error.message });
   }
@@ -541,6 +656,102 @@ function handleAdminLogout(req, res) {
     "Set-Cookie": "freehospitals_admin=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0",
   });
   res.end(JSON.stringify({ ok: true, message: "Logged out." }));
+}
+
+async function handleAdminUsersGet(req, res) {
+  if (!requireAdminPermission(req, res, "adminUsers", "Only super admin can manage admin accounts.")) return;
+  try {
+    const adminUsers = await readAdminUsers();
+    jsonResponse(res, 200, {
+      ok: true,
+      adminUsers: [superAdminRecord(), ...adminUsers.map(({ passwordHash, ...admin }) => admin)],
+    });
+  } catch (error) {
+    jsonResponse(res, 500, { ok: false, message: "Could not load admin users.", detail: error.message });
+  }
+}
+
+async function handleAdminUsersSave(req, res) {
+  if (!requireAdminPermission(req, res, "adminUsers", "Only super admin can manage admin accounts.")) return;
+  try {
+    const payload = await readJsonBody(req);
+    const adminUsers = await readAdminUsers();
+    const email = String(payload.email || "").trim().toLowerCase();
+    const password = String(payload.password || "");
+    const permissions = normalizeAdminPermissions(payload.permissions, []);
+
+    if (!email.includes("@")) {
+      jsonResponse(res, 400, { ok: false, message: "Enter a valid admin email." });
+      return;
+    }
+
+    if (permissions.length === 0) {
+      jsonResponse(res, 400, { ok: false, message: "Select at least one view for this admin." });
+      return;
+    }
+
+    const adminId = String(payload.id || "").trim();
+    const existingIndex = adminUsers.findIndex((item) => item.id === adminId || item.email === email);
+    if (existingIndex === -1 && password.length < 6) {
+      jsonResponse(res, 400, { ok: false, message: "New admins need a password with at least 6 characters." });
+      return;
+    }
+
+    if (existingIndex >= 0) {
+      adminUsers[existingIndex] = normalizeAdminUser({
+        ...adminUsers[existingIndex],
+        name: String(payload.name || adminUsers[existingIndex].name || "").trim(),
+        email,
+        permissions,
+        passwordHash: password ? hashPassword(password) : adminUsers[existingIndex].passwordHash,
+        updatedAt: new Date().toISOString(),
+      }, existingIndex);
+    } else {
+      adminUsers.unshift(
+        normalizeAdminUser({
+          id: randomUUID(),
+          name: String(payload.name || "").trim(),
+          email,
+          permissions,
+          passwordHash: hashPassword(password),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }, 0),
+      );
+    }
+
+    await saveAdminUsers(adminUsers);
+    jsonResponse(res, 200, {
+      ok: true,
+      message: existingIndex >= 0 ? "Admin updated." : "Admin created.",
+      adminUsers: [superAdminRecord(), ...adminUsers.map(({ passwordHash, ...admin }) => admin)],
+    });
+  } catch (error) {
+    jsonResponse(res, 500, { ok: false, message: "Could not save admin.", detail: error.message });
+  }
+}
+
+async function handleAdminUsersDelete(req, res) {
+  if (!requireAdminPermission(req, res, "adminUsers", "Only super admin can manage admin accounts.")) return;
+  try {
+    const payload = await readJsonBody(req);
+    const adminId = String(payload.id || "").trim();
+    if (!adminId || adminId === "super-admin") {
+      jsonResponse(res, 400, { ok: false, message: "Super admin cannot be deleted." });
+      return;
+    }
+
+    const adminUsers = await readAdminUsers();
+    const nextUsers = adminUsers.filter((item) => item.id !== adminId);
+    await saveAdminUsers(nextUsers);
+    jsonResponse(res, 200, {
+      ok: true,
+      message: "Admin removed.",
+      adminUsers: [superAdminRecord(), ...nextUsers.map(({ passwordHash, ...admin }) => admin)],
+    });
+  } catch (error) {
+    jsonResponse(res, 500, { ok: false, message: "Could not delete admin.", detail: error.message });
+  }
 }
 
 async function handleUserLoginOrSignup(req, res) {
@@ -833,18 +1044,28 @@ const server = http.createServer((req, res) => {
   }
 
   if (req.method === "GET" && pathname === "/api/admin/me") {
-    jsonResponse(res, isAdmin(req) ? 200 : 401, { ok: isAdmin(req) });
+    const admin = currentAdmin(req);
+    jsonResponse(res, admin ? 200 : 401, admin ? {
+      ok: true,
+      admin: {
+        id: admin.id,
+        name: admin.name,
+        email: admin.email,
+        role: admin.role,
+        permissions: admin.permissions,
+      },
+    } : { ok: false });
     return;
   }
 
   if (req.method === "GET" && pathname === "/api/admin/summary") {
-    if (!requireAdmin(req, res)) return;
+    if (!requireAnyAdminPermission(req, res, ["dashboard", "needsAttention", "analytics", "requests"], "You do not have access to admin summary data.")) return;
     handleAdminSummary(res);
     return;
   }
 
   if (req.method === "POST" && pathname === "/api/admin/requests") {
-    if (!requireAdmin(req, res)) return;
+    if (!requireAdminPermission(req, res, "requests", "You do not have request access.")) return;
     handleRequestsSave(req, res);
     return;
   }
@@ -860,14 +1081,29 @@ const server = http.createServer((req, res) => {
   }
 
   if (req.method === "POST" && pathname === "/api/doctors") {
-    if (!requireAdmin(req, res)) return;
+    if (!requireAnyAdminPermission(req, res, ["doctorEditor", "doctorTableSection"], "You do not have doctor access.")) return;
     handleDoctorsSave(req, res);
     return;
   }
 
   if (req.method === "POST" && pathname === "/api/hospitals") {
-    if (!requireAdmin(req, res)) return;
+    if (!requireAdminPermission(req, res, "hospitalManager", "You do not have hospital access.")) return;
     handleHospitalsSave(req, res);
+    return;
+  }
+
+  if (req.method === "GET" && pathname === "/api/admin/admin-users") {
+    handleAdminUsersGet(req, res);
+    return;
+  }
+
+  if (req.method === "POST" && pathname === "/api/admin/admin-users") {
+    handleAdminUsersSave(req, res);
+    return;
+  }
+
+  if (req.method === "DELETE" && pathname === "/api/admin/admin-users") {
+    handleAdminUsersDelete(req, res);
     return;
   }
 

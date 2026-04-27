@@ -2044,6 +2044,31 @@ output {
   padding: clamp(18px, 4vw, 26px);
 }
 
+.permission-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.permission-grid label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 42px;
+  padding: 10px 12px;
+  background: var(--wash);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.permission-grid input {
+  width: auto;
+  min-height: 0;
+  padding: 0;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2616,6 +2641,10 @@ output {
     grid-template-columns: 1fr;
   }
 
+  .permission-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .request-controls {
     grid-template-columns: 1fr 1fr;
   }
@@ -2727,6 +2756,10 @@ output {
   }
 
   .admin-dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .permission-grid {
     grid-template-columns: 1fr;
   }
 
