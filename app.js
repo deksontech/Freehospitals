@@ -41,6 +41,8 @@ const translations = {
   en: {
     language: "Language",
     doctors: "Doctors",
+    navDoctors: "Find Doctors",
+    navHospitals: "Find Hospitals",
     specialties: "Specialties",
     symptoms: "Symptoms",
     faq: "FAQ",
@@ -216,6 +218,8 @@ const translations = {
   hi: {
     language: "भाषा",
     doctors: "डॉक्टर",
+    navDoctors: "डॉक्टर खोजें",
+    navHospitals: "अस्पताल खोजें",
     specialties: "विशेषताएं",
     symptoms: "लक्षण",
     faq: "सवाल",
@@ -337,6 +341,8 @@ const translations = {
   gu: {
     language: "ભાષા",
     doctors: "ડૉક્ટર્સ",
+    navDoctors: "ડૉક્ટર શોધો",
+    navHospitals: "હોસ્પિટલ શોધો",
     specialties: "વિશેષતા",
     symptoms: "લક્ષણો",
     faq: "પ્રશ્નો",
@@ -602,6 +608,7 @@ Object.assign(translations.gu, {
 
 const supportedLanguages = ["en", "hi"];
 const relatedLanguageBase = {};
+const DOCTOR_PLACEHOLDER_IMAGE = "/assets/doctor-placeholder.png";
 
 let currentLanguage = localStorage.getItem("freehospitalsLanguage") || "en";
 const pathLanguage = window.location.pathname.split("/").filter(Boolean)[0];
@@ -824,9 +831,6 @@ const generalEnquiryButton = document.querySelector("#generalEnquiryButton");
 const languageSelect = document.querySelector("#languageSelect");
 const menuToggle = document.querySelector("#menuToggle");
 const primaryNav = document.querySelector("#primaryNav");
-const megaTriggers = document.querySelectorAll("[data-mega-trigger]");
-const openWizard = document.querySelector("#openWizard");
-const findWizard = document.querySelector("#findWizard");
 const doctorWizard = document.querySelector("#doctorWizard");
 const wizardEnquiry = document.querySelector("#wizardEnquiry");
 const searchSuggestions = document.querySelector("#searchSuggestions");
@@ -1029,6 +1033,14 @@ function localizedDoctor(doctor) {
   };
 }
 
+function doctorImageSrc(doctor) {
+  return doctor.image?.trim() || DOCTOR_PLACEHOLDER_IMAGE;
+}
+
+function doctorImageFallbackAttr() {
+  return `onerror="this.onerror=null;this.src='${DOCTOR_PLACEHOLDER_IMAGE}'"`;
+}
+
 function fillSelect(select, values, placeholder) {
   select.innerHTML = `<option value="All">${placeholder}</option>`;
   values.forEach((value) => {
@@ -1057,6 +1069,7 @@ function matchesSet(selected, available) {
 }
 
 function updateAuthButton() {
+  if (!openAuth) return;
   openAuth.textContent = listingState.user ? `Hi, ${listingState.user.name || "there"}` : t("login");
 }
 
@@ -1191,7 +1204,7 @@ function doctorCard(doctor) {
   const displayDoctor = localizedDoctor(doctor);
   return `
     <article class="doctor-card">
-      <img class="doctor-photo" src="${doctor.image}" alt="${displayDoctor.displayName}" />
+      <img class="doctor-photo" src="${doctorImageSrc(doctor)}" alt="${displayDoctor.displayName}" ${doctorImageFallbackAttr()} />
       <div class="doctor-main">
         <div class="doctor-card-head">
           <h3>${displayDoctor.displayName}</h3>
@@ -1212,8 +1225,6 @@ function doctorCard(doctor) {
       </div>
       <div class="doctor-action">
         <button class="book-button" type="button" data-contact="${doctor.id}" data-source="Doctor card request">${t("requestContact")}</button>
-        <a class="call-button" href="tel:+918586930497">Call Now</a>
-        <a class="whatsapp-button" href="${whatsAppUrl(doctor, "Doctor card WhatsApp")}" target="_blank" rel="noreferrer">WhatsApp</a>
         <button class="detail-button" type="button" data-detail="${doctor.id}">${t("viewProfile")}</button>
       </div>
     </article>
@@ -1336,6 +1347,7 @@ function trackEvent(type, details = {}) {
 }
 
 function renderBrowseLinks() {
+  if (!browseCities || !browseSpecialties) return;
   const cities = [...new Set(doctors.filter((doctor) => doctor.published !== false).map((doctor) => doctor.city))]
     .filter(Boolean)
     .slice(0, 10);
@@ -1386,7 +1398,7 @@ function renderSavedDrawer() {
           const displayDoctor = localizedDoctor(doctor);
           return `
             <article class="saved-item">
-              <img src="${doctor.image}" alt="Portrait of ${doctor.name}" />
+              <img src="${doctorImageSrc(doctor)}" alt="Portrait of ${doctor.name}" ${doctorImageFallbackAttr()} />
               <div>
                 <strong>${doctor.name}</strong>
                 <span>${displayDoctor.displaySpecialty} in ${doctor.city}</span>
@@ -1483,7 +1495,7 @@ function detailMarkup(doctor) {
       <button class="icon-button" type="button" data-close="doctorDetailModal" aria-label="Close doctor profile">x</button>
     </div>
     <div class="doctor-detail-grid">
-      <img class="doctor-detail-photo" src="${doctor.image}" alt="${displayDoctor.displayName}" />
+      <img class="doctor-detail-photo" src="${doctorImageSrc(doctor)}" alt="${displayDoctor.displayName}" ${doctorImageFallbackAttr()} />
       <div>
         <p class="specialty-line">${displayDoctor.displaySpecialty} ${t("inLocation")} ${doctor.city}, ${doctor.state}</p>
         ${doctor.verified ? `<p class="verified-profile-line">${t("verifiedProfile")}${doctor.registrationNumber ? ` - Reg. ${doctor.registrationNumber}` : ""}</p>` : ""}
@@ -1509,10 +1521,7 @@ function detailMarkup(doctor) {
     ${displayDoctor.displayServices.length ? `<div class="chips">${displayDoctor.displayServices.map((service) => `<span class="chip">${service}</span>`).join("")}</div>` : ""}
     <div class="contact-actions">
       <button class="primary-button" type="button" data-contact="${doctor.id}" data-source="Doctor profile request">${t("requestContact")}</button>
-      <a class="whatsapp-button" href="${whatsAppUrl(doctor, "Doctor profile WhatsApp")}" target="_blank" rel="noreferrer">${t("whatsappDesk")}</a>
-      <a class="call-button" href="tel:+918586930497">Call +91 8586930497</a>
     </div>
-    ${doctor.mapUrl ? `<a class="seo-link" href="${doctor.mapUrl}" target="_blank" rel="noreferrer">${t("openMap")}</a>` : ""}
   `;
 }
 
@@ -1611,12 +1620,10 @@ function applyTranslations() {
   document.title = currentLanguage === "en" ? "Freehospitals Doctor Listings" : `${t("findDoctor")} | Freehospitals`;
 
   setText(".language-switcher span", t("language"));
-  setText('.nav-links a[href="#doctors"]', t("doctors"));
-  setText('.nav-links a[href="#specialties"]', t("specialties"));
-  setText('.nav-links a[href="#symptoms"]', t("symptoms"));
-  setText('.nav-links a[href="#faq"]', t("faq"));
+  setText('.nav-links [data-nav="doctors"]', t("navDoctors"));
+  setText('.nav-links [data-nav="hospitals"]', t("navHospitals"));
   setText(".urgent-link", t("urgentCare"));
-  openAuth.dataset.shortLabel = t("loginShort");
+  if (openAuth) openAuth.dataset.shortLabel = t("loginShort");
   document.querySelector(".urgent-link").dataset.shortLabel = t("urgentShort");
   setText(".emergency-banner strong", t("emergencyTitle"));
   setText(".emergency-banner span", t("emergencyText"));
@@ -1624,8 +1631,7 @@ function applyTranslations() {
   setText("#page-title", t("heroTitle"));
   setText(".search-copy > p:not(.eyebrow)", t("heroCopy"));
   setText('.hero-actions a[href="#doctors"]', t("findDoctor"));
-  setText('.hero-actions a[href="#journey"]', t("howItWorks"));
-  setText("#openWizard", t("helpFind"));
+  setText('.hero-actions a[href="#faq"]', currentLanguage === "hi" ? "सामान्य प्रश्न" : "Common questions");
   setText('label[for="searchInput"] span', t("searchLabel"));
   setPlaceholder("#searchInput", t("searchPlaceholder"));
   setText('label[for="specialtyFilter"] span', t("specialty"));
@@ -1726,7 +1732,6 @@ function applyTranslations() {
   setText(".faq-grid details:nth-child(4) p", t("faqWhatsappAnswer"));
   setText(".site-footer span", t("footerText"));
   setText('.site-footer a[href="#doctors"]', t("doctors"));
-  setText('.site-footer a[href="#symptoms"]', t("symptoms"));
   setText('.site-footer a[href="#faq"]', t("faq"));
   setText('.site-footer a[href="privacy.html"]', t("privacy"));
   setText('.site-footer a[href="terms.html"]', t("terms"));
@@ -1752,7 +1757,7 @@ function applyTranslations() {
   setText('.mobile-contact-bar a[href="#doctors"]', t("findDoctorMobile"));
   setText("#menuToggle", t("menu"));
   setText("#wizard-title", t("helpMeFind"));
-  setText("#findWizard .section-copy p:not(.eyebrow)", t("wizardCopy"));
+  setText("#wizardCopyText", t("wizardCopy"));
   setFieldLabel("#wizardProblem", t("wizardProblem"));
   setFieldLabel("#wizardCity", t("wizardCity"));
   setFieldLabel("#wizardPatient", t("wizardPatient"));
@@ -1888,7 +1893,7 @@ doctorDetailContent.addEventListener("click", (event) => {
   }
 });
 
-openAuth.addEventListener("click", () => {
+openAuth?.addEventListener("click", () => {
   if (listingState.user) {
     authForm.authName.value = listingState.user.name || "";
     authForm.authEmail.value = listingState.user.email || "";
@@ -1897,7 +1902,7 @@ openAuth.addEventListener("click", () => {
   authModal.showModal();
 });
 
-authForm.addEventListener("submit", (event) => {
+authForm?.addEventListener("submit", (event) => {
   event.preventDefault();
   const formData = new FormData(authForm);
   const password = String(formData.get("password") || "");
@@ -2057,17 +2062,12 @@ document.addEventListener("keydown", (event) => {
 document.querySelector(".sidebar").addEventListener("click", (event) => {
   if (event.target.classList.contains("sidebar")) document.body.classList.remove("filters-open");
 });
-openWizard.addEventListener("click", () => {
-  findWizard.hidden = !findWizard.hidden;
-  trackEvent("wizard_toggle", { open: !findWizard.hidden });
-  if (!findWizard.hidden) findWizard.scrollIntoView({ behavior: "smooth" });
-});
-doctorWizard.addEventListener("submit", (event) => {
+doctorWizard?.addEventListener("submit", (event) => {
   event.preventDefault();
   trackEvent("wizard_submit");
   applyWizardFilters();
 });
-wizardEnquiry.addEventListener("click", () => {
+wizardEnquiry?.addEventListener("click", () => {
   applyWizardFilters();
   openContactForm(careDeskDoctor(), "Find my doctor wizard enquiry");
 });
@@ -2135,7 +2135,7 @@ document.querySelector("#nearbySuggestions")?.addEventListener("click", (event) 
   render();
 });
 
-browseCities.addEventListener("click", (event) => {
+browseCities?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-browse-city]");
   if (!button) return;
   const city = button.dataset.browseCity;
@@ -2150,7 +2150,7 @@ browseCities.addEventListener("click", (event) => {
   document.querySelector("#doctors").scrollIntoView({ behavior: "smooth" });
 });
 
-browseSpecialties.addEventListener("click", (event) => {
+browseSpecialties?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-browse-specialty]");
   if (!button) return;
   listingState.specialty = button.dataset.browseSpecialty;
@@ -2172,49 +2172,9 @@ menuToggle.addEventListener("click", () => {
   menuToggle.setAttribute("aria-expanded", String(isOpen));
 });
 
-megaTriggers.forEach((trigger) => {
-  trigger.addEventListener("click", (event) => {
-    event.stopPropagation();
-    const item = trigger.closest(".mega-item");
-    const isOpen = item.classList.toggle("mega-open");
-    trigger.setAttribute("aria-expanded", String(isOpen));
-    document.querySelectorAll(".mega-item").forEach((other) => {
-      if (other === item) return;
-      other.classList.remove("mega-open");
-      other.querySelector("[data-mega-trigger]")?.setAttribute("aria-expanded", "false");
-    });
-  });
-});
-
 primaryNav.addEventListener("click", (event) => {
-  const specialtyLink = event.target.closest("[data-menu-specialty]");
-  const symptomLink = event.target.closest("[data-menu-symptom]");
-  if (event.target.closest("[data-mega-trigger]")) return;
-  if (specialtyLink) {
-    listingState.specialty = specialtyLink.dataset.menuSpecialty;
-    specialtyFilter.value = listingState.specialty;
-    render();
-  }
-  if (symptomLink) {
-    listingState.search = symptomLink.dataset.menuSymptom;
-    searchInput.value = listingState.search;
-    if (listingSearchInput) listingSearchInput.value = listingState.search;
-    render();
-  }
   document.body.classList.remove("menu-open");
   menuToggle.setAttribute("aria-expanded", "false");
-  document.querySelectorAll(".mega-item").forEach((item) => {
-    item.classList.remove("mega-open");
-    item.querySelector("[data-mega-trigger]")?.setAttribute("aria-expanded", "false");
-  });
-});
-
-document.addEventListener("click", (event) => {
-  if (event.target.closest(".mega-nav")) return;
-  document.querySelectorAll(".mega-item").forEach((item) => {
-    item.classList.remove("mega-open");
-    item.querySelector("[data-mega-trigger]")?.setAttribute("aria-expanded", "false");
-  });
 });
 
 document.querySelectorAll("[data-symptom]").forEach((button) => {
@@ -2228,7 +2188,7 @@ document.querySelectorAll("[data-symptom]").forEach((button) => {
   });
 });
 
-nearMeButton.addEventListener("click", () => {
+nearMeButton?.addEventListener("click", () => {
   if (!navigator.geolocation) {
     nearMeMessage.textContent = "Location is not available in this browser. Please choose your state and city.";
     nearMeMessage.className = "form-note error";

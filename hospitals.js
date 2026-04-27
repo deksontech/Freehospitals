@@ -26,10 +26,8 @@ if (!["en", "hi"].includes(currentLanguage)) currentLanguage = "en";
 const translations = {
   en: {
     language: "Language",
-    navDoctors: "Doctors",
-    navHospitals: "Affiliated Hospitals",
-    navSymptoms: "Symptoms",
-    navFaq: "FAQ",
+    navDoctors: "Find Doctors",
+    navHospitals: "Find Hospitals",
     urgentCare: "Need urgent care?",
     affiliatedHospitals: "Affiliated hospitals",
     hospitalHeroTitle: "Find hospitals connected with care support.",
@@ -95,10 +93,8 @@ const translations = {
   },
   hi: {
     language: "\u092d\u093e\u0937\u093e",
-    navDoctors: "\u0921\u0949\u0915\u094d\u091f\u0930",
-    navHospitals: "\u0938\u0902\u092c\u0926\u094d\u0927 \u0905\u0938\u094d\u092a\u0924\u093e\u0932",
-    navSymptoms: "\u0932\u0915\u094d\u0937\u0923",
-    navFaq: "\u0938\u0935\u093e\u0932",
+    navDoctors: "\u0921\u0949\u0915\u094d\u091f\u0930 \u0916\u094b\u091c\u0947\u0902",
+    navHospitals: "\u0905\u0938\u094d\u092a\u0924\u093e\u0932 \u0916\u094b\u091c\u0947\u0902",
     urgentCare: "\u0924\u0941\u0930\u0902\u0924 \u0926\u0947\u0916\u092d\u093e\u0932 \u091a\u093e\u0939\u093f\u090f?",
     affiliatedHospitals: "\u0938\u0902\u092c\u0926\u094d\u0927 \u0905\u0938\u094d\u092a\u0924\u093e\u0932",
     hospitalHeroTitle: "\u0915\u0947\u092f\u0930 \u0938\u092a\u094b\u0930\u094d\u091f \u0938\u0947 \u091c\u0941\u0921\u093c\u0947 \u0905\u0938\u094d\u092a\u0924\u093e\u0932 \u0922\u0942\u0902\u0922\u0947\u0902\u0964",
@@ -213,6 +209,8 @@ const hospitalRequestModal = document.querySelector("#hospitalRequestModal");
 const hospitalRequestForm = document.querySelector("#hospitalRequestForm");
 const hospitalRequestMessage = document.querySelector("#hospitalRequestMessage");
 const hospitalLanguageSelect = document.querySelector("#hospitalLanguageSelect");
+const menuToggle = document.querySelector("#menuToggle");
+const primaryNav = document.querySelector("#primaryNav");
 
 function unique(values) {
   return [...new Set(values.filter(Boolean))].sort();
@@ -268,11 +266,8 @@ function hospitalCard(hospital) {
         <div class="chips">${[...(hospital.specialties || []), ...(hospital.services || [])].slice(0, 8).map((item) => `<span class="chip">${translateTerm(item)}</span>`).join("")}</div>
       </div>
       <div class="doctor-action">
-        <a class="call-button" data-hospital-call="${hospital.id}" href="tel:+918586930497">${t("callCareDesk")}</a>
-        <a class="whatsapp-button" data-hospital-whatsapp="${hospital.id}" href="https://wa.me/918586930497?text=${encodeURIComponent(`Hello, I want help with ${hospital.name}.`)}" target="_blank" rel="noreferrer">${t("whatsapp")}</a>
-        <a class="detail-button" href="/hospitals/${slugify(hospital.name)}" data-hospital-detail="${hospital.id}">${t("viewHospital")}</a>
-        <button class="book-button" type="button" data-hospital-request="${hospital.id}">${t("requestHelp")}</button>
-        ${hospital.mapUrl ? `<a class="detail-button" href="${hospital.mapUrl}" target="_blank" rel="noreferrer">${t("map")}</a>` : ""}
+        <button class="book-button" type="button" data-hospital-request="${hospital.id}">Request Contact</button>
+        <a class="detail-button" href="/hospitals/${slugify(hospital.name)}" data-hospital-detail="${hospital.id}">View Profile</a>
       </div>
     </article>
   `;
@@ -325,9 +320,6 @@ function renderHospitalDetail(hospital) {
       </div>
       <div class="contact-actions">
         <button class="primary-button" type="button" data-hospital-request="${hospital.id}">${t("requestHospitalHelp")}</button>
-        <a class="call-button" data-hospital-call="${hospital.id}" href="tel:+918586930497">${t("callCareDesk")}</a>
-        <a class="whatsapp-button" data-hospital-whatsapp="${hospital.id}" href="https://wa.me/918586930497?text=${encodeURIComponent(`Hello, I want help with ${hospital.name}.`)}" target="_blank" rel="noreferrer">${t("sendRequestWhatsapp")}</a>
-        ${hospital.mapUrl ? `<a class="detail-button" href="${hospital.mapUrl}" target="_blank" rel="noreferrer">${t("openMap")}</a>` : ""}
       </div>
     </section>
   `;
@@ -474,6 +466,16 @@ hospitalLanguageSelect?.addEventListener("change", (event) => {
   currentLanguage = event.target.value;
   localStorage.setItem("freehospitalsLanguage", currentLanguage);
   rerenderHospitalLanguage();
+});
+
+menuToggle?.addEventListener("click", () => {
+  const isOpen = document.body.classList.toggle("menu-open");
+  menuToggle.setAttribute("aria-expanded", String(isOpen));
+});
+
+primaryNav?.addEventListener("click", () => {
+  document.body.classList.remove("menu-open");
+  menuToggle?.setAttribute("aria-expanded", "false");
 });
 
 applyHospitalTranslations();

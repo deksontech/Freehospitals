@@ -24,83 +24,9 @@
         <span>Freehospitals</span>
       </a>
       <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="primaryNav">Menu</button>
-      <nav class="nav-links mega-nav" id="primaryNav" aria-label="Primary navigation">
-        <div class="mega-item">
-          <button class="mega-trigger" type="button" data-mega-trigger aria-expanded="false">Discover Freehospitals</button>
-          <div class="mega-menu">
-            <div class="mega-side">
-              <a href="#doctors">Find a doctor</a>
-              <a href="hospitals.html">Affiliated hospitals</a>
-              <a href="#journey">How Freehospitals works</a>
-              <a href="#faq">FAQs</a>
-            </div>
-            <div class="mega-links">
-              <a href="#doctors">Verified doctors</a>
-              <a href="hospitals.html">Hospitals and private clinics</a>
-              <a href="#symptoms">Symptom search</a>
-              <a href="#browse">Browse by city</a>
-              <a href="#specialties">Popular specialties</a>
-              <a href="#help">Care desk support</a>
-            </div>
-          </div>
-        </div>
-        <div class="mega-item">
-          <button class="mega-trigger" type="button" data-mega-trigger aria-expanded="false">Find Hospital</button>
-          <div class="mega-menu compact-mega">
-            <div class="mega-links">
-              <a href="hospitals.html">Search hospitals</a>
-              <a href="/hospitals/cardiology/ahmedabad">Cardiology hospitals</a>
-              <a href="/hospitals/general-medicine/delhi">General medicine hospitals</a>
-              <a href="/hospitals/pediatrics/mumbai">Pediatric hospitals</a>
-              <a href="/hospitals/orthopedics/jaipur">Orthopedic hospitals</a>
-              <a href="hospitals.html#hospitals">Verified hospitals</a>
-            </div>
-          </div>
-        </div>
-        <div class="mega-item">
-          <button class="mega-trigger" type="button" data-mega-trigger aria-expanded="false">Medical Services</button>
-          <div class="mega-menu">
-            <div class="mega-side">
-              <a href="#specialties">Specialties</a>
-              <a href="#symptoms">Symptoms guide</a>
-              <a href="#doctors">Doctor search</a>
-              <a href="#help">Care desk</a>
-            </div>
-            <div class="mega-links three-col">
-              <a href="#doctors" data-menu-specialty="Cardiologist">Cardiology</a>
-              <a href="#doctors" data-menu-specialty="Dermatologist">Dermatology</a>
-              <a href="#doctors" data-menu-specialty="Gynecologist">Gynecology</a>
-              <a href="#doctors" data-menu-specialty="Pediatrician">Pediatrics</a>
-              <a href="#doctors" data-menu-specialty="Orthopedic Surgeon">Orthopedics</a>
-              <a href="#doctors" data-menu-specialty="General Physician">General Medicine</a>
-              <a href="#doctors" data-menu-specialty="Neurologist">Neurology</a>
-              <a href="#doctors" data-menu-specialty="ENT Specialist">ENT</a>
-              <a href="#doctors" data-menu-specialty="General Surgeon">General Surgery</a>
-            </div>
-          </div>
-        </div>
-        <div class="mega-item">
-          <button class="mega-trigger" type="button" data-mega-trigger aria-expanded="false">Health Library</button>
-          <div class="mega-menu health-mega">
-            <div class="mega-side">
-              <a href="#symptoms">Diseases and Conditions</a>
-              <a href="#symptoms">Symptoms Guide</a>
-              <a href="#specialties">Treatments and Procedures</a>
-              <a href="#faq">Patient FAQs</a>
-            </div>
-            <div class="mega-links three-col">
-              <a href="#symptoms" data-menu-symptom="diabetes">Diabetes Mellitus</a>
-              <a href="#symptoms" data-menu-symptom="blood pressure">Hypertension</a>
-              <a href="#symptoms" data-menu-symptom="skin allergy">Skin Conditions</a>
-              <a href="#symptoms" data-menu-symptom="pregnancy">Pregnancy</a>
-              <a href="#symptoms" data-menu-symptom="back pain">Back Pain</a>
-              <a href="#symptoms" data-menu-symptom="fever">Fever and Infection</a>
-              <a href="#symptoms" data-menu-symptom="heart">Heart Health</a>
-              <a href="#symptoms" data-menu-symptom="child fever">Child Health</a>
-              <a href="#symptoms" data-menu-symptom="headache">Headache</a>
-            </div>
-          </div>
-        </div>
+      <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
+        <a href="#doctors" data-nav="doctors">Find Doctors</a>
+        <a href="hospitals.html" data-nav="hospitals">Find Hospitals</a>
       </nav>
       <div class="top-actions">
         <label class="language-switcher" for="languageSelect">
@@ -110,7 +36,6 @@
             <option value="hi">&#2361;&#2367;&#2306;&#2342;&#2368;</option>
           </select>
         </label>
-        <button class="login-button" id="openAuth" type="button">Login / Sign up</button>
         <a class="urgent-link" href="tel:108">Need urgent care?</a>
       </div>
     </header>
@@ -131,12 +56,63 @@
           </p>
           <div class="hero-actions">
             <a class="primary-link" href="#doctors">Find a doctor</a>
-            <a class="secondary-link" href="#journey">How it works</a>
-            <button class="secondary-link button-link" id="openWizard" type="button">Find my doctor</button>
+            <a class="secondary-link" href="#faq">Common questions</a>
           </div>
         </div>
 
-        <form class="finder" id="finder" aria-label="Doctor search filters">
+        <form class="wizard-card hero-wizard" id="doctorWizard" aria-labelledby="wizard-title">
+          <div class="hero-wizard-copy">
+            <p class="eyebrow">Guided search</p>
+            <h2 id="wizard-title">Find my doctor</h2>
+            <p id="wizardCopyText">Answer a few quick questions and we will set up the search for you.</p>
+          </div>
+          <label class="field">
+            <span>What problem are you facing?</span>
+            <select id="wizardProblem">
+              <option value="">Select concern</option>
+              <option value="General Physician">Fever, cough, weakness</option>
+              <option value="Cardiologist">Chest pain or BP</option>
+              <option value="Dermatologist">Skin, acne, hair fall</option>
+              <option value="Gynecologist">Pregnancy, PCOS, periods</option>
+              <option value="Pediatrician">Child fever or vaccination</option>
+              <option value="Orthopedic Surgeon">Back pain, joint pain, injury</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Which city are you in?</span>
+            <input id="wizardCity" type="text" placeholder="Delhi, Noida, Ahmedabad" />
+          </label>
+          <label class="field">
+            <span>Who is the patient?</span>
+            <select id="wizardPatient">
+              <option value="">Adult or child</option>
+              <option value="adult">Adult</option>
+              <option value="child">Child</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Preferred language</span>
+            <select id="wizardLanguage">
+              <option value="">Any language</option>
+              <option value="Hindi">Hindi</option>
+              <option value="English">English</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Urgency</span>
+            <select id="wizardUrgency">
+              <option value="All">Routine</option>
+              <option value="Today">Today</option>
+              <option value="Tomorrow">Tomorrow</option>
+            </select>
+          </label>
+          <div class="contact-actions">
+            <button class="primary-button" type="submit">Show matches</button>
+            <button class="save-button" id="wizardEnquiry" type="button">Ask care desk</button>
+          </div>
+        </form>
+
+        <form class="finder" id="finder" aria-label="Doctor search filters" hidden>
           <label class="field wide" for="searchInput">
             <span>Doctor, symptom, or specialty</span>
             <input
@@ -201,221 +177,6 @@
         </div>
       </section>
 
-      <section class="wizard-section" id="findWizard" aria-labelledby="wizard-title" hidden>
-        <div class="section-copy">
-          <p class="eyebrow">Guided search</p>
-          <h2 id="wizard-title">Find my doctor</h2>
-          <p>Answer a few quick questions and we will set up the search for you.</p>
-        </div>
-        <form class="wizard-card" id="doctorWizard">
-          <label class="field">
-            <span>What problem are you facing?</span>
-            <select id="wizardProblem">
-              <option value="">Select concern</option>
-              <option value="General Physician">Fever, cough, weakness</option>
-              <option value="Cardiologist">Chest pain or BP</option>
-              <option value="Dermatologist">Skin, acne, hair fall</option>
-              <option value="Gynecologist">Pregnancy, PCOS, periods</option>
-              <option value="Pediatrician">Child fever or vaccination</option>
-              <option value="Orthopedic Surgeon">Back pain, joint pain, injury</option>
-            </select>
-          </label>
-          <label class="field">
-            <span>Which city are you in?</span>
-            <input id="wizardCity" type="text" placeholder="Delhi, Noida, Ahmedabad" />
-          </label>
-          <label class="field">
-            <span>Who is the patient?</span>
-            <select id="wizardPatient">
-              <option value="">Adult or child</option>
-              <option value="adult">Adult</option>
-              <option value="child">Child</option>
-            </select>
-          </label>
-          <label class="field">
-            <span>Preferred language</span>
-            <select id="wizardLanguage">
-              <option value="">Any language</option>
-              <option value="Hindi">Hindi</option>
-              <option value="English">English</option>
-            </select>
-          </label>
-          <label class="field">
-            <span>Urgency</span>
-            <select id="wizardUrgency">
-              <option value="All">Routine</option>
-              <option value="Today">Today</option>
-              <option value="Tomorrow">Tomorrow</option>
-            </select>
-          </label>
-          <div class="contact-actions">
-            <button class="primary-button" type="submit">Show matches</button>
-            <button class="save-button" id="wizardEnquiry" type="button">Ask care desk</button>
-          </div>
-        </form>
-      </section>
-
-      <section class="symptom-section" id="symptoms" aria-labelledby="symptom-title">
-        <div class="section-copy">
-          <p class="eyebrow">Search by symptom</p>
-          <h2 id="symptom-title">Not sure which specialist you need?</h2>
-          <p>Choose what feels closest. We will point the search toward the right category.</p>
-        </div>
-        <div class="symptom-grid">
-          <button type="button" data-symptom="Fever cough weakness" data-specialty="General Physician">
-            <strong>Fever, cough, weakness</strong>
-            <span>General Physician</span>
-          </button>
-          <button type="button" data-symptom="Chest pain blood pressure heart" data-specialty="Cardiologist">
-            <strong>Chest pain or BP</strong>
-            <span>Cardiologist</span>
-          </button>
-          <button type="button" data-symptom="Acne rash hair fall skin" data-specialty="Dermatologist">
-            <strong>Skin, acne, hair fall</strong>
-            <span>Dermatologist</span>
-          </button>
-          <button type="button" data-symptom="Pregnancy PCOS periods" data-specialty="Gynecologist">
-            <strong>Pregnancy, PCOS, periods</strong>
-            <span>Gynecologist</span>
-          </button>
-          <button type="button" data-symptom="Child fever vaccination" data-specialty="Pediatrician">
-            <strong>Child fever or vaccine</strong>
-            <span>Pediatrician</span>
-          </button>
-          <button type="button" data-symptom="Joint pain fracture sports injury" data-specialty="Orthopedic Surgeon">
-            <strong>Joint pain or injury</strong>
-            <span>Orthopedic Surgeon</span>
-          </button>
-        </div>
-      </section>
-
-      <section class="insights" aria-label="Freehospitals highlights">
-        <article>
-          <strong>120+</strong>
-          <span>verified doctors</span>
-        </article>
-        <article>
-          <strong>24x7</strong>
-          <span>request support</span>
-        </article>
-        <article>
-          <strong>4.8</strong>
-          <span>average patient rating</span>
-        </article>
-      </section>
-
-      <section class="feature-band" id="journey" aria-labelledby="journey-title">
-        <div class="section-copy">
-          <p class="eyebrow">Simple care journey</p>
-          <h2 id="journey-title">From search to callback in minutes.</h2>
-          <p>
-            Find a doctor, submit one request, and let the care desk help you connect.
-          </p>
-        </div>
-        <div class="steps">
-          <article>
-            <span>01</span>
-            <h3>Find a doctor</h3>
-            <p>Search by symptom, specialty, state, city, hospital, language, and availability.</p>
-          </article>
-          <article>
-            <span>02</span>
-            <h3>Submit request</h3>
-            <p>Share patient details, health concern, and the best time to be contacted.</p>
-          </article>
-          <article>
-            <span>03</span>
-            <h3>Care desk connects</h3>
-            <p>The Freehospitals care desk helps you with the next call, WhatsApp, or email step.</p>
-          </article>
-        </div>
-      </section>
-
-      <section class="trust-cards" aria-labelledby="freehospitals-trust-title">
-        <div class="section-copy">
-          <p class="eyebrow">Why patients use Freehospitals</p>
-          <h2 id="freehospitals-trust-title">Clear, free, and easy to act on.</h2>
-        </div>
-        <div class="trust-card-grid">
-          <article><strong>Free of Cost</strong><span>No charge to submit a doctor contact request.</span></article>
-          <article><strong>No hidden charges</strong><span>Any clinic or hospital terms are confirmed before the visit.</span></article>
-          <article><strong>Care desk support</strong><span>A centralized team helps patients connect with the right next step.</span></article>
-          <article><strong>Hospitals and private clinics</strong><span>Search both hospital-affiliated doctors and private clinic doctors.</span></article>
-          <article><strong>Available across Indian states</strong><span>Browse doctors by state and city as the network grows.</span></article>
-        </div>
-      </section>
-
-      <section class="specialty-showcase" id="specialties" aria-labelledby="specialty-title">
-        <div class="section-copy">
-          <p class="eyebrow">Popular specialties</p>
-          <h2 id="specialty-title">Care that matches the moment.</h2>
-        </div>
-        <div class="specialty-grid">
-          <article>
-            <img
-              src="https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=640&q=80"
-              alt="Doctor checking a child's heartbeat"
-            />
-            <h3>Pediatric Care</h3>
-            <p>Fever, nutrition, vaccines, newborn support, and growth concerns.</p>
-          </article>
-          <article>
-            <img
-              src="https://images.unsplash.com/photo-1612277795421-9bc7706a4a34?auto=format&fit=crop&w=640&q=80"
-              alt="Doctor discussing heart health with a patient"
-            />
-            <h3>Heart Health</h3>
-            <p>Blood pressure, cholesterol, rhythm concerns, and prevention plans.</p>
-          </article>
-          <article>
-            <img
-              src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=640&q=80"
-              alt="Modern clinic care room"
-            />
-            <h3>Everyday Consults</h3>
-            <p>General medicine, skin, ENT, orthopedics, and women's health.</p>
-          </article>
-        </div>
-      </section>
-
-      <section class="trust-section" aria-labelledby="trust-title">
-        <img
-          src="https://images.unsplash.com/photo-1550831107-1553da8c8464?auto=format&fit=crop&w=900&q=80"
-          alt="Doctor speaking with a patient in a clinic"
-        />
-        <div>
-          <p class="eyebrow">Built for confidence</p>
-          <h2 id="trust-title">Clear information before the first call.</h2>
-          <p>
-            Every listing keeps the essentials easy to scan: specialty, hospital or clinic, city, availability,
-            language, and supported visit options.
-          </p>
-          <div class="trust-list">
-            <span>Verified profiles</span>
-            <span>Free contact requests</span>
-            <span>India-wide location search</span>
-          </div>
-        </div>
-      </section>
-
-      <section class="browse-section" aria-labelledby="browse-title">
-        <div class="section-copy">
-          <p class="eyebrow">Browse faster</p>
-          <h2 id="browse-title">Start with a city or specialty.</h2>
-          <p>Choose a popular location or doctor category and we will take you straight to matching doctors.</p>
-        </div>
-        <div class="browse-grid">
-          <article>
-            <h3>Browse by city</h3>
-            <div class="browse-links" id="browseCities"></div>
-          </article>
-          <article>
-            <h3>Browse by specialty</h3>
-            <div class="browse-links" id="browseSpecialties"></div>
-          </article>
-        </div>
-      </section>
-
       <section class="content-grid" id="doctors">
         <aside class="sidebar" aria-label="Listing controls">
           <div class="panel">
@@ -425,8 +186,6 @@
               <button type="button" id="closeFilters">Close</button>
             </div>
             <div class="active-filter-list" id="activeFilterList" aria-live="polite"></div>
-            <button class="near-me-button" type="button" id="nearMeButton">Use my location</button>
-            <p class="form-note" id="nearMeMessage">Choose state and city, or allow location to find nearby options.</p>
             <div class="filter-group" id="categoryFilters">
               <h3>Categories</h3>
             </div>
@@ -529,7 +288,6 @@
       <nav aria-label="Footer navigation">
         <a href="#doctors">Doctors</a>
         <a href="hospitals.html">Affiliated Hospitals</a>
-        <a href="#symptoms">Symptoms</a>
         <a href="#faq">FAQ</a>
         <a href="privacy.html">Privacy Policy</a>
         <a href="terms.html">Terms</a>
