@@ -108,19 +108,18 @@ textarea {
 }
 
 .brand {
+  flex: 0 0 auto;
   gap: 10px;
   font-weight: 800;
   font-size: 1.2rem;
 }
 
-.brand-mark {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  color: #fff;
-  background: var(--mint);
-  border-radius: 8px;
+.brand-logo {
+  display: block;
+  width: auto;
+  height: 56px;
+  max-width: min(360px, 50vw);
+  object-fit: contain;
 }
 
 .nav-links {
@@ -1784,8 +1783,9 @@ output {
   background: #1f2a27;
 }
 
-.wp-sidebar .brand-mark {
-  background: var(--coral);
+.wp-sidebar .brand-logo {
+  height: 56px;
+  max-width: 100%;
 }
 
 .wp-sidebar nav {
@@ -3219,10 +3219,9 @@ output {
     min-width: 0 !important;
   }
 
-  .topbar .brand span:last-child {
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
+  .topbar .brand-logo {
+    height: 46px !important;
+    max-width: min(300px, 68vw) !important;
   }
 
   .topbar .nav-links {

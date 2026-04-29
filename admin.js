@@ -258,7 +258,7 @@ function blankHospital() {
     services: [],
     departments: [],
     timings: "Call to confirm",
-    phone: "+91 8586930497",
+    phone: "+91 7838883008",
     email: "",
     website: "",
     mapUrl: "",

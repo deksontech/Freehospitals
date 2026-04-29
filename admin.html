@@ -11,13 +11,12 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css?v=20260413-2" />
-    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="assets/favicon.png" type="image/png" />
   </head>
   <body class="admin-body">
     <aside class="wp-sidebar" aria-label="Admin panel navigation">
       <a class="brand" href="index.html" aria-label="Freehospitals home">
-        <span class="brand-mark">+</span>
-        <span>Freehospitals</span>
+        <img class="brand-logo" src="assets/freehospitals-logo.png" alt="Freehospitals" />
       </a>
       <nav>
         <a href="#dashboard">Dashboard</a>
@@ -180,7 +179,7 @@
               </label>
               <label class="field" for="adminHospitalPhone">
                 <span>Phone</span>
-                <input id="adminHospitalPhone" name="phone" placeholder="+91 8586930497" />
+                <input id="adminHospitalPhone" name="phone" placeholder="+91 7838883008" />
               </label>
               <label class="field" for="adminHospitalSpecialties">
                 <span>Specialties</span>
@@ -571,7 +570,8 @@
         <p>
           `ADMIN_PASSWORD` in `.env` is your super admin password. Use the Admin Access tab to create additional admins
           with selected views.
-          Patient request notifications are sent to `CONTACT_TO`, currently vishal@deksontech.com. Keep `.env` private.
+          Patient request notifications are sent to `CONTACT_TO`, and WhatsApp admin alerts use `ADMIN_WHATSAPP_TO`
+          together with the Twilio WhatsApp variables in `.env`. Keep `.env` private.
         </p>
       </section>
     </main>

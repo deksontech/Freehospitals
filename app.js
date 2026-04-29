@@ -609,6 +609,8 @@ Object.assign(translations.gu, {
 const supportedLanguages = ["en", "hi"];
 const relatedLanguageBase = {};
 const DOCTOR_PLACEHOLDER_IMAGE = "/assets/doctor-placeholder.png";
+const CARE_DESK_PHONE = "+917838883008";
+const CARE_DESK_WHATSAPP = "917838883008";
 
 let currentLanguage = localStorage.getItem("freehospitalsLanguage") || "en";
 const pathLanguage = window.location.pathname.split("/").filter(Boolean)[0];
@@ -1115,7 +1117,7 @@ function hospitalMiniCard(hospital) {
       <span>${hospital.timings || "Call to confirm"}</span>
       <div class="contact-actions">
         <a class="detail-button" href="/hospitals/${slugify(hospital.name)}">View hospital</a>
-        <a class="call-button" href="tel:+918586930497">Call</a>
+          <a class="call-button" href="tel:${CARE_DESK_PHONE}">Call</a>
       </div>
     </div>
   `;
@@ -1465,8 +1467,8 @@ function openContactForm(doctor, source = "Doctor listing contact form") {
   contactDoctorName.textContent = doctor.id ? `${t("contactDoctor")} ${translateTerm(doctor.name)}` : t("helpMeFind");
   contactMessage.textContent = t("submitOnce");
   contactMessage.className = "form-note";
-  emailButton.hidden = true;
-  emailButton.removeAttribute("href");
+  emailButton?.setAttribute("hidden", "");
+  emailButton?.removeAttribute("href");
   successCard.hidden = true;
   contactForm.website.value = "";
 
@@ -1540,10 +1542,11 @@ function whatsAppUrl(doctor, source = "WhatsApp quick action") {
   ]
     .filter(Boolean)
     .join("\n");
-  return `https://wa.me/918586930497?text=${encodeURIComponent(text)}`;
+  return `https://wa.me/${CARE_DESK_WHATSAPP}?text=${encodeURIComponent(text)}`;
 }
 
 function updateWhatsAppLink(doctor) {
+  if (!whatsappButton) return;
   whatsappButton.href = whatsAppUrl(doctor, currentContactSource);
 }
 
@@ -1985,7 +1988,7 @@ contactForm.addEventListener("submit", async (event) => {
   submitButton.textContent = t("saving");
   contactMessage.textContent = t("savingRequest");
   contactMessage.className = "form-note";
-  emailButton.href = contactEmailUrl(doctor, formData);
+  if (emailButton) emailButton.href = contactEmailUrl(doctor, formData);
 
   try {
     const response = await fetch("/api/contact", {
@@ -1999,13 +2002,13 @@ contactForm.addEventListener("submit", async (event) => {
     contactMessage.textContent = t("requestSaved");
     contactMessage.className = "form-note success";
     successCard.hidden = false;
-    emailButton.hidden = false;
+    if (emailButton) emailButton.hidden = true;
     updateWhatsAppLink(doctor);
     trackEvent("request_submitted", { source: payload.source, doctor: payload.doctorName, specialty: payload.doctorSpecialty });
   } catch (error) {
-    contactMessage.textContent = `${error.message} You can still call, WhatsApp, or open email.`;
+    contactMessage.textContent = error.message;
     contactMessage.className = "form-note error";
-    emailButton.hidden = false;
+    if (emailButton) emailButton.hidden = true;
   } finally {
     submitButton.disabled = false;
     submitButton.textContent = originalLabel;

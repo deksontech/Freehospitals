@@ -1,0 +1,16 @@
+[
+  {
+    "id": "2d6633a1-3744-439f-83af-1bd4623627ae",
+    "name": "Vishal Gupta",
+    "email": "vishalgupta710@gmail.com",
+    "passwordHash": "9a8ed2cd4394aa35611cf8422d4baec4:a889629de6f5a72a540e579802ee5cb83c716209f4cd458b75f01bd132f51c89",
+    "permissions": [
+      "dashboard",
+      "doctorEditor",
+      "requests"
+    ],
+    "createdAt": "2026-04-27T06:24:19.917Z",
+    "updatedAt": "2026-04-27T06:24:49.572Z",
+    "role": "admin"
+  }
+]

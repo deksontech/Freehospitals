@@ -18,6 +18,10 @@ loadEnvFile();
 const port = Number(process.env.PORT || 3000);
 const contactTo = process.env.CONTACT_TO || "vishal@deksontech.com";
 const adminPassword = process.env.ADMIN_PASSWORD || "Red2blue";
+const adminWhatsAppTo = process.env.ADMIN_WHATSAPP_TO || "+917838883008";
+const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID || "";
+const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN || "";
+const twilioWhatsAppFrom = process.env.TWILIO_WHATSAPP_FROM || "";
 const adminSessions = new Map();
 const userSessions = new Map();
 const contactRateLimit = new Map();
@@ -158,6 +162,15 @@ function safeCompare(left, right) {
   const rightBuffer = Buffer.from(String(right));
   if (leftBuffer.length !== rightBuffer.length) return false;
   return timingSafeEqual(leftBuffer, rightBuffer);
+}
+
+function whatsappAddress(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  if (raw.startsWith("whatsapp:")) return raw;
+  const digits = raw.replace(/[^\d+]/g, "");
+  if (!digits) return "";
+  return `whatsapp:${digits.startsWith("+") ? digits : `+${digits}`}`;
 }
 
 function requireAdmin(req, res) {
@@ -871,6 +884,21 @@ function emailBody(submission) {
   ].filter((line) => line !== "").join("\n");
 }
 
+function whatsappAlertBody(submission) {
+  return [
+    "New Freehospitals enquiry",
+    `Type: ${submission.requestType || "doctor"}`,
+    `Patient: ${submission.patientName}`,
+    `Phone: ${submission.patientPhone}`,
+    `City: ${submission.patientCity}`,
+    `Doctor/Hospital: ${submission.doctorName}${submission.hospitalName ? ` / ${submission.hospitalName}` : ""}`,
+    `Specialty: ${submission.doctorSpecialty}`,
+    `Preferred time: ${submission.preferredTime || "Not provided"}`,
+    `Source: ${submission.source || "Doctor contact form"}`,
+    `Concern: ${submission.patientMessage}`,
+  ].join("\n");
+}
+
 async function sendViaResend(submission) {
   if (!process.env.RESEND_API_KEY) {
     return { sent: false, reason: "RESEND_API_KEY is not configured." };
@@ -897,6 +925,35 @@ async function sendViaResend(submission) {
   }
 
   return { sent: true };
+}
+
+async function sendAdminWhatsApp(submission) {
+  if (!twilioAccountSid || !twilioAuthToken || !twilioWhatsAppFrom || !adminWhatsAppTo) {
+    return { sent: false, reason: "Twilio WhatsApp credentials are not configured." };
+  }
+
+  const body = new URLSearchParams({
+    From: whatsappAddress(twilioWhatsAppFrom),
+    To: whatsappAddress(adminWhatsAppTo),
+    Body: whatsappAlertBody(submission),
+  });
+
+  const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${Buffer.from(`${twilioAccountSid}:${twilioAuthToken}`).toString("base64")}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body,
+  });
+
+  if (!response.ok) {
+    const details = await response.text();
+    throw new Error(`WhatsApp provider rejected the request: ${details}`);
+  }
+
+  const result = await response.json();
+  return { sent: true, sid: result.sid || "", status: result.status || "" };
 }
 
 async function handleContact(req, res) {
@@ -949,14 +1006,19 @@ async function handleContact(req, res) {
     };
 
     await storeSubmission(submission);
-    const email = await sendViaResend(submission);
+    const [email, whatsapp] = await Promise.all([
+      sendViaResend(submission).catch((error) => ({ sent: false, reason: error.message })),
+      sendAdminWhatsApp(submission).catch((error) => ({ sent: false, reason: error.message })),
+    ]);
 
     jsonResponse(res, 200, {
       ok: true,
-      message: email.sent
-        ? "Your request was sent successfully."
-        : "Your request was saved. Email delivery will start after the backend email key is configured.",
+      message:
+        email.sent || whatsapp.sent
+          ? "Your request was sent successfully."
+          : "Your request was saved. Email and WhatsApp delivery will start after the backend credentials are configured.",
       email,
+      whatsapp,
     });
   } catch (error) {
     jsonResponse(res, 500, {

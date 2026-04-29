@@ -21,6 +21,8 @@ let doctors = [];
 let activeHospital = null;
 let searchTrackTimer = null;
 let currentLanguage = localStorage.getItem("freehospitalsLanguage") || "en";
+const CARE_DESK_PHONE = "+91 7838883008";
+const CARE_DESK_PHONE_HREF = "+917838883008";
 if (!["en", "hi"].includes(currentLanguage)) currentLanguage = "en";
 
 const translations = {
@@ -331,7 +333,7 @@ function renderHospitalDetail(hospital) {
     "@type": "Hospital",
     name: hospital.name,
     address: hospital.address,
-    telephone: hospital.phone || "+91 8586930497",
+    telephone: hospital.phone || CARE_DESK_PHONE,
     medicalSpecialty: hospital.specialties || [],
     availableService: hospital.services || [],
     url: window.location.href,
@@ -346,7 +348,7 @@ function renderHospitals() {
   const sameState = hospitalState.value !== "All" ? hospitals.filter((hospital) => hospital.state === hospitalState.value && hospital.city !== hospitalCity.value).slice(0, 4) : [];
   hospitalList.innerHTML = results.length
     ? results.map(hospitalCard).join("")
-    : `<div class="empty-state"><h2>${t("noHospitals")}</h2><p>${t("tryAnother")}</p>${sameState.length ? `<div class="nearby-suggestions">${sameState.map((hospital) => `<button type="button" data-nearby-hospital-city="${hospital.city}">${hospital.city}</button>`).join("")}</div>` : ""}<div class="empty-actions"><a class="call-button" href="tel:+918586930497">${t("callCareDesk")}</a></div></div>`;
+    : `<div class="empty-state"><h2>${t("noHospitals")}</h2><p>${t("tryAnother")}</p>${sameState.length ? `<div class="nearby-suggestions">${sameState.map((hospital) => `<button type="button" data-nearby-hospital-city="${hospital.city}">${hospital.city}</button>`).join("")}</div>` : ""}<div class="empty-actions"><a class="call-button" href="tel:${CARE_DESK_PHONE_HREF}">${t("callCareDesk")}</a></div></div>`;
 }
 
 function trackHospitalSearch() {
